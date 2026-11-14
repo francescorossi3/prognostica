@@ -1,4 +1,476 @@
 region,event,date,station,lead_day,osservato,arpege,ecmwf_aifs,ecmwf_ifs,gem,gfs,icon2i,icon_eu,icon_global,ukmo,name
+italia,pioggia_forte,2026-10-06,16235,0,29.4,4.7,3.2,2.4,1.7,3.8,0.9,2.3,1.4,0.6,Roma / Urbe
+italia,pioggia_forte,2026-10-06,16235,1,29.4,0.9,9.4,56.7,4.8,0.0,7.3,4.4,4.6,5.0,Roma / Urbe
+italia,pioggia_forte,2026-10-06,16235,2,29.4,0.0,9.0,13.5,0.9,0.0,0.6,6.1,5.8,0.0,Roma / Urbe
+italia,pioggia_forte,2026-10-06,16235,3,29.4,5.2,2.8,10.7,0.0,2.0,,0.3,0.5,0.9,Roma / Urbe
+italia,pioggia_forte,2026-10-06,16235,4,29.4,,3.0,13.7,0.4,0.0,,21.3,14.3,0.9,Roma / Urbe
+italia,pioggia_forte,2026-10-06,16235,5,29.4,,0.4,0.2,0.9,0.0,,,1.6,0.0,Roma / Urbe
+italia,pioggia_forte,2026-10-06,16235,6,29.4,,0.4,0.0,4.3,2.2,,,0.0,22.0,Roma / Urbe
+italia,pioggia_forte,2026-10-06,16235,7,29.4,,0.0,0.0,0.0,0.4,,,,,Roma / Urbe
+italia,pioggia_forte,2026-10-06,16244,0,20.3,20.5,3.0,0.4,5.0,4.3,2.9,7.1,9.6,0.3,Frosinone
+italia,pioggia_forte,2026-10-06,16244,1,20.3,0.7,7.6,14.7,0.2,21.5,3.3,5.4,4.8,2.3,Frosinone
+italia,pioggia_forte,2026-10-06,16244,2,20.3,1.9,7.6,19.4,0.1,0.1,2.7,3.3,4.9,0.3,Frosinone
+italia,pioggia_forte,2026-10-06,16244,3,20.3,4.1,3.4,4.4,7.7,0.7,,0.9,1.4,1.2,Frosinone
+italia,pioggia_forte,2026-10-06,16244,4,20.3,,3.6,3.6,0.2,0.0,,19.5,15.2,0.3,Frosinone
+italia,pioggia_forte,2026-10-06,16244,5,20.3,,0.4,0.0,0.0,1.0,,,0.1,0.0,Frosinone
+italia,pioggia_forte,2026-10-06,16244,6,20.3,,1.0,0.0,161.9,0.2,,,0.2,1.9,Frosinone
+italia,pioggia_forte,2026-10-06,16244,7,20.3,,0.0,0.9,0.0,2.6,,,,,Frosinone
+italia,pioggia_forte,2026-10-06,16531,0,20.2,2.2,8.0,10.2,2.6,8.2,19.2,3.7,5.6,8.7,Olbia / Costa Smeralda
+italia,pioggia_forte,2026-10-06,16531,1,20.2,9.1,13.6,11.0,5.7,8.9,2.6,3.8,2.5,13.2,Olbia / Costa Smeralda
+italia,pioggia_forte,2026-10-06,16531,2,20.2,3.2,11.4,8.7,4.4,4.0,8.7,2.1,1.8,0.8,Olbia / Costa Smeralda
+italia,pioggia_forte,2026-10-06,16531,3,20.2,2.6,6.2,6.0,2.3,0.6,,0.6,1.0,10.1,Olbia / Costa Smeralda
+italia,pioggia_forte,2026-10-06,16531,4,20.2,,6.4,12.9,0.0,3.9,,0.1,0.2,8.2,Olbia / Costa Smeralda
+italia,pioggia_forte,2026-10-06,16531,5,20.2,,0.4,0.0,7.7,0.1,,,0.9,0.3,Olbia / Costa Smeralda
+italia,pioggia_forte,2026-10-06,16531,6,20.2,,5.4,0.3,0.1,0.0,,,3.0,0.6,Olbia / Costa Smeralda
+italia,pioggia_forte,2026-10-06,16531,7,20.2,,3.0,0.9,0.3,1.4,,,,,Olbia / Costa Smeralda
+italia,pioggia_forte,2026-10-07,16119,0,28.2,20.0,13.4,5.8,2.7,7.5,15.4,12.6,10.7,8.7,Passo Dei Giovi
+italia,pioggia_forte,2026-10-07,16119,1,28.2,3.7,18.4,33.3,4.9,0.4,20.2,8.7,4.5,2.2,Passo Dei Giovi
+italia,pioggia_forte,2026-10-07,16119,2,28.2,7.9,9.8,9.5,11.6,5.9,26.6,4.2,0.7,8.3,Passo Dei Giovi
+italia,pioggia_forte,2026-10-07,16119,3,28.2,0.5,12.2,11.6,9.5,7.2,,8.0,3.6,9.4,Passo Dei Giovi
+italia,pioggia_forte,2026-10-07,16119,4,28.2,,13.2,28.7,0.0,6.5,,4.8,4.7,17.4,Passo Dei Giovi
+italia,pioggia_forte,2026-10-07,16119,5,28.2,,6.4,0.1,6.2,1.5,,,0.0,0.0,Passo Dei Giovi
+italia,pioggia_forte,2026-10-07,16119,6,28.2,,0.0,0.0,0.0,0.2,,,0.0,9.7,Passo Dei Giovi
+italia,pioggia_forte,2026-10-07,16119,7,28.2,,13.8,0.2,0.0,1.6,,,,,Passo Dei Giovi
+italia,pioggia_forte,2026-10-07,16122,0,41.4,37.9,32.8,35.8,13.9,21.7,90.9,36.2,41.6,32.7,Albenga
+italia,pioggia_forte,2026-10-07,16122,1,41.4,14.9,32.8,27.1,8.7,1.4,51.3,15.2,17.0,18.4,Albenga
+italia,pioggia_forte,2026-10-07,16122,2,41.4,16.6,22.8,23.0,30.3,9.9,113.5,6.4,8.4,41.7,Albenga
+italia,pioggia_forte,2026-10-07,16122,3,41.4,2.6,21.8,7.8,13.2,6.5,,4.9,5.7,14.3,Albenga
+italia,pioggia_forte,2026-10-07,16122,4,41.4,,25.4,32.0,0.6,19.7,,3.6,5.7,30.7,Albenga
+italia,pioggia_forte,2026-10-07,16122,5,41.4,,7.6,0.6,5.7,1.1,,,0.7,0.0,Albenga
+italia,pioggia_forte,2026-10-07,16122,6,41.4,,1.2,0.0,11.0,1.7,,,0.3,11.7,Albenga
+italia,pioggia_forte,2026-10-07,16122,7,41.4,,7.4,2.7,0.3,0.5,,,,,Albenga
+italia,pioggia_forte,2026-10-07,16125,0,29.8,14.1,11.8,14.3,30.2,10.1,11.7,11.7,6.7,23.0,Sarzana / Luni
+italia,pioggia_forte,2026-10-07,16125,1,29.8,7.6,18.2,17.6,29.0,2.7,3.9,13.1,8.4,27.3,Sarzana / Luni
+italia,pioggia_forte,2026-10-07,16125,2,29.8,7.1,10.8,9.3,14.0,27.0,22.9,7.7,5.2,1.2,Sarzana / Luni
+italia,pioggia_forte,2026-10-07,16125,3,29.8,1.1,12.4,14.3,9.9,35.5,,7.6,3.7,37.3,Sarzana / Luni
+italia,pioggia_forte,2026-10-07,16125,4,29.8,,17.2,27.8,0.5,8.2,,12.3,10.0,12.3,Sarzana / Luni
+italia,pioggia_forte,2026-10-07,16125,5,29.8,,6.4,1.9,11.3,4.8,,,0.0,1.3,Sarzana / Luni
+italia,pioggia_forte,2026-10-07,16125,6,29.8,,0.2,0.0,7.0,0.1,,,3.6,73.8,Sarzana / Luni
+italia,pioggia_forte,2026-10-07,16125,7,29.8,,16.4,0.2,0.0,45.1,,,,,Sarzana / Luni
+italia,pioggia_forte,2026-10-07,16294,0,40.1,6.0,4.8,3.6,19.5,9.7,9.7,7.9,11.1,0.7,Capri
+italia,pioggia_forte,2026-10-07,16294,1,40.1,5.9,4.6,22.6,17.1,7.2,6.8,18.1,24.3,21.8,Capri
+italia,pioggia_forte,2026-10-07,16294,2,40.1,7.3,12.6,37.6,9.5,4.2,1.1,18.6,13.3,29.8,Capri
+italia,pioggia_forte,2026-10-07,16294,3,40.1,12.4,12.4,40.0,19.1,0.3,,15.6,20.9,14.8,Capri
+italia,pioggia_forte,2026-10-07,16294,4,40.1,,3.4,22.0,5.5,5.4,,0.6,2.2,0.4,Capri
+italia,pioggia_forte,2026-10-07,16294,5,40.1,,7.8,26.7,1.6,0.1,,,6.8,0.0,Capri
+italia,pioggia_forte,2026-10-07,16294,6,40.1,,1.2,0.0,8.8,1.3,,,6.5,0.0,Capri
+italia,pioggia_forte,2026-10-07,16294,7,40.1,,7.2,1.5,0.1,0.2,,,,,Capri
+italia,pioggia_forte,2026-10-08,16036,0,32.8,19.6,14.4,14.7,15.8,5.5,6.9,10.5,10.7,8.7,Aviano
+italia,pioggia_forte,2026-10-08,16036,1,32.8,18.8,14.8,9.0,29.7,5.6,14.0,5.6,10.1,5.4,Aviano
+italia,pioggia_forte,2026-10-08,16036,2,32.8,18.9,14.6,18.0,27.4,7.1,7.4,22.7,33.5,38.2,Aviano
+italia,pioggia_forte,2026-10-08,16036,3,32.8,29.1,14.8,22.2,10.5,7.6,,2.0,1.7,15.8,Aviano
+italia,pioggia_forte,2026-10-08,16036,4,32.8,,18.6,24.2,14.9,4.5,,11.7,19.5,16.0,Aviano
+italia,pioggia_forte,2026-10-08,16036,5,32.8,,25.2,27.8,2.6,0.0,,,12.3,4.0,Aviano
+italia,pioggia_forte,2026-10-08,16036,6,32.8,,5.6,3.3,1.2,19.4,,,6.5,13.2,Aviano
+italia,pioggia_forte,2026-10-08,16036,7,32.8,,5.6,0.1,0.0,0.1,,,,,Aviano
+italia,pioggia_forte,2026-10-08,16108,0,36.2,65.0,42.4,52.3,42.3,52.0,62.5,49.5,60.1,55.1,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-08,16108,1,36.2,98.9,42.2,41.0,52.2,22.4,58.4,57.9,85.8,38.3,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-08,16108,2,36.2,105.9,38.4,68.1,43.1,27.7,103.6,45.9,74.6,84.1,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-08,16108,3,36.2,108.8,37.0,45.8,22.3,17.4,,37.1,44.6,58.6,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-08,16108,4,36.2,,44.0,49.0,40.3,8.8,,61.0,87.3,49.6,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-08,16108,5,36.2,,45.6,61.5,0.1,4.0,,,21.3,26.7,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-08,16108,6,36.2,,18.0,5.2,7.5,20.3,,,6.1,40.0,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-08,16108,7,36.2,,19.0,5.6,2.7,10.2,,,,,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-08,16125,0,51.7,25.3,36.2,63.3,56.5,41.2,27.1,119.7,86.8,55.7,Sarzana / Luni
+italia,pioggia_forte,2026-10-08,16125,1,51.7,32.9,35.2,63.6,71.2,31.3,17.3,89.7,61.6,44.0,Sarzana / Luni
+italia,pioggia_forte,2026-10-08,16125,2,51.7,32.2,39.4,101.4,63.1,46.4,4.2,73.9,60.3,54.0,Sarzana / Luni
+italia,pioggia_forte,2026-10-08,16125,3,51.7,38.9,34.0,65.5,27.0,30.9,,50.4,29.6,66.1,Sarzana / Luni
+italia,pioggia_forte,2026-10-08,16125,4,51.7,,42.2,74.2,55.3,30.8,,59.9,42.1,70.9,Sarzana / Luni
+italia,pioggia_forte,2026-10-08,16125,5,51.7,,27.0,56.8,12.0,17.2,,,23.0,11.2,Sarzana / Luni
+italia,pioggia_forte,2026-10-08,16125,6,51.7,,7.4,15.0,5.6,26.9,,,15.2,22.3,Sarzana / Luni
+italia,pioggia_forte,2026-10-08,16125,7,51.7,,22.0,17.3,0.4,19.4,,,,,Sarzana / Luni
+italia,pioggia_forte,2026-10-08,16134,0,38.6,0.6,11.6,11.5,4.9,9.2,37.4,5.4,0.2,5.3,Monte Cimone
+italia,pioggia_forte,2026-10-08,16134,1,38.6,1.7,11.4,11.8,17.5,9.8,2.3,3.4,1.4,4.4,Monte Cimone
+italia,pioggia_forte,2026-10-08,16134,2,38.6,1.8,11.8,15.6,13.7,24.1,10.8,16.9,8.4,79.2,Monte Cimone
+italia,pioggia_forte,2026-10-08,16134,3,38.6,5.1,12.2,11.6,1.3,5.7,,7.4,3.4,31.7,Monte Cimone
+italia,pioggia_forte,2026-10-08,16134,4,38.6,,16.8,18.7,14.7,5.1,,14.2,5.7,21.5,Monte Cimone
+italia,pioggia_forte,2026-10-08,16134,5,38.6,,15.0,14.4,10.7,15.2,,,19.8,6.5,Monte Cimone
+italia,pioggia_forte,2026-10-08,16134,6,38.6,,7.6,3.9,7.1,14.9,,,16.1,18.2,Monte Cimone
+italia,pioggia_forte,2026-10-08,16134,7,38.6,,14.4,3.7,2.6,5.6,,,,,Monte Cimone
+italia,pioggia_forte,2026-10-08,16158,0,37.1,22.4,39.4,56.1,32.8,28.0,4.2,53.6,49.5,25.5,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-08,16158,1,37.1,41.5,38.4,72.6,39.0,27.7,3.4,47.1,38.9,24.7,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-08,16158,2,37.1,27.2,42.4,43.3,47.7,20.6,13.6,65.1,67.0,41.4,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-08,16158,3,37.1,44.4,36.4,62.8,25.9,17.5,,53.9,48.7,38.9,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-08,16158,4,37.1,,42.0,42.6,38.6,15.8,,33.9,39.9,73.4,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-08,16158,5,37.1,,29.8,57.7,27.2,9.5,,,21.8,18.8,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-08,16158,6,37.1,,15.0,17.2,51.2,21.5,,,11.9,17.0,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-08,16158,7,37.1,,23.6,24.2,0.6,13.6,,,,,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-08,16170,0,58.5,21.2,27.0,39.2,39.8,27.3,35.2,43.1,46.0,31.5,Firenze / Peretola
+italia,pioggia_forte,2026-10-08,16170,1,58.5,61.5,24.0,35.1,49.7,22.2,13.0,37.5,33.9,59.1,Firenze / Peretola
+italia,pioggia_forte,2026-10-08,16170,2,58.5,60.3,26.4,59.5,54.3,27.5,25.8,39.3,43.6,33.0,Firenze / Peretola
+italia,pioggia_forte,2026-10-08,16170,3,58.5,48.0,22.2,36.8,17.6,15.6,,34.4,39.4,30.7,Firenze / Peretola
+italia,pioggia_forte,2026-10-08,16170,4,58.5,,26.2,43.1,57.1,13.6,,27.3,28.7,56.1,Firenze / Peretola
+italia,pioggia_forte,2026-10-08,16170,5,58.5,,22.0,50.0,5.6,8.7,,,27.8,23.3,Firenze / Peretola
+italia,pioggia_forte,2026-10-08,16170,6,58.5,,13.2,9.5,38.9,11.4,,,13.3,33.8,Firenze / Peretola
+italia,pioggia_forte,2026-10-08,16170,7,58.5,,13.6,6.2,0.7,6.4,,,,,Firenze / Peretola
+italia,pioggia_forte,2026-10-08,16172,0,43.1,28.3,23.0,20.1,31.4,24.1,94.8,36.4,44.0,26.8,Arezzo
+italia,pioggia_forte,2026-10-08,16172,1,43.1,45.7,25.0,40.6,37.1,25.0,104.7,24.8,31.6,57.7,Arezzo
+italia,pioggia_forte,2026-10-08,16172,2,43.1,52.0,26.0,46.6,44.8,28.2,121.7,29.9,34.8,34.1,Arezzo
+italia,pioggia_forte,2026-10-08,16172,3,43.1,78.6,21.0,41.4,25.4,11.5,,31.0,34.9,23.9,Arezzo
+italia,pioggia_forte,2026-10-08,16172,4,43.1,,24.8,55.1,45.2,14.8,,29.9,36.2,49.3,Arezzo
+italia,pioggia_forte,2026-10-08,16172,5,43.1,,20.2,28.7,15.2,4.2,,,15.9,33.4,Arezzo
+italia,pioggia_forte,2026-10-08,16172,6,43.1,,14.6,10.6,34.0,13.1,,,13.2,36.3,Arezzo
+italia,pioggia_forte,2026-10-08,16172,7,43.1,,12.6,1.8,1.6,6.8,,,,,Arezzo
+italia,pioggia_forte,2026-10-08,16181,0,46.6,23.0,18.2,11.8,10.5,22.9,15.4,5.7,12.9,23.5,Perugia
+italia,pioggia_forte,2026-10-08,16181,1,46.6,19.0,22.0,9.1,13.5,24.0,44.4,11.1,18.9,35.7,Perugia
+italia,pioggia_forte,2026-10-08,16181,2,46.6,17.4,23.0,9.6,16.2,21.6,22.8,15.5,27.3,11.1,Perugia
+italia,pioggia_forte,2026-10-08,16181,3,46.6,23.1,18.4,10.4,14.9,22.4,,20.8,33.9,23.2,Perugia
+italia,pioggia_forte,2026-10-08,16181,4,46.6,,23.8,3.1,51.8,15.6,,21.9,41.4,15.3,Perugia
+italia,pioggia_forte,2026-10-08,16181,5,46.6,,22.2,6.9,18.5,7.6,,,9.2,30.5,Perugia
+italia,pioggia_forte,2026-10-08,16181,6,46.6,,12.0,39.7,49.2,5.1,,,18.2,29.6,Perugia
+italia,pioggia_forte,2026-10-08,16181,7,46.6,,10.4,1.4,0.7,2.5,,,,,Perugia
+italia,pioggia_forte,2026-10-08,16216,0,24.0,13.3,30.6,23.9,29.9,20.3,14.4,9.7,8.3,10.0,Viterbo
+italia,pioggia_forte,2026-10-08,16216,1,24.0,1.6,40.8,21.4,43.5,9.0,3.5,8.9,9.2,3.2,Viterbo
+italia,pioggia_forte,2026-10-08,16216,2,24.0,19.5,36.4,38.6,37.6,11.5,46.9,17.1,5.6,2.2,Viterbo
+italia,pioggia_forte,2026-10-08,16216,3,24.0,9.3,28.4,40.2,22.5,10.7,,20.3,17.7,1.6,Viterbo
+italia,pioggia_forte,2026-10-08,16216,4,24.0,,33.4,18.9,43.1,2.1,,26.2,25.5,4.8,Viterbo
+italia,pioggia_forte,2026-10-08,16216,5,24.0,,25.6,19.2,41.4,4.0,,,5.3,27.8,Viterbo
+italia,pioggia_forte,2026-10-08,16216,6,24.0,,18.6,9.4,50.8,11.9,,,7.9,36.9,Viterbo
+italia,pioggia_forte,2026-10-08,16216,7,24.0,,23.8,1.6,0.0,9.4,,,,,Viterbo
+italia,pioggia_forte,2026-10-08,16219,0,24.5,11.8,14.2,19.8,22.2,24.0,60.4,15.6,8.3,35.3,Monte Terminillo
+italia,pioggia_forte,2026-10-08,16219,1,24.5,6.7,17.6,10.8,23.0,20.2,48.4,15.6,10.0,30.5,Monte Terminillo
+italia,pioggia_forte,2026-10-08,16219,2,24.5,14.6,20.4,36.4,17.5,15.3,99.5,13.2,11.0,49.7,Monte Terminillo
+italia,pioggia_forte,2026-10-08,16219,3,24.5,13.7,18.8,32.7,8.1,19.5,,16.6,11.1,21.4,Monte Terminillo
+italia,pioggia_forte,2026-10-08,16219,4,24.5,,23.6,18.5,38.0,23.1,,17.1,12.4,38.5,Monte Terminillo
+italia,pioggia_forte,2026-10-08,16219,5,24.5,,31.6,35.2,19.6,9.9,,,3.7,23.8,Monte Terminillo
+italia,pioggia_forte,2026-10-08,16219,6,24.5,,10.6,33.2,28.1,21.7,,,6.0,51.0,Monte Terminillo
+italia,pioggia_forte,2026-10-08,16219,7,24.5,,9.6,0.4,4.4,9.7,,,,,Monte Terminillo
+italia,pioggia_forte,2026-10-08,16235,0,25.9,40.8,27.4,48.1,31.1,25.3,20.1,46.0,52.7,30.7,Roma / Urbe
+italia,pioggia_forte,2026-10-08,16235,1,25.9,58.2,40.2,24.0,44.5,20.0,0.0,34.0,32.5,16.8,Roma / Urbe
+italia,pioggia_forte,2026-10-08,16235,2,25.9,57.5,37.0,75.1,35.7,27.0,13.5,21.9,21.0,26.0,Roma / Urbe
+italia,pioggia_forte,2026-10-08,16235,3,25.9,71.7,28.8,54.2,30.7,26.2,,39.8,44.7,5.6,Roma / Urbe
+italia,pioggia_forte,2026-10-08,16235,4,25.9,,35.4,24.3,54.8,15.5,,36.5,41.2,29.6,Roma / Urbe
+italia,pioggia_forte,2026-10-08,16235,5,25.9,,33.4,36.4,25.9,7.8,,,16.2,18.7,Roma / Urbe
+italia,pioggia_forte,2026-10-08,16235,6,25.9,,20.2,27.4,46.1,22.4,,,23.1,57.6,Roma / Urbe
+italia,pioggia_forte,2026-10-08,16235,7,25.9,,23.4,1.9,7.4,12.9,,,,,Roma / Urbe
+italia,pioggia_forte,2026-10-08,16244,0,52.6,57.5,20.0,11.7,29.0,13.0,4.5,22.7,23.8,19.0,Frosinone
+italia,pioggia_forte,2026-10-08,16244,1,52.6,45.1,36.8,19.1,31.6,12.5,44.0,18.6,28.1,33.0,Frosinone
+italia,pioggia_forte,2026-10-08,16244,2,52.6,63.0,38.6,32.3,30.5,25.1,101.9,19.1,29.2,59.3,Frosinone
+italia,pioggia_forte,2026-10-08,16244,3,52.6,75.9,27.6,22.7,7.3,12.3,,10.0,12.0,32.8,Frosinone
+italia,pioggia_forte,2026-10-08,16244,4,52.6,,34.0,21.8,62.3,17.4,,24.6,32.7,89.8,Frosinone
+italia,pioggia_forte,2026-10-08,16244,5,52.6,,43.4,25.8,19.3,4.7,,,13.3,50.0,Frosinone
+italia,pioggia_forte,2026-10-08,16244,6,52.6,,17.4,16.1,46.0,36.7,,,9.0,75.9,Frosinone
+italia,pioggia_forte,2026-10-08,16244,7,52.6,,16.6,0.1,4.5,3.5,,,,,Frosinone
+italia,pioggia_forte,2026-10-08,16288,0,35.7,58.9,30.4,42.9,23.4,15.1,22.5,21.1,6.8,19.6,Caserta / Sala
+italia,pioggia_forte,2026-10-08,16288,1,35.7,45.5,35.2,55.5,23.0,30.3,10.3,51.4,30.0,65.8,Caserta / Sala
+italia,pioggia_forte,2026-10-08,16288,2,35.7,62.7,35.8,59.1,20.8,21.3,32.4,53.7,36.0,67.9,Caserta / Sala
+italia,pioggia_forte,2026-10-08,16288,3,35.7,52.9,29.2,16.2,8.6,27.5,,31.9,14.2,23.7,Caserta / Sala
+italia,pioggia_forte,2026-10-08,16288,4,35.7,,34.6,66.1,54.2,37.4,,66.1,52.6,31.6,Caserta / Sala
+italia,pioggia_forte,2026-10-08,16288,5,35.7,,53.2,88.4,37.6,30.9,,,50.6,11.6,Caserta / Sala
+italia,pioggia_forte,2026-10-08,16288,6,35.7,,23.6,14.8,62.3,5.9,,,18.6,56.4,Caserta / Sala
+italia,pioggia_forte,2026-10-08,16288,7,35.7,,12.8,3.3,11.0,0.8,,,,,Caserta / Sala
+italia,pioggia_forte,2026-10-08,16294,0,66.2,8.6,27.8,22.4,5.0,20.3,4.8,25.0,26.3,1.0,Capri
+italia,pioggia_forte,2026-10-08,16294,1,66.2,35.7,28.2,25.4,16.3,26.7,0.7,55.6,48.7,3.3,Capri
+italia,pioggia_forte,2026-10-08,16294,2,66.2,19.9,27.4,11.0,13.2,19.8,8.9,50.5,54.2,15.7,Capri
+italia,pioggia_forte,2026-10-08,16294,3,66.2,41.6,19.8,8.7,10.7,15.7,,20.7,19.6,9.0,Capri
+italia,pioggia_forte,2026-10-08,16294,4,66.2,,33.8,41.8,55.3,7.6,,77.9,84.0,4.0,Capri
+italia,pioggia_forte,2026-10-08,16294,5,66.2,,44.4,62.7,51.8,18.3,,,101.0,0.6,Capri
+italia,pioggia_forte,2026-10-08,16294,6,66.2,,22.4,13.2,90.2,5.2,,,68.3,35.8,Capri
+italia,pioggia_forte,2026-10-08,16294,7,66.2,,12.4,1.8,25.0,0.0,,,,,Capri
+italia,pioggia_forte,2026-10-08,16520,0,23.3,25.3,14.4,20.9,17.0,11.8,16.8,32.9,38.6,19.2,Alghero
+italia,pioggia_forte,2026-10-08,16520,1,23.3,24.0,17.2,23.4,24.9,11.9,0.0,22.2,24.5,12.6,Alghero
+italia,pioggia_forte,2026-10-08,16520,2,23.3,68.5,17.8,17.0,15.5,6.8,2.6,41.4,39.0,1.2,Alghero
+italia,pioggia_forte,2026-10-08,16520,3,23.3,59.5,11.6,5.8,13.8,8.5,,36.2,33.2,2.1,Alghero
+italia,pioggia_forte,2026-10-08,16520,4,23.3,,16.2,29.9,19.3,1.0,,16.4,17.4,10.4,Alghero
+italia,pioggia_forte,2026-10-08,16520,5,23.3,,11.6,9.5,10.8,14.4,,,20.5,19.7,Alghero
+italia,pioggia_forte,2026-10-08,16520,6,23.3,,18.0,24.7,11.8,2.6,,,11.2,31.4,Alghero
+italia,pioggia_forte,2026-10-08,16520,7,23.3,,15.8,13.5,4.1,3.5,,,,,Alghero
+italia,pioggia_forte,2026-10-09,16036,0,25.6,7.1,5.2,1.5,4.1,4.0,0.0,0.5,1.3,1.9,Aviano
+italia,pioggia_forte,2026-10-09,16036,1,25.6,8.3,5.2,0.8,4.9,1.6,0.0,2.3,8.4,1.5,Aviano
+italia,pioggia_forte,2026-10-09,16036,2,25.6,3.4,5.4,2.7,9.6,5.8,17.4,7.8,7.0,3.8,Aviano
+italia,pioggia_forte,2026-10-09,16036,3,25.6,11.7,11.2,16.5,20.6,0.4,,1.0,1.5,5.9,Aviano
+italia,pioggia_forte,2026-10-09,16036,4,25.6,,4.8,5.8,2.6,0.3,,2.8,3.6,8.2,Aviano
+italia,pioggia_forte,2026-10-09,16036,5,25.6,,9.8,1.0,25.5,0.5,,,10.4,1.3,Aviano
+italia,pioggia_forte,2026-10-09,16036,6,25.6,,9.4,10.2,4.9,0.1,,,3.6,0.2,Aviano
+italia,pioggia_forte,2026-10-09,16036,7,25.6,,0.2,11.2,2.1,2.3,,,,,Aviano
+italia,pioggia_forte,2026-10-09,16108,0,39.9,24.2,7.4,10.4,12.0,11.1,18.4,12.7,15.7,9.2,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-09,16108,1,39.9,28.1,11.0,15.9,6.5,9.8,2.6,10.6,13.1,2.4,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-09,16108,2,39.9,13.0,8.6,15.7,13.6,12.2,22.0,12.2,24.4,13.3,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-09,16108,3,39.9,34.8,13.6,34.4,23.0,5.8,,5.3,9.0,5.1,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-09,16108,4,39.9,,13.2,6.4,2.5,3.2,,15.1,18.6,19.7,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-09,16108,5,39.9,,16.8,18.3,23.9,2.8,,,6.6,3.2,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-09,16108,6,39.9,,16.8,23.6,0.0,0.0,,,14.5,3.4,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-09,16108,7,39.9,,4.4,15.7,0.2,21.8,,,,,Ronchi Dei Legionari
+italia,pioggia_forte,2026-10-09,16170,0,20.2,1.3,6.0,3.2,1.3,6.2,0.9,7.7,7.5,4.1,Firenze / Peretola
+italia,pioggia_forte,2026-10-09,16170,1,20.2,0.3,4.4,0.8,3.0,1.8,3.1,0.2,0.0,1.7,Firenze / Peretola
+italia,pioggia_forte,2026-10-09,16170,2,20.2,1.0,6.4,3.6,8.0,2.3,4.0,1.9,1.1,2.5,Firenze / Peretola
+italia,pioggia_forte,2026-10-09,16170,3,20.2,4.4,7.6,8.7,10.1,3.2,,5.1,7.6,3.1,Firenze / Peretola
+italia,pioggia_forte,2026-10-09,16170,4,20.2,,6.2,4.0,6.1,2.5,,0.2,0.1,5.5,Firenze / Peretola
+italia,pioggia_forte,2026-10-09,16170,5,20.2,,5.4,2.3,5.7,1.9,,,3.0,0.1,Firenze / Peretola
+italia,pioggia_forte,2026-10-09,16170,6,20.2,,15.0,16.6,0.1,0.2,,,13.8,0.0,Firenze / Peretola
+italia,pioggia_forte,2026-10-09,16170,7,20.2,,0.2,13.6,0.6,2.0,,,,,Firenze / Peretola
+italia,pioggia_forte,2026-10-09,16181,0,24.3,3.3,6.4,2.3,5.1,15.2,0.4,1.2,3.9,7.6,Perugia
+italia,pioggia_forte,2026-10-09,16181,1,24.3,6.9,5.8,4.4,3.8,6.2,0.0,2.7,4.5,13.6,Perugia
+italia,pioggia_forte,2026-10-09,16181,2,24.3,8.9,7.8,4.5,4.3,15.4,2.8,0.7,1.8,4.2,Perugia
+italia,pioggia_forte,2026-10-09,16181,3,24.3,9.0,9.8,4.0,3.9,5.8,,6.9,7.3,1.5,Perugia
+italia,pioggia_forte,2026-10-09,16181,4,24.3,,9.2,7.4,6.4,14.4,,1.5,2.5,5.7,Perugia
+italia,pioggia_forte,2026-10-09,16181,5,24.3,,8.2,0.6,8.9,4.0,,,3.2,3.3,Perugia
+italia,pioggia_forte,2026-10-09,16181,6,24.3,,14.4,5.0,7.9,2.4,,,15.6,3.0,Perugia
+italia,pioggia_forte,2026-10-09,16181,7,24.3,,2.2,25.4,0.4,6.7,,,,,Perugia
+italia,pioggia_forte,2026-10-09,16244,0,55.5,23.4,32.2,37.9,17.6,13.6,28.3,19.2,17.4,33.6,Frosinone
+italia,pioggia_forte,2026-10-09,16244,1,55.5,29.5,21.8,22.4,36.2,22.3,17.7,14.2,17.4,68.6,Frosinone
+italia,pioggia_forte,2026-10-09,16244,2,55.5,5.0,21.4,6.4,14.4,11.1,0.2,9.8,12.0,30.1,Frosinone
+italia,pioggia_forte,2026-10-09,16244,3,55.5,5.4,15.2,21.4,45.7,5.2,,0.6,0.6,3.4,Frosinone
+italia,pioggia_forte,2026-10-09,16244,4,55.5,,10.6,22.1,15.7,3.6,,4.3,1.5,36.9,Frosinone
+italia,pioggia_forte,2026-10-09,16244,5,55.5,,9.2,11.4,2.6,0.7,,,1.6,3.1,Frosinone
+italia,pioggia_forte,2026-10-09,16244,6,55.5,,10.2,11.8,1.5,4.9,,,5.3,5.8,Frosinone
+italia,pioggia_forte,2026-10-09,16244,7,55.5,,4.4,19.5,2.1,16.0,,,,,Frosinone
+italia,pioggia_forte,2026-10-09,16252,0,20.4,1.2,10.4,22.4,0.0,1.9,23.9,1.6,0.8,1.1,Campobasso
+italia,pioggia_forte,2026-10-09,16252,1,20.4,0.1,4.6,13.3,0.1,2.3,64.7,1.7,1.0,1.0,Campobasso
+italia,pioggia_forte,2026-10-09,16252,2,20.4,0.1,7.2,12.5,1.9,3.2,43.5,3.6,2.1,15.4,Campobasso
+italia,pioggia_forte,2026-10-09,16252,3,20.4,0.4,9.4,19.9,2.0,4.5,,2.3,2.9,0.3,Campobasso
+italia,pioggia_forte,2026-10-09,16252,4,20.4,,2.2,3.9,0.7,0.8,,0.8,0.6,2.0,Campobasso
+italia,pioggia_forte,2026-10-09,16252,5,20.4,,5.2,12.5,0.8,0.0,,,0.0,9.8,Campobasso
+italia,pioggia_forte,2026-10-09,16252,6,20.4,,2.4,11.1,0.3,4.1,,,0.2,5.3,Campobasso
+italia,pioggia_forte,2026-10-09,16252,7,20.4,,8.0,6.1,0.0,6.0,,,,,Campobasso
+italia,pioggia_forte,2026-10-09,16288,0,26.6,45.9,31.6,44.9,5.4,27.7,53.6,27.6,20.3,22.0,Caserta / Sala
+italia,pioggia_forte,2026-10-09,16288,1,26.6,62.3,24.8,58.3,23.6,15.2,33.4,39.2,18.7,53.1,Caserta / Sala
+italia,pioggia_forte,2026-10-09,16288,2,26.6,32.7,34.0,67.6,47.2,23.6,64.4,37.0,23.8,47.2,Caserta / Sala
+italia,pioggia_forte,2026-10-09,16288,3,26.6,16.5,40.4,58.4,50.2,26.3,,9.4,8.6,17.2,Caserta / Sala
+italia,pioggia_forte,2026-10-09,16288,4,26.6,,18.0,20.1,23.5,15.7,,11.2,11.1,74.1,Caserta / Sala
+italia,pioggia_forte,2026-10-09,16288,5,26.6,,20.4,12.2,9.0,1.5,,,12.2,10.9,Caserta / Sala
+italia,pioggia_forte,2026-10-09,16288,6,26.6,,11.8,38.3,3.6,4.2,,,17.1,9.5,Caserta / Sala
+italia,pioggia_forte,2026-10-09,16288,7,26.6,,10.6,31.9,0.1,45.3,,,,,Caserta / Sala
+italia,pioggia_forte,2026-10-09,16294,0,112.0,15.2,28.8,21.7,12.1,32.5,31.0,20.6,26.4,20.4,Capri
+italia,pioggia_forte,2026-10-09,16294,1,112.0,35.5,23.6,34.4,22.4,10.1,28.9,20.2,16.7,47.9,Capri
+italia,pioggia_forte,2026-10-09,16294,2,112.0,41.7,32.6,39.0,62.1,13.2,36.7,49.1,50.6,42.9,Capri
+italia,pioggia_forte,2026-10-09,16294,3,112.0,29.2,39.2,25.7,79.6,28.1,,11.3,12.3,24.9,Capri
+italia,pioggia_forte,2026-10-09,16294,4,112.0,,20.4,36.0,29.9,21.9,,11.1,11.3,33.4,Capri
+italia,pioggia_forte,2026-10-09,16294,5,112.0,,19.6,11.1,16.9,7.6,,,18.1,9.1,Capri
+italia,pioggia_forte,2026-10-09,16294,6,112.0,,9.8,23.7,2.2,4.3,,,40.9,10.3,Capri
+italia,pioggia_forte,2026-10-09,16294,7,112.0,,11.6,15.6,3.0,21.6,,,,,Capri
+italia,pioggia_forte,2026-10-09,16405,0,28.1,4.8,14.0,12.2,5.7,7.6,0.0,5.4,5.8,11.3,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-09,16405,1,28.1,1.7,18.6,31.7,5.8,9.3,21.8,20.0,15.5,1.4,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-09,16405,2,28.1,6.9,16.8,9.7,16.5,9.5,23.5,17.9,16.6,13.3,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-09,16405,3,28.1,14.4,14.0,17.5,13.5,8.4,,17.3,19.2,11.9,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-09,16405,4,28.1,,1.8,15.0,4.9,4.5,,19.8,16.8,7.2,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-09,16405,5,28.1,,7.2,4.8,3.6,7.2,,,13.4,0.5,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-09,16405,6,28.1,,6.6,3.9,0.3,0.0,,,12.0,0.4,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-09,16405,7,28.1,,4.8,18.2,0.0,2.7,,,,,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-09,16429,0,24.4,2.9,5.8,1.2,5.2,6.2,0.1,12.9,13.4,7.4,Trapani / Birgi
+italia,pioggia_forte,2026-10-09,16429,1,24.4,2.5,11.4,12.2,5.0,11.0,0.1,8.6,7.8,12.8,Trapani / Birgi
+italia,pioggia_forte,2026-10-09,16429,2,24.4,12.3,11.2,6.6,9.0,1.9,0.0,5.9,5.5,15.8,Trapani / Birgi
+italia,pioggia_forte,2026-10-09,16429,3,24.4,19.1,8.4,16.2,3.4,9.1,,10.7,4.1,37.9,Trapani / Birgi
+italia,pioggia_forte,2026-10-09,16429,4,24.4,,1.8,4.8,5.5,0.0,,5.0,1.4,7.5,Trapani / Birgi
+italia,pioggia_forte,2026-10-09,16429,5,24.4,,5.4,1.2,9.2,0.0,,,14.3,0.2,Trapani / Birgi
+italia,pioggia_forte,2026-10-09,16429,6,24.4,,4.8,6.3,0.0,0.0,,,5.8,0.9,Trapani / Birgi
+italia,pioggia_forte,2026-10-09,16429,7,24.4,,3.2,18.9,0.2,7.3,,,,,Trapani / Birgi
+italia,pioggia_forte,2026-10-09,16470,0,26.2,0.0,0.8,0.4,3.2,0.0,0.0,0.0,0.0,0.0,Pantelleria
+italia,pioggia_forte,2026-10-09,16470,1,26.2,0.2,4.2,0.2,0.0,0.0,1.5,4.7,2.7,1.2,Pantelleria
+italia,pioggia_forte,2026-10-09,16470,2,26.2,3.4,4.4,4.8,6.0,0.6,0.0,2.2,2.8,1.1,Pantelleria
+italia,pioggia_forte,2026-10-09,16470,3,26.2,0.2,2.4,1.8,0.5,1.6,,0.1,0.6,38.2,Pantelleria
+italia,pioggia_forte,2026-10-09,16470,4,26.2,,0.6,3.9,0.4,0.0,,2.8,5.2,0.1,Pantelleria
+italia,pioggia_forte,2026-10-09,16470,5,26.2,,1.8,1.5,9.0,0.0,,,25.5,0.1,Pantelleria
+italia,pioggia_forte,2026-10-09,16470,6,26.2,,1.8,11.7,0.0,0.0,,,4.6,0.1,Pantelleria
+italia,pioggia_forte,2026-10-09,16470,7,26.2,,1.2,6.9,0.0,1.3,,,,,Pantelleria
+italia,pioggia_forte,2026-10-10,16244,0,22.1,12.7,16.8,14.4,7.1,18.1,9.1,10.7,8.1,9.3,Frosinone
+italia,pioggia_forte,2026-10-10,16244,1,22.1,9.6,14.0,8.3,6.5,9.4,12.5,2.3,2.5,10.3,Frosinone
+italia,pioggia_forte,2026-10-10,16244,2,22.1,9.5,8.6,4.2,2.4,5.2,8.0,4.9,4.9,13.3,Frosinone
+italia,pioggia_forte,2026-10-10,16244,3,22.1,0.5,8.0,5.1,0.8,0.1,,0.0,0.0,1.0,Frosinone
+italia,pioggia_forte,2026-10-10,16244,4,22.1,,3.4,1.4,12.7,0.9,,0.0,0.0,0.1,Frosinone
+italia,pioggia_forte,2026-10-10,16244,5,22.1,,0.0,3.4,11.2,0.6,,,0.0,1.6,Frosinone
+italia,pioggia_forte,2026-10-10,16244,6,22.1,,0.6,0.0,0.0,0.0,,,0.0,0.0,Frosinone
+italia,pioggia_forte,2026-10-10,16244,7,22.1,,0.0,38.6,0.0,2.3,,,,,Frosinone
+italia,pioggia_forte,2026-10-10,16252,0,22.3,1.7,15.4,9.9,0.5,2.7,12.3,4.4,4.0,6.8,Campobasso
+italia,pioggia_forte,2026-10-10,16252,1,22.3,1.9,11.0,21.6,0.2,1.7,4.7,3.6,2.6,2.0,Campobasso
+italia,pioggia_forte,2026-10-10,16252,2,22.3,0.8,6.6,3.6,3.7,4.2,4.5,3.8,2.3,2.3,Campobasso
+italia,pioggia_forte,2026-10-10,16252,3,22.3,1.9,5.4,9.0,4.7,0.3,,1.0,1.4,2.6,Campobasso
+italia,pioggia_forte,2026-10-10,16252,4,22.3,,6.6,1.2,2.1,0.0,,0.0,0.0,0.0,Campobasso
+italia,pioggia_forte,2026-10-10,16252,5,22.3,,0.2,0.9,0.2,0.9,,,0.0,0.5,Campobasso
+italia,pioggia_forte,2026-10-10,16252,6,22.3,,2.4,0.6,0.3,0.0,,,0.2,0.0,Campobasso
+italia,pioggia_forte,2026-10-10,16252,7,22.3,,0.6,17.9,0.0,0.3,,,,,Campobasso
+italia,pioggia_forte,2026-10-10,16288,0,26.0,25.5,27.4,33.3,32.7,19.0,37.2,14.9,10.4,18.9,Caserta / Sala
+italia,pioggia_forte,2026-10-10,16288,1,26.0,21.6,27.2,21.4,19.5,11.5,12.5,15.4,11.8,15.9,Caserta / Sala
+italia,pioggia_forte,2026-10-10,16288,2,26.0,19.6,20.4,18.6,26.2,16.2,14.6,16.3,11.4,4.8,Caserta / Sala
+italia,pioggia_forte,2026-10-10,16288,3,26.0,11.7,16.0,11.1,4.8,2.8,,6.0,3.5,9.4,Caserta / Sala
+italia,pioggia_forte,2026-10-10,16288,4,26.0,,11.4,4.7,23.2,3.1,,0.1,0.0,3.2,Caserta / Sala
+italia,pioggia_forte,2026-10-10,16288,5,26.0,,0.2,5.0,4.2,3.6,,,0.0,12.0,Caserta / Sala
+italia,pioggia_forte,2026-10-10,16288,6,26.0,,0.6,0.6,0.0,3.5,,,0.4,0.0,Caserta / Sala
+italia,pioggia_forte,2026-10-10,16288,7,26.0,,0.0,32.9,0.0,1.2,,,,,Caserta / Sala
+italia,pioggia_forte,2026-10-10,16294,0,73.1,34.0,28.2,30.6,39.2,25.5,29.2,46.1,46.6,20.2,Capri
+italia,pioggia_forte,2026-10-10,16294,1,73.1,58.8,29.8,17.5,29.7,20.1,64.2,31.0,31.4,25.6,Capri
+italia,pioggia_forte,2026-10-10,16294,2,73.1,61.0,23.8,18.5,16.2,13.9,29.3,31.9,38.6,11.1,Capri
+italia,pioggia_forte,2026-10-10,16294,3,73.1,5.8,16.8,15.9,4.1,3.0,,10.6,12.5,13.0,Capri
+italia,pioggia_forte,2026-10-10,16294,4,73.1,,9.0,5.8,17.9,3.1,,3.3,3.6,3.8,Capri
+italia,pioggia_forte,2026-10-10,16294,5,73.1,,1.6,4.7,13.4,0.9,,,0.0,13.0,Capri
+italia,pioggia_forte,2026-10-10,16294,6,73.1,,1.4,4.8,0.1,4.5,,,20.0,0.0,Capri
+italia,pioggia_forte,2026-10-10,16294,7,73.1,,0.0,28.5,1.0,3.0,,,,,Capri
+italia,pioggia_forte,2026-10-10,16325,0,32.0,6.8,12.6,22.3,34.1,15.8,23.5,10.6,24.9,53.6,Marina Di Ginosa
+italia,pioggia_forte,2026-10-10,16325,1,32.0,18.4,14.0,29.5,11.0,44.6,22.2,16.6,22.1,57.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-10,16325,2,32.0,30.2,7.8,23.2,10.8,10.0,9.4,17.5,25.4,24.9,Marina Di Ginosa
+italia,pioggia_forte,2026-10-10,16325,3,32.0,15.8,13.2,15.5,4.9,5.2,,19.3,15.7,33.7,Marina Di Ginosa
+italia,pioggia_forte,2026-10-10,16325,4,32.0,,12.2,5.4,2.1,0.4,,0.0,0.0,0.5,Marina Di Ginosa
+italia,pioggia_forte,2026-10-10,16325,5,32.0,,3.8,4.3,0.1,0.6,,,0.0,1.6,Marina Di Ginosa
+italia,pioggia_forte,2026-10-10,16325,6,32.0,,4.8,3.3,3.0,0.0,,,0.0,0.7,Marina Di Ginosa
+italia,pioggia_forte,2026-10-10,16325,7,32.0,,0.0,2.1,0.0,0.6,,,,,Marina Di Ginosa
+italia,pioggia_forte,2026-10-10,16337,0,33.8,24.0,32.4,38.3,65.3,51.9,87.6,40.0,55.9,42.3,Bonifati
+italia,pioggia_forte,2026-10-10,16337,1,33.8,25.2,28.6,59.1,29.1,28.4,37.5,19.2,17.4,40.7,Bonifati
+italia,pioggia_forte,2026-10-10,16337,2,33.8,15.1,18.0,36.7,40.4,31.6,18.2,22.8,26.5,27.7,Bonifati
+italia,pioggia_forte,2026-10-10,16337,3,33.8,15.1,25.4,43.6,31.8,16.3,,44.0,51.2,21.3,Bonifati
+italia,pioggia_forte,2026-10-10,16337,4,33.8,,28.4,30.7,33.4,18.5,,0.5,0.4,4.4,Bonifati
+italia,pioggia_forte,2026-10-10,16337,5,33.8,,5.4,28.8,7.9,0.0,,,0.3,12.6,Bonifati
+italia,pioggia_forte,2026-10-10,16337,6,33.8,,3.6,5.4,0.6,1.0,,,14.2,1.4,Bonifati
+italia,pioggia_forte,2026-10-10,16337,7,33.8,,1.2,0.1,0.0,0.0,,,,,Bonifati
+italia,pioggia_forte,2026-10-10,16350,0,43.9,18.7,30.6,55.0,37.4,27.7,55.5,30.5,31.0,56.3,Crotone
+italia,pioggia_forte,2026-10-10,16350,1,43.9,8.7,16.2,39.9,11.5,21.6,40.0,13.1,9.6,61.7,Crotone
+italia,pioggia_forte,2026-10-10,16350,2,43.9,4.6,11.4,25.2,1.3,22.8,45.0,15.9,13.1,12.0,Crotone
+italia,pioggia_forte,2026-10-10,16350,3,43.9,9.8,17.6,4.7,0.2,1.8,,8.7,4.2,15.5,Crotone
+italia,pioggia_forte,2026-10-10,16350,4,43.9,,13.4,12.5,0.0,9.8,,1.7,0.0,0.1,Crotone
+italia,pioggia_forte,2026-10-10,16350,5,43.9,,3.4,1.2,0.7,0.3,,,0.0,6.0,Crotone
+italia,pioggia_forte,2026-10-10,16350,6,43.9,,3.0,3.7,1.4,0.0,,,0.0,0.4,Crotone
+italia,pioggia_forte,2026-10-10,16350,7,43.9,,0.2,2.1,0.0,3.3,,,,,Crotone
+italia,pioggia_forte,2026-10-10,16405,0,27.5,16.2,16.6,16.7,23.8,8.4,6.2,20.6,16.1,13.0,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-10,16405,1,27.5,14.1,14.2,26.3,18.7,9.2,37.1,7.6,5.3,20.8,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-10,16405,2,27.5,2.4,14.8,26.6,7.3,7.2,15.6,4.4,2.2,2.5,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-10,16405,3,27.5,2.6,7.4,12.8,0.8,2.3,,2.5,1.4,1.8,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-10,16405,4,27.5,,2.2,2.7,10.2,2.5,,0.4,0.3,0.0,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-10,16405,5,27.5,,0.6,2.2,0.3,0.2,,,13.4,2.8,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-10,16405,6,27.5,,3.6,0.0,2.2,0.3,,,1.3,3.5,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-10,16405,7,27.5,,1.4,7.2,0.0,0.5,,,,,Palermo / Punta Raisi
+italia,pioggia_forte,2026-10-10,16415,0,20.3,33.2,28.0,22.7,18.8,21.5,28.3,27.4,34.7,21.3,Isola Di Salina
+italia,pioggia_forte,2026-10-10,16415,1,20.3,48.7,24.8,14.0,10.9,34.6,50.1,23.3,31.6,38.6,Isola Di Salina
+italia,pioggia_forte,2026-10-10,16415,2,20.3,34.1,22.0,20.2,13.2,36.1,17.1,24.3,32.6,31.4,Isola Di Salina
+italia,pioggia_forte,2026-10-10,16415,3,20.3,12.1,22.0,25.0,7.1,2.4,,22.5,24.7,24.4,Isola Di Salina
+italia,pioggia_forte,2026-10-10,16415,4,20.3,,8.8,20.2,3.3,14.9,,2.6,2.9,0.3,Isola Di Salina
+italia,pioggia_forte,2026-10-10,16415,5,20.3,,3.2,1.3,0.3,0.9,,,15.8,17.1,Isola Di Salina
+italia,pioggia_forte,2026-10-10,16415,6,20.3,,4.4,0.6,4.7,0.3,,,4.3,11.8,Isola Di Salina
+italia,pioggia_forte,2026-10-10,16415,7,20.3,,1.4,3.3,0.0,0.4,,,,,Isola Di Salina
+italia,pioggia_forte,2026-10-10,16422,0,53.9,33.9,50.6,53.0,27.3,28.4,55.8,11.8,24.1,30.8,Reggio Calabria
+italia,pioggia_forte,2026-10-10,16422,1,53.9,16.3,27.2,19.5,12.5,28.6,40.5,19.8,30.7,14.3,Reggio Calabria
+italia,pioggia_forte,2026-10-10,16422,2,53.9,23.1,22.2,30.8,12.6,27.2,31.9,16.8,29.2,27.3,Reggio Calabria
+italia,pioggia_forte,2026-10-10,16422,3,53.9,1.2,23.6,18.3,10.8,2.6,,5.9,9.7,21.2,Reggio Calabria
+italia,pioggia_forte,2026-10-10,16422,4,53.9,,12.2,8.7,8.1,16.7,,0.0,0.0,1.6,Reggio Calabria
+italia,pioggia_forte,2026-10-10,16422,5,53.9,,2.2,0.6,3.7,0.1,,,0.3,4.5,Reggio Calabria
+italia,pioggia_forte,2026-10-10,16422,6,53.9,,1.8,2.7,1.8,0.8,,,0.0,1.2,Reggio Calabria
+italia,pioggia_forte,2026-10-10,16422,7,53.9,,2.4,4.6,0.0,1.7,,,,,Reggio Calabria
+italia,pioggia_forte,2026-10-10,16429,0,27.0,8.4,8.8,9.7,10.3,5.7,3.7,11.2,9.8,9.2,Trapani / Birgi
+italia,pioggia_forte,2026-10-10,16429,1,27.0,3.9,9.6,17.3,24.6,11.2,10.2,11.7,8.3,4.5,Trapani / Birgi
+italia,pioggia_forte,2026-10-10,16429,2,27.0,3.7,10.4,19.2,11.6,7.1,20.0,10.0,9.5,2.8,Trapani / Birgi
+italia,pioggia_forte,2026-10-10,16429,3,27.0,1.3,5.4,14.8,1.5,4.5,,1.0,1.1,0.8,Trapani / Birgi
+italia,pioggia_forte,2026-10-10,16429,4,27.0,,1.0,2.2,14.4,0.1,,0.0,0.0,0.0,Trapani / Birgi
+italia,pioggia_forte,2026-10-10,16429,5,27.0,,0.0,10.9,1.8,0.0,,,3.4,7.6,Trapani / Birgi
+italia,pioggia_forte,2026-10-10,16429,6,27.0,,1.8,0.0,1.6,0.6,,,1.7,0.6,Trapani / Birgi
+italia,pioggia_forte,2026-10-10,16429,7,27.0,,0.0,3.9,0.0,0.0,,,,,Trapani / Birgi
+italia,pioggia_forte,2026-10-10,16436,0,58.0,19.7,10.6,13.6,17.1,6.8,8.4,7.2,4.6,17.1,Sciacca / San Carlo
+italia,pioggia_forte,2026-10-10,16436,1,58.0,17.3,13.6,41.2,11.1,6.7,6.7,21.0,7.8,50.2,Sciacca / San Carlo
+italia,pioggia_forte,2026-10-10,16436,2,58.0,5.2,16.4,25.4,5.6,2.2,4.7,17.4,1.2,3.2,Sciacca / San Carlo
+italia,pioggia_forte,2026-10-10,16436,3,58.0,1.3,7.4,23.0,1.0,1.5,,0.1,0.1,0.6,Sciacca / San Carlo
+italia,pioggia_forte,2026-10-10,16436,4,58.0,,0.6,3.9,8.8,0.0,,0.0,0.0,0.0,Sciacca / San Carlo
+italia,pioggia_forte,2026-10-10,16436,5,58.0,,0.0,1.8,0.4,0.0,,,0.0,7.7,Sciacca / San Carlo
+italia,pioggia_forte,2026-10-10,16436,6,58.0,,1.2,0.0,0.0,0.0,,,5.8,4.1,Sciacca / San Carlo
+italia,pioggia_forte,2026-10-10,16436,7,58.0,,0.0,10.2,0.0,2.1,,,,,Sciacca / San Carlo
+italia,pioggia_forte,2026-10-10,16453,0,33.7,24.9,21.0,11.6,11.7,27.3,27.7,17.0,29.6,29.9,Gela
+italia,pioggia_forte,2026-10-10,16453,1,33.7,29.9,20.6,16.1,5.0,17.5,0.0,20.3,21.2,13.6,Gela
+italia,pioggia_forte,2026-10-10,16453,2,33.7,37.8,24.0,17.5,5.4,16.4,4.6,11.6,15.2,9.4,Gela
+italia,pioggia_forte,2026-10-10,16453,3,33.7,1.0,10.0,7.2,0.1,0.2,,2.1,0.9,4.4,Gela
+italia,pioggia_forte,2026-10-10,16453,4,33.7,,1.2,0.6,6.8,6.4,,0.0,0.0,0.0,Gela
+italia,pioggia_forte,2026-10-10,16453,5,33.7,,0.0,0.0,0.8,0.0,,,0.0,5.7,Gela
+italia,pioggia_forte,2026-10-10,16453,6,33.7,,0.6,1.8,0.0,0.0,,,0.0,4.5,Gela
+italia,pioggia_forte,2026-10-10,16453,7,33.7,,0.0,6.0,0.0,0.0,,,,,Gela
+italia,pioggia_forte,2026-10-10,16460,0,31.0,56.5,30.4,29.9,18.5,10.4,3.1,23.0,19.8,25.7,Catania / Fontanarossa
+italia,pioggia_forte,2026-10-10,16460,1,31.0,12.8,25.6,14.8,8.3,13.4,5.3,13.1,10.4,16.8,Catania / Fontanarossa
+italia,pioggia_forte,2026-10-10,16460,2,31.0,23.2,24.2,13.7,3.8,22.9,3.0,10.3,3.9,16.0,Catania / Fontanarossa
+italia,pioggia_forte,2026-10-10,16460,3,31.0,1.1,15.6,11.2,0.9,0.3,,0.4,0.1,2.0,Catania / Fontanarossa
+italia,pioggia_forte,2026-10-10,16460,4,31.0,,1.8,2.9,2.1,7.6,,0.0,0.0,0.0,Catania / Fontanarossa
+italia,pioggia_forte,2026-10-10,16460,5,31.0,,0.0,0.3,0.1,0.4,,,0.0,2.3,Catania / Fontanarossa
+italia,pioggia_forte,2026-10-10,16460,6,31.0,,0.6,0.6,0.9,0.3,,,0.0,0.6,Catania / Fontanarossa
+italia,pioggia_forte,2026-10-10,16460,7,31.0,,0.0,8.1,0.0,0.0,,,,,Catania / Fontanarossa
+italia,pioggia_forte,2026-10-10,16520,0,76.7,4.3,2.2,2.9,1.6,1.6,0.1,0.4,0.0,0.8,Alghero
+italia,pioggia_forte,2026-10-10,16520,1,76.7,1.3,2.4,2.6,1.8,5.9,0.0,0.2,0.0,7.2,Alghero
+italia,pioggia_forte,2026-10-10,16520,2,76.7,1.3,1.4,1.2,2.8,8.0,0.9,2.9,2.4,5.7,Alghero
+italia,pioggia_forte,2026-10-10,16520,3,76.7,0.5,4.2,3.0,0.2,1.1,,2.0,2.1,0.3,Alghero
+italia,pioggia_forte,2026-10-10,16520,4,76.7,,1.0,8.3,4.5,5.5,,0.0,0.0,0.0,Alghero
+italia,pioggia_forte,2026-10-10,16520,5,76.7,,0.0,3.5,0.4,0.2,,,0.0,1.1,Alghero
+italia,pioggia_forte,2026-10-10,16520,6,76.7,,0.0,0.0,0.0,0.0,,,0.1,0.0,Alghero
+italia,pioggia_forte,2026-10-10,16520,7,76.7,,0.0,3.6,0.0,0.5,,,,,Alghero
+italia,pioggia_forte,2026-10-11,16232,0,20.5,5.2,4.4,2.1,13.1,6.8,6.5,2.8,1.6,18.6,Termoli
+italia,pioggia_forte,2026-10-11,16232,1,20.5,7.4,3.8,10.9,26.2,12.6,1.4,6.0,5.5,12.7,Termoli
+italia,pioggia_forte,2026-10-11,16232,2,20.5,3.4,4.4,4.0,3.2,10.2,1.9,1.2,2.1,10.6,Termoli
+italia,pioggia_forte,2026-10-11,16232,3,20.5,1.5,6.6,11.7,0.2,43.9,,2.6,2.6,12.1,Termoli
+italia,pioggia_forte,2026-10-11,16232,4,20.5,,0.8,0.6,0.0,0.0,,0.0,0.0,5.5,Termoli
+italia,pioggia_forte,2026-10-11,16232,5,20.5,,0.6,0.0,0.0,0.2,,,0.0,0.0,Termoli
+italia,pioggia_forte,2026-10-11,16232,6,20.5,,0.0,0.0,1.8,1.3,,,0.0,17.6,Termoli
+italia,pioggia_forte,2026-10-11,16232,7,20.5,,0.6,0.0,0.1,0.0,,,,,Termoli
+italia,pioggia_forte,2026-10-11,16261,0,43.3,0.1,6.8,4.0,1.4,6.4,11.2,1.3,0.6,0.3,Amendola
+italia,pioggia_forte,2026-10-11,16261,1,43.3,0.3,5.4,7.8,2.1,35.6,0.2,6.8,4.4,1.6,Amendola
+italia,pioggia_forte,2026-10-11,16261,2,43.3,0.2,5.0,5.0,1.9,8.7,1.5,0.8,0.9,1.6,Amendola
+italia,pioggia_forte,2026-10-11,16261,3,43.3,0.0,5.4,17.4,0.2,28.4,,0.2,0.0,4.9,Amendola
+italia,pioggia_forte,2026-10-11,16261,4,43.3,,1.2,0.3,0.0,0.0,,0.0,0.0,0.5,Amendola
+italia,pioggia_forte,2026-10-11,16261,5,43.3,,0.6,0.0,0.0,0.0,,,0.0,0.0,Amendola
+italia,pioggia_forte,2026-10-11,16261,6,43.3,,0.0,0.0,0.2,0.8,,,0.0,5.4,Amendola
+italia,pioggia_forte,2026-10-11,16261,7,43.3,,4.8,0.0,0.0,0.0,,,,,Amendola
+italia,pioggia_forte,2026-10-11,16325,0,20.9,4.0,3.2,1.6,0.0,0.9,0.1,0.0,0.0,10.4,Marina Di Ginosa
+italia,pioggia_forte,2026-10-11,16325,1,20.9,0.0,4.8,1.4,0.1,3.4,0.0,0.5,0.3,0.1,Marina Di Ginosa
+italia,pioggia_forte,2026-10-11,16325,2,20.9,0.1,2.8,0.5,0.1,0.2,26.5,2.1,2.6,0.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-11,16325,3,20.9,2.5,5.6,12.3,0.0,9.6,,0.0,0.0,0.3,Marina Di Ginosa
+italia,pioggia_forte,2026-10-11,16325,4,20.9,,0.8,0.9,0.0,0.0,,0.0,0.0,0.1,Marina Di Ginosa
+italia,pioggia_forte,2026-10-11,16325,5,20.9,,0.6,0.2,0.0,0.1,,,0.0,0.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-11,16325,6,20.9,,0.0,0.0,0.2,0.0,,,0.0,0.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-11,16325,7,20.9,,3.0,0.0,0.4,0.0,,,,,Marina Di Ginosa
+italia,pioggia_forte,2026-10-11,16350,0,26.3,0.2,6.4,1.3,0.1,2.6,4.8,0.0,0.0,8.4,Crotone
+italia,pioggia_forte,2026-10-11,16350,1,26.3,0.2,2.0,0.6,0.0,2.9,0.2,0.0,0.0,0.0,Crotone
+italia,pioggia_forte,2026-10-11,16350,2,26.3,0.0,1.4,0.3,0.3,1.5,0.2,0.6,1.0,0.2,Crotone
+italia,pioggia_forte,2026-10-11,16350,3,26.3,2.7,4.0,1.5,0.0,2.7,,0.2,0.2,0.2,Crotone
+italia,pioggia_forte,2026-10-11,16350,4,26.3,,0.2,1.5,0.0,0.0,,0.0,0.0,0.0,Crotone
+italia,pioggia_forte,2026-10-11,16350,5,26.3,,0.0,0.3,0.0,1.0,,,0.0,0.0,Crotone
+italia,pioggia_forte,2026-10-11,16350,6,26.3,,0.6,2.0,0.0,0.0,,,0.0,0.1,Crotone
+italia,pioggia_forte,2026-10-11,16350,7,26.3,,3.0,0.9,0.0,1.1,,,,,Crotone
+italia,pioggia_forte,2026-10-12,16146,0,20.3,7.3,20.2,16.4,7.5,7.2,5.8,14.9,20.5,30.2,Punta Marina
+italia,pioggia_forte,2026-10-12,16146,1,20.3,6.7,13.0,8.1,2.2,5.5,12.1,14.5,16.5,30.8,Punta Marina
+italia,pioggia_forte,2026-10-12,16146,2,20.3,2.8,13.8,7.8,1.2,2.4,1.4,2.0,4.3,4.3,Punta Marina
+italia,pioggia_forte,2026-10-12,16146,3,20.3,1.8,4.0,0.3,2.3,0.6,,0.0,0.0,0.0,Punta Marina
+italia,pioggia_forte,2026-10-12,16146,4,20.3,,2.0,4.2,0.0,0.4,,1.1,1.3,0.4,Punta Marina
+italia,pioggia_forte,2026-10-12,16146,5,20.3,,15.6,1.5,4.9,14.7,,,0.9,0.0,Punta Marina
+italia,pioggia_forte,2026-10-12,16146,6,20.3,,0.2,0.9,0.0,2.5,,,0.2,0.0,Punta Marina
+italia,pioggia_forte,2026-10-12,16146,7,20.3,,0.0,0.0,2.0,3.8,,,,,Punta Marina
+italia,pioggia_forte,2026-10-12,16261,0,23.0,3.6,7.4,6.0,2.5,6.0,32.8,8.0,5.2,0.5,Amendola
+italia,pioggia_forte,2026-10-12,16261,1,23.0,6.2,6.6,6.3,0.0,11.9,13.4,4.0,7.7,3.6,Amendola
+italia,pioggia_forte,2026-10-12,16261,2,23.0,0.2,2.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Amendola
+italia,pioggia_forte,2026-10-12,16261,3,23.0,0.0,3.6,0.0,0.0,0.9,,0.0,0.0,0.0,Amendola
+italia,pioggia_forte,2026-10-12,16261,4,23.0,,1.8,0.3,0.0,3.9,,6.0,4.9,0.0,Amendola
+italia,pioggia_forte,2026-10-12,16261,5,23.0,,7.4,0.0,0.3,2.2,,,1.6,12.5,Amendola
+italia,pioggia_forte,2026-10-12,16261,6,23.0,,0.6,0.0,0.0,0.0,,,5.7,0.0,Amendola
+italia,pioggia_forte,2026-10-12,16261,7,23.0,,1.2,0.0,0.8,2.0,,,,,Amendola
+italia,pioggia_forte,2026-10-12,16325,0,25.3,6.9,6.0,6.7,12.0,7.7,17.2,9.1,5.1,1.5,Marina Di Ginosa
+italia,pioggia_forte,2026-10-12,16325,1,25.3,12.2,9.0,6.3,1.0,10.7,15.2,6.6,6.7,5.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-12,16325,2,25.3,1.6,4.2,7.0,0.0,0.2,0.0,0.0,0.0,0.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-12,16325,3,25.3,0.0,3.2,0.3,0.0,0.0,,0.0,0.0,0.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-12,16325,4,25.3,,0.6,0.3,0.0,1.4,,3.6,2.2,0.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-12,16325,5,25.3,,6.0,0.0,0.0,0.6,,,3.9,3.6,Marina Di Ginosa
+italia,pioggia_forte,2026-10-12,16325,6,25.3,,0.6,1.8,0.0,0.3,,,0.0,0.0,Marina Di Ginosa
+italia,pioggia_forte,2026-10-12,16325,7,25.3,,0.6,0.0,0.9,7.6,,,,,Marina Di Ginosa
+italia,pioggia_forte,2026-10-12,16520,0,37.0,0.9,0.6,0.3,0.1,1.6,0.0,0.1,0.0,0.1,Alghero
+italia,pioggia_forte,2026-10-12,16520,1,37.0,0.0,0.2,0.5,0.0,0.9,0.0,0.1,0.1,2.3,Alghero
+italia,pioggia_forte,2026-10-12,16520,2,37.0,0.0,1.0,0.0,0.0,0.2,0.5,0.1,0.0,0.1,Alghero
+italia,pioggia_forte,2026-10-12,16520,3,37.0,0.2,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,Alghero
+italia,pioggia_forte,2026-10-12,16520,4,37.0,,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,Alghero
+italia,pioggia_forte,2026-10-12,16520,5,37.0,,1.2,0.0,0.0,6.6,,,0.0,0.5,Alghero
+italia,pioggia_forte,2026-10-12,16520,6,37.0,,0.0,0.0,0.0,0.0,,,0.0,0.3,Alghero
+italia,pioggia_forte,2026-10-12,16520,7,37.0,,0.0,0.0,0.3,0.0,,,,,Alghero
+italia,pioggia_forte,2026-10-13,16422,0,32.7,5.9,3.4,2.3,4.2,3.7,22.4,0.6,4.4,11.6,Reggio Calabria
+italia,pioggia_forte,2026-10-13,16422,1,32.7,3.4,5.0,3.4,4.5,3.3,7.5,0.3,1.0,24.5,Reggio Calabria
+italia,pioggia_forte,2026-10-13,16422,2,32.7,3.6,3.8,5.6,5.0,1.0,9.5,0.4,0.1,5.5,Reggio Calabria
+italia,pioggia_forte,2026-10-13,16422,3,32.7,0.9,3.0,0.8,1.8,0.2,,0.0,0.0,2.7,Reggio Calabria
+italia,pioggia_forte,2026-10-13,16422,4,32.7,,1.2,1.2,1.2,7.1,,0.8,0.9,0.3,Reggio Calabria
+italia,pioggia_forte,2026-10-13,16422,5,32.7,,3.8,1.7,0.0,2.6,,,0.2,2.6,Reggio Calabria
+italia,pioggia_forte,2026-10-13,16422,6,32.7,,13.2,6.8,12.4,8.5,,,0.0,1.1,Reggio Calabria
+italia,pioggia_forte,2026-10-13,16422,7,32.7,,0.0,2.4,0.0,0.8,,,,,Reggio Calabria
+italia,pioggia_forte,2026-10-18,16125,0,25.7,3.6,8.8,6.6,5.4,16.6,7.7,6.5,1.2,18.2,Sarzana / Luni
+italia,pioggia_forte,2026-10-18,16125,1,25.7,13.0,12.4,21.7,0.8,8.7,8.1,2.0,0.9,17.7,Sarzana / Luni
+italia,pioggia_forte,2026-10-18,16125,2,25.7,8.7,9.4,21.3,1.5,3.5,14.4,7.8,1.4,24.4,Sarzana / Luni
+italia,pioggia_forte,2026-10-18,16125,3,25.7,8.8,8.4,24.4,0.0,2.6,,8.6,0.5,8.0,Sarzana / Luni
+italia,pioggia_forte,2026-10-18,16125,4,25.7,,1.8,16.3,0.0,0.0,,7.0,2.5,20.2,Sarzana / Luni
+italia,pioggia_forte,2026-10-18,16125,5,25.7,,0.0,14.0,0.0,0.0,,,0.0,29.2,Sarzana / Luni
+italia,pioggia_forte,2026-10-18,16125,6,25.7,,0.0,17.2,0.0,0.3,,,0.0,2.3,Sarzana / Luni
+italia,pioggia_forte,2026-10-18,16125,7,25.7,,0.0,0.6,0.3,2.5,,,,,Sarzana / Luni
+italia,pioggia_forte,2026-10-18,16158,0,22.2,3.9,10.0,44.0,7.5,7.2,1.0,2.0,4.0,3.5,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-18,16158,1,22.2,1.9,12.6,64.2,1.5,7.1,29.1,1.0,2.0,2.2,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-18,16158,2,22.2,3.3,8.8,17.1,2.8,3.5,7.1,4.1,8.5,6.9,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-18,16158,3,22.2,4.1,10.0,19.3,0.1,2.3,,2.7,3.2,1.4,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-18,16158,4,22.2,,1.8,22.9,0.0,0.0,,3.4,4.3,15.5,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-18,16158,5,22.2,,0.0,37.8,0.0,0.0,,,0.0,33.2,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-18,16158,6,22.2,,0.0,12.4,0.0,0.9,,,0.0,0.6,Pisa / S. Giusto
+italia,pioggia_forte,2026-10-18,16158,7,22.2,,0.0,0.0,0.0,6.1,,,,,Pisa / S. Giusto
 italia,pioggia_forte,2026-10-21,16021,0,22.9,30.0,47.3,42.2,32.3,38.8,25.1,52.5,46.8,31.7,Passo Rolle
 italia,pioggia_forte,2026-10-21,16021,1,22.9,35.5,43.1,43.9,61.5,26.4,26.8,33.8,32.1,25.1,Passo Rolle
 italia,pioggia_forte,2026-10-21,16021,2,22.9,37.0,42.5,48.0,60.2,55.4,35.3,60.3,55.4,37.3,Passo Rolle
@@ -983,6 +1455,86 @@ italia,pioggia_forte,2026-11-13,16337,4,36.0,,10.2,9.3,18.0,16.7,,35.9,28.2,18.8
 italia,pioggia_forte,2026-11-13,16337,5,36.0,,11.7,13.2,18.9,29.1,,,12.8,31.5,Bonifati
 italia,pioggia_forte,2026-11-13,16337,6,36.0,,10.3,8.7,44.4,14.2,,,6.1,21.4,Bonifati
 italia,pioggia_forte,2026-11-13,16337,7,36.0,,15.6,4.4,2.3,3.8,,,,,Bonifati
+italia,pioggia_molto,2026-10-08,16125,0,51.7,25.3,36.2,63.3,56.5,41.2,27.1,119.7,86.8,55.7,Sarzana / Luni
+italia,pioggia_molto,2026-10-08,16125,1,51.7,32.9,35.2,63.6,71.2,31.3,17.3,89.7,61.6,44.0,Sarzana / Luni
+italia,pioggia_molto,2026-10-08,16125,2,51.7,32.2,39.4,101.4,63.1,46.4,4.2,73.9,60.3,54.0,Sarzana / Luni
+italia,pioggia_molto,2026-10-08,16125,3,51.7,38.9,34.0,65.5,27.0,30.9,,50.4,29.6,66.1,Sarzana / Luni
+italia,pioggia_molto,2026-10-08,16125,4,51.7,,42.2,74.2,55.3,30.8,,59.9,42.1,70.9,Sarzana / Luni
+italia,pioggia_molto,2026-10-08,16125,5,51.7,,27.0,56.8,12.0,17.2,,,23.0,11.2,Sarzana / Luni
+italia,pioggia_molto,2026-10-08,16125,6,51.7,,7.4,15.0,5.6,26.9,,,15.2,22.3,Sarzana / Luni
+italia,pioggia_molto,2026-10-08,16125,7,51.7,,22.0,17.3,0.4,19.4,,,,,Sarzana / Luni
+italia,pioggia_molto,2026-10-08,16170,0,58.5,21.2,27.0,39.2,39.8,27.3,35.2,43.1,46.0,31.5,Firenze / Peretola
+italia,pioggia_molto,2026-10-08,16170,1,58.5,61.5,24.0,35.1,49.7,22.2,13.0,37.5,33.9,59.1,Firenze / Peretola
+italia,pioggia_molto,2026-10-08,16170,2,58.5,60.3,26.4,59.5,54.3,27.5,25.8,39.3,43.6,33.0,Firenze / Peretola
+italia,pioggia_molto,2026-10-08,16170,3,58.5,48.0,22.2,36.8,17.6,15.6,,34.4,39.4,30.7,Firenze / Peretola
+italia,pioggia_molto,2026-10-08,16170,4,58.5,,26.2,43.1,57.1,13.6,,27.3,28.7,56.1,Firenze / Peretola
+italia,pioggia_molto,2026-10-08,16170,5,58.5,,22.0,50.0,5.6,8.7,,,27.8,23.3,Firenze / Peretola
+italia,pioggia_molto,2026-10-08,16170,6,58.5,,13.2,9.5,38.9,11.4,,,13.3,33.8,Firenze / Peretola
+italia,pioggia_molto,2026-10-08,16170,7,58.5,,13.6,6.2,0.7,6.4,,,,,Firenze / Peretola
+italia,pioggia_molto,2026-10-08,16244,0,52.6,57.5,20.0,11.7,29.0,13.0,4.5,22.7,23.8,19.0,Frosinone
+italia,pioggia_molto,2026-10-08,16244,1,52.6,45.1,36.8,19.1,31.6,12.5,44.0,18.6,28.1,33.0,Frosinone
+italia,pioggia_molto,2026-10-08,16244,2,52.6,63.0,38.6,32.3,30.5,25.1,101.9,19.1,29.2,59.3,Frosinone
+italia,pioggia_molto,2026-10-08,16244,3,52.6,75.9,27.6,22.7,7.3,12.3,,10.0,12.0,32.8,Frosinone
+italia,pioggia_molto,2026-10-08,16244,4,52.6,,34.0,21.8,62.3,17.4,,24.6,32.7,89.8,Frosinone
+italia,pioggia_molto,2026-10-08,16244,5,52.6,,43.4,25.8,19.3,4.7,,,13.3,50.0,Frosinone
+italia,pioggia_molto,2026-10-08,16244,6,52.6,,17.4,16.1,46.0,36.7,,,9.0,75.9,Frosinone
+italia,pioggia_molto,2026-10-08,16244,7,52.6,,16.6,0.1,4.5,3.5,,,,,Frosinone
+italia,pioggia_molto,2026-10-08,16294,0,66.2,8.6,27.8,22.4,5.0,20.3,4.8,25.0,26.3,1.0,Capri
+italia,pioggia_molto,2026-10-08,16294,1,66.2,35.7,28.2,25.4,16.3,26.7,0.7,55.6,48.7,3.3,Capri
+italia,pioggia_molto,2026-10-08,16294,2,66.2,19.9,27.4,11.0,13.2,19.8,8.9,50.5,54.2,15.7,Capri
+italia,pioggia_molto,2026-10-08,16294,3,66.2,41.6,19.8,8.7,10.7,15.7,,20.7,19.6,9.0,Capri
+italia,pioggia_molto,2026-10-08,16294,4,66.2,,33.8,41.8,55.3,7.6,,77.9,84.0,4.0,Capri
+italia,pioggia_molto,2026-10-08,16294,5,66.2,,44.4,62.7,51.8,18.3,,,101.0,0.6,Capri
+italia,pioggia_molto,2026-10-08,16294,6,66.2,,22.4,13.2,90.2,5.2,,,68.3,35.8,Capri
+italia,pioggia_molto,2026-10-08,16294,7,66.2,,12.4,1.8,25.0,0.0,,,,,Capri
+italia,pioggia_molto,2026-10-09,16244,0,55.5,23.4,32.2,37.9,17.6,13.6,28.3,19.2,17.4,33.6,Frosinone
+italia,pioggia_molto,2026-10-09,16244,1,55.5,29.5,21.8,22.4,36.2,22.3,17.7,14.2,17.4,68.6,Frosinone
+italia,pioggia_molto,2026-10-09,16244,2,55.5,5.0,21.4,6.4,14.4,11.1,0.2,9.8,12.0,30.1,Frosinone
+italia,pioggia_molto,2026-10-09,16244,3,55.5,5.4,15.2,21.4,45.7,5.2,,0.6,0.6,3.4,Frosinone
+italia,pioggia_molto,2026-10-09,16244,4,55.5,,10.6,22.1,15.7,3.6,,4.3,1.5,36.9,Frosinone
+italia,pioggia_molto,2026-10-09,16244,5,55.5,,9.2,11.4,2.6,0.7,,,1.6,3.1,Frosinone
+italia,pioggia_molto,2026-10-09,16244,6,55.5,,10.2,11.8,1.5,4.9,,,5.3,5.8,Frosinone
+italia,pioggia_molto,2026-10-09,16244,7,55.5,,4.4,19.5,2.1,16.0,,,,,Frosinone
+italia,pioggia_molto,2026-10-09,16294,0,112.0,15.2,28.8,21.7,12.1,32.5,31.0,20.6,26.4,20.4,Capri
+italia,pioggia_molto,2026-10-09,16294,1,112.0,35.5,23.6,34.4,22.4,10.1,28.9,20.2,16.7,47.9,Capri
+italia,pioggia_molto,2026-10-09,16294,2,112.0,41.7,32.6,39.0,62.1,13.2,36.7,49.1,50.6,42.9,Capri
+italia,pioggia_molto,2026-10-09,16294,3,112.0,29.2,39.2,25.7,79.6,28.1,,11.3,12.3,24.9,Capri
+italia,pioggia_molto,2026-10-09,16294,4,112.0,,20.4,36.0,29.9,21.9,,11.1,11.3,33.4,Capri
+italia,pioggia_molto,2026-10-09,16294,5,112.0,,19.6,11.1,16.9,7.6,,,18.1,9.1,Capri
+italia,pioggia_molto,2026-10-09,16294,6,112.0,,9.8,23.7,2.2,4.3,,,40.9,10.3,Capri
+italia,pioggia_molto,2026-10-09,16294,7,112.0,,11.6,15.6,3.0,21.6,,,,,Capri
+italia,pioggia_molto,2026-10-10,16294,0,73.1,34.0,28.2,30.6,39.2,25.5,29.2,46.1,46.6,20.2,Capri
+italia,pioggia_molto,2026-10-10,16294,1,73.1,58.8,29.8,17.5,29.7,20.1,64.2,31.0,31.4,25.6,Capri
+italia,pioggia_molto,2026-10-10,16294,2,73.1,61.0,23.8,18.5,16.2,13.9,29.3,31.9,38.6,11.1,Capri
+italia,pioggia_molto,2026-10-10,16294,3,73.1,5.8,16.8,15.9,4.1,3.0,,10.6,12.5,13.0,Capri
+italia,pioggia_molto,2026-10-10,16294,4,73.1,,9.0,5.8,17.9,3.1,,3.3,3.6,3.8,Capri
+italia,pioggia_molto,2026-10-10,16294,5,73.1,,1.6,4.7,13.4,0.9,,,0.0,13.0,Capri
+italia,pioggia_molto,2026-10-10,16294,6,73.1,,1.4,4.8,0.1,4.5,,,20.0,0.0,Capri
+italia,pioggia_molto,2026-10-10,16294,7,73.1,,0.0,28.5,1.0,3.0,,,,,Capri
+italia,pioggia_molto,2026-10-10,16422,0,53.9,33.9,50.6,53.0,27.3,28.4,55.8,11.8,24.1,30.8,Reggio Calabria
+italia,pioggia_molto,2026-10-10,16422,1,53.9,16.3,27.2,19.5,12.5,28.6,40.5,19.8,30.7,14.3,Reggio Calabria
+italia,pioggia_molto,2026-10-10,16422,2,53.9,23.1,22.2,30.8,12.6,27.2,31.9,16.8,29.2,27.3,Reggio Calabria
+italia,pioggia_molto,2026-10-10,16422,3,53.9,1.2,23.6,18.3,10.8,2.6,,5.9,9.7,21.2,Reggio Calabria
+italia,pioggia_molto,2026-10-10,16422,4,53.9,,12.2,8.7,8.1,16.7,,0.0,0.0,1.6,Reggio Calabria
+italia,pioggia_molto,2026-10-10,16422,5,53.9,,2.2,0.6,3.7,0.1,,,0.3,4.5,Reggio Calabria
+italia,pioggia_molto,2026-10-10,16422,6,53.9,,1.8,2.7,1.8,0.8,,,0.0,1.2,Reggio Calabria
+italia,pioggia_molto,2026-10-10,16422,7,53.9,,2.4,4.6,0.0,1.7,,,,,Reggio Calabria
+italia,pioggia_molto,2026-10-10,16436,0,58.0,19.7,10.6,13.6,17.1,6.8,8.4,7.2,4.6,17.1,Sciacca / San Carlo
+italia,pioggia_molto,2026-10-10,16436,1,58.0,17.3,13.6,41.2,11.1,6.7,6.7,21.0,7.8,50.2,Sciacca / San Carlo
+italia,pioggia_molto,2026-10-10,16436,2,58.0,5.2,16.4,25.4,5.6,2.2,4.7,17.4,1.2,3.2,Sciacca / San Carlo
+italia,pioggia_molto,2026-10-10,16436,3,58.0,1.3,7.4,23.0,1.0,1.5,,0.1,0.1,0.6,Sciacca / San Carlo
+italia,pioggia_molto,2026-10-10,16436,4,58.0,,0.6,3.9,8.8,0.0,,0.0,0.0,0.0,Sciacca / San Carlo
+italia,pioggia_molto,2026-10-10,16436,5,58.0,,0.0,1.8,0.4,0.0,,,0.0,7.7,Sciacca / San Carlo
+italia,pioggia_molto,2026-10-10,16436,6,58.0,,1.2,0.0,0.0,0.0,,,5.8,4.1,Sciacca / San Carlo
+italia,pioggia_molto,2026-10-10,16436,7,58.0,,0.0,10.2,0.0,2.1,,,,,Sciacca / San Carlo
+italia,pioggia_molto,2026-10-10,16520,0,76.7,4.3,2.2,2.9,1.6,1.6,0.1,0.4,0.0,0.8,Alghero
+italia,pioggia_molto,2026-10-10,16520,1,76.7,1.3,2.4,2.6,1.8,5.9,0.0,0.2,0.0,7.2,Alghero
+italia,pioggia_molto,2026-10-10,16520,2,76.7,1.3,1.4,1.2,2.8,8.0,0.9,2.9,2.4,5.7,Alghero
+italia,pioggia_molto,2026-10-10,16520,3,76.7,0.5,4.2,3.0,0.2,1.1,,2.0,2.1,0.3,Alghero
+italia,pioggia_molto,2026-10-10,16520,4,76.7,,1.0,8.3,4.5,5.5,,0.0,0.0,0.0,Alghero
+italia,pioggia_molto,2026-10-10,16520,5,76.7,,0.0,3.5,0.4,0.2,,,0.0,1.1,Alghero
+italia,pioggia_molto,2026-10-10,16520,6,76.7,,0.0,0.0,0.0,0.0,,,0.1,0.0,Alghero
+italia,pioggia_molto,2026-10-10,16520,7,76.7,,0.0,3.6,0.0,0.5,,,,,Alghero
 italia,pioggia_molto,2026-10-21,16036,0,168.9,74.3,61.9,65.6,90.8,51.8,35.3,60.2,57.4,68.6,Aviano
 italia,pioggia_molto,2026-10-21,16036,1,168.9,102.8,57.8,82.3,148.0,50.1,124.5,92.8,92.7,101.1,Aviano
 italia,pioggia_molto,2026-10-21,16036,2,168.9,110.9,55.1,95.1,161.0,45.2,74.1,111.6,121.9,100.3,Aviano
@@ -1255,6 +1807,150 @@ italia,pioggia_molto,2026-11-13,16181,4,88.5,,27.3,18.5,16.6,18.8,,37.0,51.6,47.
 italia,pioggia_molto,2026-11-13,16181,5,88.5,,31.7,23.2,13.8,20.7,,,9.6,45.8,Perugia
 italia,pioggia_molto,2026-11-13,16181,6,88.5,,22.3,6.2,16.5,21.0,,,19.3,22.0,Perugia
 italia,pioggia_molto,2026-11-13,16181,7,88.5,,25.7,6.8,20.7,2.7,,,,,Perugia
+italia,gelo,2026-10-02,16052,0,-0.4,1.4,3.3,0.4,-0.1,0.1,1.4,1.5,1.1,1.9,Pian Rosa
+italia,gelo,2026-10-02,16052,1,-0.4,-0.6,4.2,-2.2,-0.2,1.9,1.9,1.6,1.6,2.2,Pian Rosa
+italia,gelo,2026-10-02,16052,2,-0.4,0.2,4.2,-0.8,0.7,1.6,1.9,1.6,1.4,2.4,Pian Rosa
+italia,gelo,2026-10-02,16052,3,-0.4,-1.0,3.8,-3.3,-0.6,2.0,,1.5,1.7,0.3,Pian Rosa
+italia,gelo,2026-10-02,16052,4,-0.4,,3.9,-0.9,0.1,-0.7,,1.2,1.9,-0.2,Pian Rosa
+italia,gelo,2026-10-02,16052,5,-0.4,,3.8,-0.1,0.6,0.2,,,1.4,0.7,Pian Rosa
+italia,gelo,2026-10-02,16052,6,-0.4,,3.5,-1.3,-0.7,1.2,,,-0.2,2.0,Pian Rosa
+italia,gelo,2026-10-02,16052,7,-0.4,,2.1,-2.9,-1.5,0.1,,,,,Pian Rosa
+italia,gelo,2026-10-03,16052,0,-0.7,-0.6,2.0,-3.9,-2.0,-1.0,0.5,0.2,0.7,-2.3,Pian Rosa
+italia,gelo,2026-10-03,16052,1,-0.7,-1.2,2.9,-5.3,-0.9,-1.6,0.7,0.5,1.1,-2.0,Pian Rosa
+italia,gelo,2026-10-03,16052,2,-0.7,-1.1,3.3,-4.4,-2.0,-1.1,0.9,0.0,0.8,0.4,Pian Rosa
+italia,gelo,2026-10-03,16052,3,-0.7,-1.5,3.2,-2.8,-1.8,-0.8,,-0.3,0.3,0.7,Pian Rosa
+italia,gelo,2026-10-03,16052,4,-0.7,,2.8,-2.8,-2.9,-0.9,,0.3,0.9,1.2,Pian Rosa
+italia,gelo,2026-10-03,16052,5,-0.7,,2.7,-3.4,-1.3,-0.3,,,1.1,-1.5,Pian Rosa
+italia,gelo,2026-10-03,16052,6,-0.7,,2.2,-1.8,-3.4,0.5,,,-0.7,-0.7,Pian Rosa
+italia,gelo,2026-10-03,16052,7,-0.7,,1.8,-2.9,-3.5,-0.8,,,,,Pian Rosa
+italia,gelo,2026-10-04,16052,0,-0.9,-1.3,0.5,-5.2,-2.3,-1.5,0.7,0.4,0.7,-3.3,Pian Rosa
+italia,gelo,2026-10-04,16052,1,-0.9,-1.5,2.1,-7.2,-3.2,-1.3,0.7,0.5,0.9,-2.8,Pian Rosa
+italia,gelo,2026-10-04,16052,2,-0.9,-1.6,1.9,-7.6,-4.0,-1.5,0.9,0.2,0.6,-0.6,Pian Rosa
+italia,gelo,2026-10-04,16052,3,-0.9,-1.7,2.3,-5.2,-2.2,0.0,,0.5,0.8,0.5,Pian Rosa
+italia,gelo,2026-10-04,16052,4,-0.9,,1.8,-6.0,-4.4,-1.8,,0.3,0.1,-0.9,Pian Rosa
+italia,gelo,2026-10-04,16052,5,-0.9,,1.0,-3.8,-2.4,-1.2,,,-1.0,-0.9,Pian Rosa
+italia,gelo,2026-10-04,16052,6,-0.9,,0.9,-5.7,-4.3,0.1,,,0.4,-1.0,Pian Rosa
+italia,gelo,2026-10-04,16052,7,-0.9,,0.3,-4.4,-5.0,-2.1,,,,,Pian Rosa
+italia,gelo,2026-10-05,16052,0,-1.5,-0.9,1.4,-3.9,-3.9,-1.1,0.6,0.2,0.3,-0.4,Pian Rosa
+italia,gelo,2026-10-05,16052,1,-1.5,-1.8,1.9,-5.7,-4.0,-1.2,0.7,0.5,0.3,-2.0,Pian Rosa
+italia,gelo,2026-10-05,16052,2,-1.5,-1.8,1.4,-5.9,-3.5,-1.5,0.6,0.2,0.4,-1.8,Pian Rosa
+italia,gelo,2026-10-05,16052,3,-1.5,-1.4,1.5,-5.5,-3.3,-1.1,,-0.3,-0.1,-1.7,Pian Rosa
+italia,gelo,2026-10-05,16052,4,-1.5,,1.8,-3.9,-3.2,-0.2,,-0.6,-0.4,-1.4,Pian Rosa
+italia,gelo,2026-10-05,16052,5,-1.5,,1.3,-4.9,-3.3,-1.0,,,-0.9,-1.5,Pian Rosa
+italia,gelo,2026-10-05,16052,6,-1.5,,0.7,-2.9,-2.8,-1.0,,,-0.5,-0.2,Pian Rosa
+italia,gelo,2026-10-05,16052,7,-1.5,,0.1,-8.6,-3.8,-0.7,,,,,Pian Rosa
+italia,gelo,2026-10-06,16052,0,-2.4,-2.3,-0.3,-8.6,-5.1,-2.1,-1.0,-0.8,-0.2,-4.7,Pian Rosa
+italia,gelo,2026-10-06,16052,1,-2.4,-2.8,0.3,-5.9,-5.4,-2.3,-1.0,-0.9,-0.7,-5.2,Pian Rosa
+italia,gelo,2026-10-06,16052,2,-2.4,-3.0,0.0,-9.2,-5.6,-2.3,-1.1,-0.5,0.2,-3.4,Pian Rosa
+italia,gelo,2026-10-06,16052,3,-2.4,-2.0,1.5,-4.8,-4.0,-2.8,,-0.4,-0.2,-1.9,Pian Rosa
+italia,gelo,2026-10-06,16052,4,-2.4,,1.7,-5.9,-3.9,-1.4,,-2.3,-2.0,-2.6,Pian Rosa
+italia,gelo,2026-10-06,16052,5,-2.4,,1.4,-7.6,-3.5,-1.2,,,-2.3,-1.8,Pian Rosa
+italia,gelo,2026-10-06,16052,6,-2.4,,0.9,-4.1,-2.7,-1.6,,,-0.7,-3.4,Pian Rosa
+italia,gelo,2026-10-06,16052,7,-2.4,,0.2,-3.9,-3.7,-0.9,,,,,Pian Rosa
+italia,gelo,2026-10-07,16052,0,-2.9,-2.8,1.0,-1.9,-1.0,-2.7,-1.7,-2.0,-1.5,-1.6,Pian Rosa
+italia,gelo,2026-10-07,16052,1,-2.9,-3.4,0.8,-3.4,-2.5,-2.6,-1.7,-2.0,-1.2,-3.9,Pian Rosa
+italia,gelo,2026-10-07,16052,2,-2.9,-3.3,0.7,-4.4,-1.8,-2.6,-1.2,-2.0,-1.2,-3.3,Pian Rosa
+italia,gelo,2026-10-07,16052,3,-2.9,-3.3,0.8,-6.1,-3.1,-2.9,,-1.6,-1.0,-0.6,Pian Rosa
+italia,gelo,2026-10-07,16052,4,-2.9,,1.7,-5.1,-4.1,-2.4,,-1.1,-0.4,-0.9,Pian Rosa
+italia,gelo,2026-10-07,16052,5,-2.9,,1.4,-7.0,-1.8,-3.1,,,-2.4,-2.6,Pian Rosa
+italia,gelo,2026-10-07,16052,6,-2.9,,2.6,-4.5,-6.0,-1.5,,,-0.6,-3.8,Pian Rosa
+italia,gelo,2026-10-07,16052,7,-2.9,,0.3,-3.9,-3.5,-1.1,,,,,Pian Rosa
+italia,gelo,2026-10-08,16052,0,-5.8,-3.3,-0.9,-4.8,-4.2,-4.0,-3.1,-3.2,-3.2,-2.9,Pian Rosa
+italia,gelo,2026-10-08,16052,1,-5.8,-3.2,-0.7,-5.6,-5.3,-4.7,-5.1,-3.2,-3.2,-4.1,Pian Rosa
+italia,gelo,2026-10-08,16052,2,-5.8,-3.8,-1.5,-6.9,-6.3,-9.6,-4.7,-8.4,-8.2,-7.2,Pian Rosa
+italia,gelo,2026-10-08,16052,3,-5.8,-6.3,-3.9,-6.1,-5.9,-6.6,,-2.7,-2.8,-4.9,Pian Rosa
+italia,gelo,2026-10-08,16052,4,-5.8,,-3.4,-8.3,-4.9,-5.4,,-9.7,-9.4,-6.4,Pian Rosa
+italia,gelo,2026-10-08,16052,5,-5.8,,-6.2,-10.1,-2.0,-3.0,,,-8.6,-7.8,Pian Rosa
+italia,gelo,2026-10-08,16052,6,-5.8,,-1.4,-6.4,-1.6,-4.4,,,-7.9,-6.4,Pian Rosa
+italia,gelo,2026-10-08,16052,7,-5.8,,0.4,-2.6,-5.6,-3.2,,,,,Pian Rosa
+italia,gelo,2026-10-09,16052,0,-6.0,-4.4,-2.1,-7.6,-6.8,-3.9,-2.4,-3.0,-3.3,-4.6,Pian Rosa
+italia,gelo,2026-10-09,16052,1,-6.0,-5.3,-1.6,-10.4,-9.0,-5.3,-5.0,-3.2,-3.4,-4.8,Pian Rosa
+italia,gelo,2026-10-09,16052,2,-6.0,-6.7,-2.5,-10.2,-7.2,-14.7,-5.4,-8.6,-8.5,-14.6,Pian Rosa
+italia,gelo,2026-10-09,16052,3,-6.0,-6.7,-5.6,-9.9,-8.3,-8.4,,-8.0,-8.2,-16.9,Pian Rosa
+italia,gelo,2026-10-09,16052,4,-6.0,,-6.7,-10.2,-7.5,-7.6,,-9.1,-8.8,-7.0,Pian Rosa
+italia,gelo,2026-10-09,16052,5,-6.0,,-8.4,-14.1,-10.8,-5.2,,,-8.8,-8.5,Pian Rosa
+italia,gelo,2026-10-09,16052,6,-6.0,,-8.3,-14.3,-5.1,-4.8,,,-7.9,-6.5,Pian Rosa
+italia,gelo,2026-10-09,16052,7,-6.0,,-4.3,-15.0,-3.3,-6.3,,,,,Pian Rosa
+italia,gelo,2026-10-10,16052,0,-5.7,-4.5,-4.2,-11.1,-7.6,-5.1,-2.0,-2.4,-2.6,-4.4,Pian Rosa
+italia,gelo,2026-10-10,16052,1,-5.7,-4.9,-1.4,-11.8,-8.5,-5.8,-2.4,-2.9,-3.2,-4.2,Pian Rosa
+italia,gelo,2026-10-10,16052,2,-5.7,-5.1,-1.3,-11.5,-8.1,-5.5,-2.4,-3.2,-3.4,-4.3,Pian Rosa
+italia,gelo,2026-10-10,16052,3,-5.7,-5.0,-1.3,-13.0,-9.3,-5.0,,-2.9,-3.1,-3.7,Pian Rosa
+italia,gelo,2026-10-10,16052,4,-5.7,,-1.9,-8.4,-9.9,-5.3,,-2.2,-2.1,-4.2,Pian Rosa
+italia,gelo,2026-10-10,16052,5,-5.7,,-1.5,-10.4,-8.3,-2.4,,,-1.5,-3.3,Pian Rosa
+italia,gelo,2026-10-10,16052,6,-5.7,,-2.0,-9.9,-8.9,-4.3,,,-5.7,-2.2,Pian Rosa
+italia,gelo,2026-10-10,16052,7,-5.7,,-1.1,-21.0,-4.6,-2.9,,,,,Pian Rosa
+italia,gelo,2026-10-10,16134,0,-0.8,1.5,2.8,0.5,0.9,3.1,5.1,4.1,2.3,2.1,Monte Cimone
+italia,gelo,2026-10-10,16134,1,-0.8,1.6,4.2,0.6,3.0,2.8,5.2,3.7,2.2,1.9,Monte Cimone
+italia,gelo,2026-10-10,16134,2,-0.8,1.2,4.5,0.9,0.4,2.9,4.4,4.1,2.8,1.8,Monte Cimone
+italia,gelo,2026-10-10,16134,3,-0.8,1.8,4.2,1.2,1.3,0.5,,2.4,1.1,-1.5,Monte Cimone
+italia,gelo,2026-10-10,16134,4,-0.8,,2.0,1.4,0.0,2.4,,3.4,0.6,-0.4,Monte Cimone
+italia,gelo,2026-10-10,16134,5,-0.8,,1.1,2.0,2.5,3.0,,,-0.3,-0.4,Monte Cimone
+italia,gelo,2026-10-10,16134,6,-0.8,,-0.3,0.3,-0.7,3.7,,,1.4,2.1,Monte Cimone
+italia,gelo,2026-10-10,16134,7,-0.8,,-0.2,2.0,3.2,3.6,,,,,Monte Cimone
+italia,gelo,2026-10-11,16052,0,-5.8,-5.1,-5.9,-12.3,-9.0,-5.9,-2.9,-3.3,-3.3,-6.8,Pian Rosa
+italia,gelo,2026-10-11,16052,1,-5.8,-5.2,-3.2,-13.6,-9.1,-6.3,-2.1,-3.4,-3.6,-6.7,Pian Rosa
+italia,gelo,2026-10-11,16052,2,-5.8,-5.8,-3.4,-14.1,-10.5,-5.6,-2.0,-3.4,-3.5,-4.5,Pian Rosa
+italia,gelo,2026-10-11,16052,3,-5.8,-5.9,-3.6,-13.8,-9.3,-5.6,,-3.5,-3.7,-4.0,Pian Rosa
+italia,gelo,2026-10-11,16052,4,-5.8,,-4.3,-13.5,-12.3,-5.9,,-4.0,-4.5,-4.3,Pian Rosa
+italia,gelo,2026-10-11,16052,5,-5.8,,-2.7,-13.0,-11.6,-5.5,,,-1.8,-4.6,Pian Rosa
+italia,gelo,2026-10-11,16052,6,-5.8,,-3.6,-11.5,-9.9,-6.1,,,-2.4,-3.9,Pian Rosa
+italia,gelo,2026-10-11,16052,7,-5.8,,-3.9,-9.2,-10.3,-4.8,,,,,Pian Rosa
+italia,gelo,2026-10-12,16052,0,-5.1,-4.1,-6.7,-13.0,-6.8,-4.6,-3.4,-3.1,-3.6,-6.9,Pian Rosa
+italia,gelo,2026-10-12,16052,1,-5.1,-4.8,-3.5,-12.1,-7.4,-4.8,-3.0,-2.7,-3.2,-6.7,Pian Rosa
+italia,gelo,2026-10-12,16052,2,-5.1,-4.9,-3.4,-10.6,-7.6,-4.1,-3.2,-2.4,-2.6,-3.4,Pian Rosa
+italia,gelo,2026-10-12,16052,3,-5.1,-5.9,-2.8,-10.1,-8.3,-5.1,,-3.3,-3.7,-3.3,Pian Rosa
+italia,gelo,2026-10-12,16052,4,-5.1,,-0.9,-8.2,-9.3,-7.0,,-2.6,-3.0,-4.4,Pian Rosa
+italia,gelo,2026-10-12,16052,5,-5.1,,-4.3,-11.2,-11.9,-8.5,,,-2.8,-3.5,Pian Rosa
+italia,gelo,2026-10-12,16052,6,-5.1,,-0.7,-9.2,-10.1,-5.8,,,-2.0,-3.2,Pian Rosa
+italia,gelo,2026-10-12,16052,7,-5.1,,0.0,-9.4,-9.9,-7.7,,,,,Pian Rosa
+italia,gelo,2026-10-13,16022,0,-0.3,-0.1,-4.5,-6.5,-1.5,-0.7,2.5,2.5,0.4,-1.6,Paganella
+italia,gelo,2026-10-13,16022,1,-0.3,0.5,-2.8,-5.0,-2.3,-0.7,2.3,2.2,0.7,-1.1,Paganella
+italia,gelo,2026-10-13,16022,2,-0.3,0.2,-3.0,-3.5,-2.7,-0.7,2.5,1.8,0.3,0.0,Paganella
+italia,gelo,2026-10-13,16022,3,-0.3,0.6,-2.8,-3.9,-2.9,0.5,,3.6,1.8,-0.4,Paganella
+italia,gelo,2026-10-13,16022,4,-0.3,,-2.0,-5.1,-4.7,0.6,,0.6,0.2,2.2,Paganella
+italia,gelo,2026-10-13,16022,5,-0.3,,0.0,-6.6,-4.5,-2.1,,,0.9,0.3,Paganella
+italia,gelo,2026-10-13,16022,6,-0.3,,-3.4,-2.2,-7.1,-3.6,,,1.4,1.1,Paganella
+italia,gelo,2026-10-13,16022,7,-0.3,,1.5,-4.4,-2.9,-2.5,,,,,Paganella
+italia,gelo,2026-10-13,16052,0,-2.1,-3.6,0.1,-6.4,-6.0,-2.1,1.2,1.3,0.9,-3.4,Pian Rosa
+italia,gelo,2026-10-13,16052,1,-2.1,-3.0,0.0,-7.2,-6.9,-2.3,1.4,0.7,0.3,-4.1,Pian Rosa
+italia,gelo,2026-10-13,16052,2,-2.1,-3.2,0.2,-6.2,-6.3,-2.8,1.0,-0.2,-0.7,-2.5,Pian Rosa
+italia,gelo,2026-10-13,16052,3,-2.1,-2.4,-0.1,-6.8,-5.9,-2.6,,-0.5,-0.8,-2.4,Pian Rosa
+italia,gelo,2026-10-13,16052,4,-2.1,,0.2,-6.7,-6.2,-3.3,,0.1,-0.3,-2.6,Pian Rosa
+italia,gelo,2026-10-13,16052,5,-2.1,,0.6,-7.0,-5.0,-3.8,,,0.3,-3.3,Pian Rosa
+italia,gelo,2026-10-13,16052,6,-2.1,,-1.1,-7.0,-10.5,-7.3,,,1.8,-3.2,Pian Rosa
+italia,gelo,2026-10-13,16052,7,-2.1,,2.7,-6.1,-7.8,-7.5,,,,,Pian Rosa
+italia,gelo,2026-10-14,16052,0,-1.4,-1.0,-1.4,-8.3,-3.4,-1.3,1.6,1.3,1.1,-2.4,Pian Rosa
+italia,gelo,2026-10-14,16052,1,-1.4,-1.7,1.6,-8.6,-3.6,-2.0,1.6,0.6,0.3,-2.0,Pian Rosa
+italia,gelo,2026-10-14,16052,2,-1.4,-1.8,1.1,-9.1,-3.5,-1.6,2.6,1.3,0.9,-3.3,Pian Rosa
+italia,gelo,2026-10-14,16052,3,-1.4,-2.1,0.9,-7.5,-4.5,-2.0,,0.5,0.1,-3.1,Pian Rosa
+italia,gelo,2026-10-14,16052,4,-1.4,,0.8,-8.8,-3.8,-1.4,,0.6,0.3,-2.0,Pian Rosa
+italia,gelo,2026-10-14,16052,5,-1.4,,1.0,-5.9,-3.0,-0.9,,,1.2,-2.6,Pian Rosa
+italia,gelo,2026-10-14,16052,6,-1.4,,1.7,-6.5,-2.7,-3.1,,,1.3,-2.1,Pian Rosa
+italia,gelo,2026-10-14,16052,7,-1.4,,0.1,-4.4,-5.5,-3.6,,,,,Pian Rosa
+italia,gelo,2026-10-17,16052,0,-3.1,-3.4,-5.8,-13.4,-5.6,-2.7,-2.8,-2.3,-1.6,-4.2,Pian Rosa
+italia,gelo,2026-10-17,16052,1,-3.1,-3.6,1.4,-9.7,-6.4,-2.7,-2.7,-2.2,-1.8,-4.3,Pian Rosa
+italia,gelo,2026-10-17,16052,2,-3.1,-2.7,1.1,-6.3,-6.5,-2.8,-2.7,-2.6,-1.8,-3.6,Pian Rosa
+italia,gelo,2026-10-17,16052,3,-3.1,-3.0,0.8,-4.5,-6.5,-2.7,,-2.5,-1.7,-3.1,Pian Rosa
+italia,gelo,2026-10-17,16052,4,-3.1,,1.2,-5.4,-6.5,-2.0,,-1.6,-1.6,-3.5,Pian Rosa
+italia,gelo,2026-10-17,16052,5,-3.1,,1.0,-5.2,-5.8,-2.1,,,-1.0,-3.2,Pian Rosa
+italia,gelo,2026-10-17,16052,6,-3.1,,2.2,-5.9,-6.6,-4.0,,,-1.8,-2.6,Pian Rosa
+italia,gelo,2026-10-17,16052,7,-3.1,,0.5,-9.8,-7.5,-3.9,,,,,Pian Rosa
+italia,gelo,2026-10-18,16052,0,-4.4,-4.9,-0.2,-4.0,-2.5,-3.6,-3.7,-3.5,-3.0,-3.8,Pian Rosa
+italia,gelo,2026-10-18,16052,1,-4.4,-4.6,0.4,-3.5,-4.4,-3.5,-3.4,-3.5,-3.1,-5.1,Pian Rosa
+italia,gelo,2026-10-18,16052,2,-4.4,-3.1,0.2,-4.8,-3.7,-4.0,-3.0,-3.5,-3.1,-3.6,Pian Rosa
+italia,gelo,2026-10-18,16052,3,-4.4,-4.5,-0.2,-3.3,-3.6,-3.8,,-2.8,-2.0,-2.7,Pian Rosa
+italia,gelo,2026-10-18,16052,4,-4.4,,-0.2,-3.5,-5.2,-4.0,,-3.2,-3.1,-3.5,Pian Rosa
+italia,gelo,2026-10-18,16052,5,-4.4,,-0.5,-3.5,-5.5,-4.9,,,-3.8,-5.4,Pian Rosa
+italia,gelo,2026-10-18,16052,6,-4.4,,-0.1,-6.4,-4.4,-4.2,,,-2.5,-5.2,Pian Rosa
+italia,gelo,2026-10-18,16052,7,-4.4,,-0.1,-5.1,-7.1,-6.4,,,,,Pian Rosa
+italia,gelo,2026-10-19,16052,0,-3.8,-2.9,-0.1,-4.8,-1.7,-3.1,-1.9,-1.8,-1.4,-4.2,Pian Rosa
+italia,gelo,2026-10-19,16052,1,-3.8,-4.1,0.4,-4.2,-1.5,-2.5,-1.0,-1.3,-1.3,-6.4,Pian Rosa
+italia,gelo,2026-10-19,16052,2,-3.8,-4.0,0.8,-4.4,-1.8,-1.9,-1.6,-1.3,-1.1,-6.5,Pian Rosa
+italia,gelo,2026-10-19,16052,3,-3.8,-2.1,-0.2,-8.5,-2.9,-3.5,,-2.0,-1.9,-4.9,Pian Rosa
+italia,gelo,2026-10-19,16052,4,-3.8,,-0.3,-4.8,-1.6,-3.9,,-2.5,-2.4,-2.6,Pian Rosa
+italia,gelo,2026-10-19,16052,5,-3.8,,-0.9,-7.5,-2.5,-3.5,,,-3.5,-3.5,Pian Rosa
+italia,gelo,2026-10-19,16052,6,-3.8,,-1.0,-5.6,-3.6,-5.2,,,-2.2,-4.8,Pian Rosa
+italia,gelo,2026-10-19,16052,7,-3.8,,-1.5,-8.0,-7.0,-6.8,,,,,Pian Rosa
 italia,gelo,2026-10-21,16052,0,-10.1,-9.4,-5.6,-10.9,-8.2,-11.2,-9.1,-8.7,-8.4,-11.0,Pian Rosa
 italia,gelo,2026-10-21,16052,1,-10.1,-9.0,-6.1,-9.5,-8.5,-9.5,-8.4,-8.2,-8.2,-8.7,Pian Rosa
 italia,gelo,2026-10-21,16052,2,-10.1,-8.9,-6.2,-9.7,-10.0,-9.4,-8.2,-7.9,-7.5,-9.0,Pian Rosa
