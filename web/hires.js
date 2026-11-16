@@ -275,6 +275,7 @@ const HR = (() => {
 
   async function run() {
     const P = S.point; if (!P) return;
+    track("map-10m-" + $("#h-target").value.split(":")[0]);
     const st = $("#h-status"), size = +$("#h-size").value * 1000, kind = $("#h-target").value;
     const mlat = 111320, mlon = 111320 * Math.cos(P.lat * Math.PI / 180);
     const half = size / 2, pad = size * 0.1;
@@ -369,6 +370,7 @@ const HR = (() => {
 
   function csv() {
     const o = HR.out; if (!o) return;
+    track("download-csv-10m");
     const lines = ["lat,lon,estimate,kriging_sd,trend,elevation_m,imperviousness_pct"];
     for (let r = 0; r < o.N; r++) for (let c = 0; c < o.N; c++) {
       const i = r * o.N + c;

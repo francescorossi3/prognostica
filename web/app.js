@@ -34,6 +34,20 @@ function drawChart(id, cfg) {
   charts[id] = new Chart(document.getElementById(id), cfg);
 }
 
+// statistiche d'uso anonime (GoatCounter, senza cookie) -> repository privato Census
+function track(name) {
+  try { window.goatcounter?.count?.({ path: "prognostica/" + name, title: name, event: true }); } catch { /* niente */ }
+}
+function initStats() {
+  const code = S.meta.goatcounter;
+  if (!code) return;
+  window.goatcounter = { path: p => "prognostica" + p };       // pagine distinte da quelle degli altri siti
+  const sc = document.createElement("script");
+  sc.async = true; sc.src = "https://gc.zgo.at/count.js";
+  sc.dataset.goatcounter = `https://${code}.goatcounter.com/count`;
+  document.head.appendChild(sc);
+}
+
 // ------------------------------------------------------------------ avvio
 (async function init() {
   [S.meta, S.scores, S.hold, S.trend, S.weights, S.gpval, S.gpst, S.stations] = await Promise.all([
@@ -55,6 +69,7 @@ function drawChart(id, cfg) {
   $("#updated").textContent = S.meta.last_day
     ? `Verified up to ${S.meta.last_day} · updated ${S.meta.built?.replace("T", " ").slice(0, 16)} UTC` : "No data yet";
   document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+  initStats();
   initRank(); initEvents(); initMaps(); initPoint(); initValid(); initData();
   refreshAll();
   const h = location.hash.slice(1);
@@ -73,6 +88,7 @@ function refreshAll() {
 }
 
 function showTab(t) {
+  track("tab-" + t);
   document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
   document.querySelectorAll(".tab").forEach(s => s.classList.toggle("active", s.id === "tab-" + t));
   history.replaceState(null, "", "#" + t);
@@ -360,7 +376,7 @@ function initPoint() {
   const box = $("#p-suggest");
   let items = [], sel = -1, timer = null, seq = 0;
   const close = () => { box.classList.remove("open"); box.innerHTML = ""; items = []; sel = -1; };
-  const pick = x => { $("#p-addr").value = x.title; close(); setPoint(x.lat, x.lon, x.label); runPoint(); };
+  const pick = x => { track("place-search"); $("#p-addr").value = x.title; close(); setPoint(x.lat, x.lon, x.label); runPoint(); };
   const show = list => {
     items = list; sel = list.length ? 0 : -1;
     box.innerHTML = list.length ? list.map((x, k) => `<div data-k="${k}" class="${k === 0 ? "sel" : ""}">${x.title}<small>${x.sub}</small></div>`).join("")
@@ -496,6 +512,7 @@ async function runPoint() {
   const lat = +$("#p-lat").value, lon = +$("#p-lon").value;
   if (!isFinite(lat) || !isFinite(lon)) return;
   history.replaceState(null, "", `#point?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`);
+  track("point-forecast");
   const rid = pointRegion(lat, lon);
   // fuori dalle regioni verificate: solo i modelli globali grezzi, senza combinazioni
   const globalIds = S.meta.providers.filter(p => p.gridded && p.coverage === "global").map(p => p.id);
@@ -834,7 +851,8 @@ function dataTextIT(link, d) {
   <h3>Licenza</h3><p>© 2026 Francesco Rossi. Codice: tutti i diritti riservati. Dati: CC BY-NC 4.0 (attribuzione, uso non commerciale).
   I dati di terzi restano soggetti alle loro licenze.</p>`;
 }
-function onLang() {
+function onLang(l) {
+  track("lang-" + l);
   if (!S.meta) return;
   initData(); refreshAll();
   if (S.point) renderPoint();
