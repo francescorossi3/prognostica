@@ -24,6 +24,15 @@ Licenza: © 2026 Francesco Rossi, **codice tutti i diritti riservati, dati CC BY
 - **Copia locale**: `C:\Users\franc\Desktop\meteo-accuracy` (può essere indietro: fa fede GitHub; `git remote set-url origin https://github.com/francescorossi3/prognostica` e `git pull`).
 - Proprietario: Francesco (CNR-IMIOT). Script Python in stile lineare, adatti a Spyder (niente `main()`).
 
+## Schede del sito (16/11/2026 sera)
+Forecast · **Atmosphere** (superficie, profili, spettri 6S 400–2500 nm ogni 10 nm da `lut_hyper.json` o bande S2, CSV dello spettro) ·
+**10 m map** (regression kriging; variabili: previsione GPR, grandezze atmosferiche, grandezze spettrali a una lunghezza d'onda scelta;
+area 2/5/10/30 km, celle 10/20/30 m, punti campione 7×7…11×11, DEM Terrarium z14 fino a 10 km poi z13; GeoTIFF Float32 EPSG:4326; CSV fino a 1,5 M celle;
+30×30 km a 10 m = 9 M celle, circa 1 minuto nel browser) · Maps · Model accuracy · Events · GPR reliability · Data & method.
+CSV/Excel con nomi inglesi: `rankings.csv`, `rankings_holdout.csv`, `best_and_weights.csv`, `gpr_validation.csv`, `gpr_backtest(_summary).csv`,
+`monthly_trend.csv`, `event_scores.csv`, `event_list.csv`, `daily_pairs/`, `stations.csv`, `summary.xlsx`.
+LUT iperspettrale: workflow Torricelli «Tabella RT 6S» con `hyper` (6 macchine in parallelo, ~1 h; `scripts/01b_merge_lut.py` unisce le parti).
+
 ## Novità 16/11/2026
 - Scheda **Forecast** prima: ricerca luoghi con suggerimenti (Photon, distorsione verso il centro mappa, frecce/Invio), coordinate “lat, lon”,
   posizione del dispositivo, Nominatim di riserva.
