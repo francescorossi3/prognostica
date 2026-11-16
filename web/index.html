@@ -11,7 +11,7 @@
 <header>
   <div class="brand">
     <h1>Meteo Accuracy</h1>
-    <p class="sub">How accurate are precipitation and temperature forecasts in Italy and at the RadCalNet sites — plus a combined estimate with uncertainty</p>
+    <p class="sub">The most accurate forecast for any place: verified models combined by machine learning (GPR) with uncertainty, 10 m maps and the atmospheric parameters for satellite data correction</p>
   </div>
   <div class="head-right">
     <label class="region">Region <select id="region"></select></label>
@@ -20,17 +20,17 @@
 </header>
 
 <nav id="tabs">
-  <button data-tab="rank" class="active">Rankings</button>
-  <button data-tab="events">Events</button>
+  <button data-tab="point" class="active">Forecast</button>
   <button data-tab="maps">Maps</button>
-  <button data-tab="point">Point forecast</button>
+  <button data-tab="rank">Model accuracy</button>
+  <button data-tab="events">Events</button>
   <button data-tab="valid">GPR reliability</button>
   <button data-tab="data">Data &amp; method</button>
 </nav>
 
 <main>
 <!-- ============================ RANKINGS ============================ -->
-<section id="tab-rank" class="tab active">
+<section id="tab-rank" class="tab">
   <div class="controls">
     <label>Variable <select id="r-var"></select></label>
     <label>Aggregation <select id="r-agg"></select></label>
@@ -75,11 +75,13 @@
 </section>
 
 <!-- ============================ POINT ============================ -->
-<section id="tab-point" class="tab">
-  <div class="controls">
-    <label class="grow">Address <input type="search" id="p-addr" placeholder="e.g. Piazza Navona, Rome  ·  Via Salaria 29300, Montelibretti" autocomplete="off"></label>
+<section id="tab-point" class="tab active">
+  <div class="controls search-row">
+    <label class="grow search-wrap">Place <input type="search" id="p-addr" placeholder="Address, town, place name — or “41.90, 12.50”" autocomplete="off">
+      <div id="p-suggest" class="suggest"></div></label>
     <button id="p-search" class="primary">Search</button>
-    <label>RadCalNet site <select id="p-site"></select></label>
+    <button id="p-geo" title="Use my location">◎ My location</button>
+    <label>Calibration site <select id="p-site"></select></label>
   </div>
   <div id="p-results" class="results"></div>
   <div class="controls">
@@ -96,6 +98,37 @@
   </div>
   <div class="card"><canvas id="p-chart"></canvas></div>
   <div class="card"><div class="table-wrap"><table id="p-table" class="plain"></table></div></div>
+
+  <h2 class="section">Atmosphere at the point <span class="hint">· water vapour, aerosols, radiation, profiles, air density and radiative-transfer parameters for atmospheric correction</span></h2>
+  <div class="controls"><label>Hour <select id="a-hour"></select></label>
+    <span class="hint">Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).</span></div>
+  <div id="a-box"></div>
+  <div class="grid2">
+    <div class="card"><h3>Surface and column</h3><div id="a-surf"></div></div>
+    <div class="card"><h3>Vertical profile</h3><canvas id="a-prof"></canvas></div>
+  </div>
+  <div class="card"><h3>Pressure levels</h3><div class="table-wrap"><table id="a-proft" class="plain"></table></div></div>
+  <div class="card"><h3>VNIR–SWIR radiative transfer, Sentinel-2 bands <span class="hint">· 6S, nadir view, continental aerosol</span></h3>
+    <div class="table-wrap"><table id="a-rt" class="plain"></table></div></div>
+  <div class="card"><h3>Next days</h3><canvas id="a-ts"></canvas></div>
+
+  <h2 class="section">10 m map around the point <span class="hint">· regression kriging on Copernicus covariates</span></h2>
+  <div class="controls">
+    <label>Variable <select id="h-target"></select></label>
+    <label>Period / hour <select id="h-period"></select></label>
+    <label>Area <select id="h-size"></select></label>
+    <button id="h-go" class="primary">Build 10 m map</button>
+    <label>Layer <select id="h-layer"></select></label>
+    <button id="h-csv">Download CSV</button>
+  </div>
+  <p class="hint" id="h-status">The forecast is computed at 49 sample points around the place (with the GPR where available, otherwise the model mean), then
+    interpolated to 10 m: a linear trend on Copernicus covariates (elevation, slope and northness from the EU-DEM/Copernicus DEM, imperviousness and
+    tree-cover density HRL 2018) plus ordinary kriging of the residuals. Leave-one-out validation compares it with the trend alone and with plain kriging.</p>
+  <div class="card map-card"><div id="hmap" class="map"></div><div id="h-legend" class="legend"></div></div>
+  <div class="grid2">
+    <div class="card"><h3>Validation (leave-one-out)</h3><div class="table-wrap"><table id="h-metrics" class="plain"></table></div></div>
+    <div class="card"><h3>Model</h3><div id="h-model"></div></div>
+  </div>
 </section>
 
 <!-- ============================ GPR RELIABILITY ============================ -->
@@ -129,13 +162,16 @@
 <footer>
   Model forecasts: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0) ·
   Observations: <a href="https://meteostat.net/">Meteostat</a> ·
-  Maps &amp; geocoding: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ·
+  Atmosphere: ECMWF IFS and CAMS via Open-Meteo, 6S · Covariates: Copernicus DEM / EU-DEM (Mapzen Terrarium tiles), EEA HRL 2018 (© European Union, Copernicus Land Monitoring Service) ·
+  Maps &amp; geocoding: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Photon (komoot), Nominatim ·
   Data and code on GitHub
 </footer>
 
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="vendor/chart.umd.js"></script>
 <script src="gp.js"></script>
+<script src="atmos.js"></script>
+<script src="hires.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

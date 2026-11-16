@@ -62,3 +62,15 @@ footer a { color: inherit; }
 input[type=search] { font: inherit; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: 6px; flex: 1; min-width: 260px; }
 .prose ol { padding-left: 1.2rem; }
 tr.pastrow td { background: #f8fafc; color: #475569; }
+
+h2.section { font-size: 1.15rem; margin: 1.6rem 0 .4rem; }
+h2.section .hint { font-weight: 400; }
+.search-wrap { position: relative; }
+.suggest { position: absolute; top: 100%; left: 3.2rem; right: 0; z-index: 1000; background: #fff; border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.12); display: none; max-height: 340px; overflow-y: auto; }
+.suggest.open { display: block; }
+.suggest div { padding: .45rem .6rem; cursor: pointer; color: var(--ink); font-size: .88rem; border-bottom: 1px solid var(--line); }
+.suggest div:last-child { border-bottom: 0; }
+.suggest div.sel, .suggest div:hover { background: #eef4ff; }
+.suggest small { color: var(--muted); display: block; }
+button#p-geo, button#h-csv { font: inherit; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: .42rem .7rem; cursor: pointer; }

@@ -41,6 +41,27 @@ regions:
       - {id: BSCN, name: "Baotou sand (China)",        lat: 40.87,  lon: 109.62}
       - {id: BTCN, name: "Baotou artificial (China)",   lat: 40.85,  lon: 109.63}   # coordinate approssimate
 
+  # HYPERNETS (LANDHYPERNET + WATERHYPERNET): rete di radiometri iperspettrali automatici
+  # per la validazione della riflettanza di superficie (simile a RadCalNet). Solo archivio.
+  # Coordinate dai lavori Frontiers 2024 (Bialek et al., Ruddick et al.); quelle con "~" sono approssimate.
+  - id: hypernets
+    name: HYPERNETS
+    type: points
+    verify: false
+    radius_km: 100
+    map_timezone: local
+    center: [30, 10, 2]
+    sites:
+      - {id: GHNA, name: "Gobabeb (Namibia) – desert",          lat: -23.60153, lon: 15.12589}
+      - {id: DEGE, name: "Demmin (Germany) – cropland",         lat: 53.868278, lon: 13.268556}
+      - {id: JAES, name: "Järvselja (Estonia) – forest",        lat: 58.281975, lon: 27.312959}
+      - {id: LOBE, name: "Lonzée (Belgium) – cropland",         lat: 50.551493, lon: 4.745911}
+      - {id: WWUK, name: "Wytham Woods (UK) – forest ~",        lat: 51.7746,   lon: -1.3384}
+      - {id: PEAN, name: "Princess Elisabeth (Antarctica) – snow ~", lat: -71.9401, lon: 23.3470}
+      - {id: IFAR, name: "IFEVA Buenos Aires (Argentina) – grass ~", lat: -34.5890, lon: -58.4820}
+      - {id: AAOT, name: "Acqua Alta (Italy) – water ~",        lat: 45.3139,   lon: 12.5083}
+      - {id: ZEBE, name: "Zeebrugge (Belgium) – water ~",       lat: 51.3620,   lon: 3.1200}
+
   # Mondo intero: DISATTIVATO di default perche' con le chiamate gratuite di
   # Open-Meteo (~10.000/giorno) si e' al limite. Attivarlo con enabled: true
   # (meglio con una chiave a pagamento in OPENMETEO_API_KEY).
@@ -160,5 +181,7 @@ grid:
 site:
   title: "Meteo Accuracy"
   openmeteo_url: "https://api.open-meteo.com/v1/forecast"
+  # back end atmosferico (altro repository): LUT 6S e database per la correzione atmosferica
+  atmos_url: "https://francescorossi3.github.io/atmos-correction/"
 # Con un piano a pagamento Open-Meteo: mettere la chiave nel Secret OPENMETEO_API_KEY
 # -> si usano gli endpoint "customer-" senza il limite di ~10.000 chiamate/giorno.

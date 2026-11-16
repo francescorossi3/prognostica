@@ -351,34 +351,74 @@ function initPoint() {
   opts($("#p-past"), [[0, "none"], [3, "3 days"], [7, "7 days"], [14, "14 days"], [30, "30 days"]], 7);
   S.pastDays = 7;
   $("#p-past").onchange = () => { S.pastDays = +$("#p-past").value; if (S.point) runPoint(); };
-  // ricerca per indirizzo (OpenStreetMap Nominatim: max 1 richiesta al secondo, solo su invio)
-  const search = async () => {
-    const q = $("#p-addr").value.trim();
-    if (!q) return;
-    $("#p-results").innerHTML = '<span class="hint">Searching…</span>';
-    try {
-      const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&accept-language=en&q=${encodeURIComponent(q)}`);
-      const res = await r.json();
-      if (!res.length) { $("#p-results").innerHTML = '<span class="hint">No place found: try adding the town or country.</span>'; return; }
-      const pick = x => { setPoint(+x.lat, +x.lon, x.display_name); $("#p-results").innerHTML = ""; runPoint(); };
-      if (res.length === 1) return pick(res[0]);
-      $("#p-results").innerHTML = res.map((x, i) => `<button class="result" data-i="${i}">${x.display_name}</button>`).join("");
-      document.querySelectorAll("#p-results .result").forEach(b => (b.onclick = () => pick(res[+b.dataset.i])));
-    } catch (e) { $("#p-results").innerHTML = `<span class="error">Address search failed: ${e.message}</span>`; }
+  // ricerca luoghi: suggerimenti mentre si scrive (Photon/OSM, vicino alla mappa), coordinate "lat, lon", Nominatim di riserva
+  const box = $("#p-suggest");
+  let items = [], sel = -1, timer = null, seq = 0;
+  const close = () => { box.classList.remove("open"); box.innerHTML = ""; items = []; sel = -1; };
+  const pick = x => { $("#p-addr").value = x.title; close(); setPoint(x.lat, x.lon, x.label); runPoint(); };
+  const show = list => {
+    items = list; sel = list.length ? 0 : -1;
+    box.innerHTML = list.length ? list.map((x, k) => `<div data-k="${k}" class="${k === 0 ? "sel" : ""}">${x.title}<small>${x.sub}</small></div>`).join("")
+      : '<div class="hint">No place found: try adding the town or the country.</div>';
+    box.classList.add("open");
+    box.querySelectorAll("div[data-k]").forEach(d => (d.onmousedown = e => { e.preventDefault(); pick(items[+d.dataset.k]); }));
   };
-  $("#p-search").onclick = search;
-  $("#p-addr").addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+  const parseLL = q => { const m = q.match(/^\s*(-?\d+(?:[.,]\d+)?)\s*[,; ]\s*(-?\d+(?:[.,]\d+)?)\s*$/);
+    if (!m) return null; const a = +m[1].replace(",", "."), b = +m[2].replace(",", ".");
+    return Math.abs(a) <= 90 && Math.abs(b) <= 180 ? { lat: a, lon: b } : null; };
+  const photon = async q => {
+    const c = S.pmap.getCenter();
+    const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&lat=${c.lat.toFixed(3)}&lon=${c.lng.toFixed(3)}`);
+    const js = await r.json();
+    return js.features.map(f => { const p = f.properties, [lon, lat] = f.geometry.coordinates;
+      const street = [p.street, p.housenumber].filter(Boolean).join(" ");
+      const title = p.name && p.name !== p.street ? (street ? `${p.name}, ${street}` : p.name) : street || p.city || p.county || "";
+      const sub = [p.postcode, p.city || p.town || p.village, p.county, p.state, p.country].filter((v, k, a) => v && a.indexOf(v) === k && v !== title).join(", ");
+      return { lat, lon, title, sub, label: [title, sub].filter(Boolean).join(", ") }; });
+  };
+  const nominatim = async q => {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&accept-language=en&q=${encodeURIComponent(q)}`);
+    return (await r.json()).map(x => ({ lat: +x.lat, lon: +x.lon, title: x.display_name.split(",")[0], sub: x.display_name.split(",").slice(1).join(",").trim(), label: x.display_name }));
+  };
+  const suggest = async (q, final) => {
+    const ll = parseLL(q);
+    if (ll) { if (final) { close(); setPoint(ll.lat, ll.lon); runPoint(); } else show([{ ...ll, title: `${ll.lat}, ${ll.lon}`, sub: "coordinates (lat, lon)", label: null }]); return; }
+    if (q.length < 3) return close();
+    const my = ++seq;
+    let res = [];
+    try { res = await photon(q); } catch { /* riserva */ }
+    if (!res.length && final) { try { res = await nominatim(q); } catch { /* niente */ } }
+    if (my !== seq) return;                       // arrivata una ricerca piu' recente
+    if (final && res.length === 1) return pick(res[0]);
+    show(res);
+  };
+  $("#p-addr").addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(() => suggest($("#p-addr").value.trim(), false), 280); });
+  $("#p-addr").addEventListener("keydown", e => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!items.length) return; e.preventDefault();
+      sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+      box.querySelectorAll("div[data-k]").forEach((d, k) => d.classList.toggle("sel", k === sel));
+    } else if (e.key === "Enter") { e.preventDefault(); if (sel >= 0 && items[sel]) pick(items[sel]); else suggest($("#p-addr").value.trim(), true); }
+    else if (e.key === "Escape") close();
+  });
+  $("#p-addr").addEventListener("blur", () => setTimeout(close, 150));
+  $("#p-search").onclick = () => (sel >= 0 && items[sel] ? pick(items[sel]) : suggest($("#p-addr").value.trim(), true));
+  $("#p-geo").onclick = () => navigator.geolocation?.getCurrentPosition(
+    g => { setPoint(g.coords.latitude, g.coords.longitude, "My location"); runPoint(); },
+    e => { $("#p-results").innerHTML = `<span class="error">Location not available: ${e.message}</span>`; }, { enableHighAccuracy: true, timeout: 10000 });
   // siti RadCalNet
-  const sites = S.meta.regions.filter(r => r.type === "points").flatMap(r => r.sites || []);
-  opts($("#p-site"), [["", "— choose —"], ...sites.map(x => [x.id, x.name])], "");
+  const sites = S.meta.regions.filter(r => r.type === "points").flatMap(r => (r.sites || []).map(x => ({ ...x, net: r.name })));
+  opts($("#p-site"), [["", "— choose —"], ...sites.map(x => [x.id, `${x.net} · ${x.name}`])], "");
   $("#p-site").closest("label").style.display = sites.length ? "" : "none";
   $("#p-site").onchange = () => {
     const x = sites.find(z => z.id === $("#p-site").value);
     if (x) { setPoint(x.lat, x.lon, `${x.name} (${x.id})`); runPoint(); }
   };
   upd();
+  HR.init();
   const q = new URLSearchParams(location.hash.split("?")[1] || "");
   if (q.has("lat") && q.has("lon")) { setPoint(+q.get("lat"), +q.get("lon")); runPoint(); }
+  else { setPoint(41.9028, 12.4964, "Rome"); runPoint(); }
 }
 function setPoint(lat, lon, label = null) {
   S.pointLabel = label;
@@ -477,6 +517,8 @@ async function runPoint() {
     station: (S.pastDays || 0) > 0 ? await nearestStation(lat, lon) : null };
   for (const id in raw) { raw[id].t = raw[id].t.filter((_, k) => keep[k]); raw[id].p = raw[id].p.filter((_, k) => keep[k]); }
   await renderPoint();
+  await ATM.render(S.point);
+  HR.periods();
 }
 
 // osservazioni recenti della stazione piu' vicina (entro 25 km), da data/obs_recent.json
@@ -541,6 +583,8 @@ async function renderPoint() {
   if (!S.point) return;
   const agg = $("#p-agg").value, v = $("#p-var").value, u = VAR_UNIT[v];
   const rows = await computePoint(agg, v);
+  HR.rows = rows;
+  if ($("#h-target").value === "forecast") HR.periods();
   const P = S.point;
   const pver = !!P.region && regionOf(P.region).verify !== false;
   const wLabel = pver ? COMBO.WEIGHTED : "Model mean";
@@ -555,7 +599,7 @@ async function renderPoint() {
       <dt>Best</dt><dd>${fmt(first?.best, 1)} ${u} ${first?.bestId ? "· " + pname(first.bestId) : ""}</dd>
       <dt>${P.region && regionOf(P.region).verify !== false ? "Weighted mean" : "Model mean"}</dt><dd>${fmt(first?.weighted, 1)} ${u}</dd>
       ${v === "prcp" ? `<dt>Probability ≥ ${S.meta.prcp_thresholds[agg][0]} mm</dt><dd>${fmt(first?.prob, 0)} %</dd>` : ""}
-    </dl><p class="hint">${!P.region ? "Point far from Italy and the RadCalNet sites: only the global models and their mean, no verified combinations."
+    </dl><p class="hint">${!P.region ? "Point far from Italy and the calibration sites: only the global models and their mean, no verified combinations."
       : regionOf(P.region).verify === false ? `Near a ${regionOf(P.region).name} site: model data only (simple mean), no verification or GPR.`
       : "Model forecasts downloaded now from Open-Meteo; weights and GPR model from the latest verification."}
       ${P.past ? ` Past days: model short-range values (Open-Meteo) with the 0-day GPR${P.station ? `; green = observations at ${P.station.name}, ${fmt(P.station.dist, 0)} km away` : "; no observing station within 25 km"}.` : ""}</p>`;
@@ -669,12 +713,13 @@ function initData() {
     <li><code>coppie_giornaliere/YYYY-MM.csv</code> – for each day, station, variable and lead time: observation and forecast of every provider</li>
     <li>${link("eventi_punteggi.csv")} – significant-event verification (hits, misses, false alarms, error on event days)</li>
     <li>${link("eventi_elenco.csv")} – every observed event with the forecast of each provider</li>
-    <li><code>radcalnet/YYYY-MM.csv</code> – hourly forecasts of every model at the RadCalNet sites, for every lead time (0–7 days)</li>
+    <li><code>radcalnet/YYYY-MM.csv</code>, <code>hypernets/YYYY-MM.csv</code> – hourly forecasts of every model at the RadCalNet and HYPERNETS sites, for every lead time (0–7 days)</li>
     <li>${link("stazioni.csv")} – verification stations</li>
   </ul>
   <h3>How it works</h3>
   <p><b>Regions.</b> “Italy” uses all models covering Italy (including ICON-2I, ICON-EU, ARPEGE) on a dense grid.
-  “RadCalNet” covers the calibration sites Railroad Valley, Gobabeb, La Crau and Baotou: here the site only shows the global models
+  “RadCalNet” (Railroad Valley, Gobabeb, La Crau, Baotou) and “HYPERNETS” (LANDHYPERNET and WATERHYPERNET sites, e.g. Gobabeb, Demmin,
+  Järvselja, Lonzée, Wytham Woods, Acqua Alta) are calibration/validation sites for satellite reflectance: here the site only shows the global models
   (ECMWF, ICON, GFS, UKMO, GEM), their mean and spread, without verification; the values are archived every day
   (<code>data/csv/radcalnet</code>) for comparison with the site measurements. When you query a point the region is chosen automatically;
   days and 6-hour blocks are in the point's local time.</p>
@@ -690,7 +735,26 @@ function initData() {
   <b>Weighted mean</b> = mean of the providers with weights proportional to 1/MSE. <b>GPR</b> = Gaussian-process regression using
   location, elevation and the forecasts of all models to estimate the value and its uncertainty. It is checked on days excluded from training
   and, every week, with a historical back-test over the whole record (“GPR reliability” tab).</p>
-  <p><b>Address search</b> uses <a href="https://nominatim.openstreetmap.org/">OpenStreetMap Nominatim</a>.</p>
+  <p><b>Place search</b> suggests places while you type (<a href="https://photon.komoot.io/">Photon</a>, OpenStreetMap data, ranked by
+  closeness to the map), accepts coordinates (“41.90, 12.50”) and your device location, and falls back to
+  <a href="https://nominatim.openstreetmap.org/">Nominatim</a>.</p>
+  <h3>Atmosphere and atmospheric correction</h3>
+  <p>For the chosen point: total column water vapour, surface pressure, temperature, humidity, cloud cover, irradiance (ECMWF IFS 0.25°),
+  aerosol optical depth at 550 nm and dust (CAMS), and the profile on pressure levels 1000–200 hPa (temperature, humidity, geopotential height, wind).
+  Air density is ρ = p / (R<sub>d</sub> T<sub>v</sub>) with the virtual temperature T<sub>v</sub>. The radiative-transfer parameters of the
+  Sentinel-2 bands (downward/upward scattering transmittance, gaseous transmittance, path radiance, direct and diffuse irradiance, spherical albedo)
+  are interpolated from a look-up table computed with the 6S code (water vapour × AOD × solar zenith × altitude; nadir view, continental aerosol,
+  ozone 0.30 cm-atm). For the thermal infrared, transmittance and up/down-welling radiance of Landsat 8/9 band 10 come from the water-vapour functions
+  of Jiménez-Muñoz et al. (2014). The hourly archive at the stations and calibration sites is kept by the atmospheric back-end repository.</p>
+  <h3>10 m maps (regression kriging)</h3>
+  <p>The value is computed at 49 sample points around the place (GPR forecast where available, otherwise the model mean; atmospheric quantities
+  from the same sources as above, with the 6S table at the 10 m elevation). It is then mapped on a 10 m grid as
+  <i>trend + kriged residual</i>: the trend is a linear regression on Copernicus covariates (elevation, slope and northness from the
+  Copernicus DEM / EU-DEM, imperviousness and tree-cover density from the EEA High Resolution Layers 2018), the residuals are interpolated by
+  ordinary kriging with an exponential variogram fitted to them. The map of the kriging standard deviation shows where the interpolation is
+  less certain. Validation is leave-one-out at the sample points: RMSE, MAE, bias, R² and the coverage of the 95% interval, compared with the
+  trend alone and with plain ordinary kriging. Note that the 10 m detail comes from the covariates: the weather models themselves have a
+  resolution of 2–25 km.</p>
   <p><b>Limitations.</b> Best, Weighted mean and GPR only use models available everywhere (Open-Meteo), so they can be computed
   at any point. Stations are mostly in lowlands or on the coast: in the mountains estimates and uncertainties are less verified.</p>`;
 }

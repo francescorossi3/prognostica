@@ -25,6 +25,7 @@ meta = {
     "built": pd.Timestamp.now(tz="UTC").isoformat(timespec="minutes"),
     "aggs": AGGS, "leads": LEADS,
     "openmeteo_url": CFG["site"]["openmeteo_url"],
+    "atmos_url": CFG["site"].get("atmos_url", ""),
     "providers": [{"id": p["id"], "name": p["name"], "type": p["type"], "model": p.get("model"),
                    "coverage": p.get("coverage", "global"), "gridded": p["id"] in gridded_ids()}
                   for p in CFG["providers"] if p.get("enabled", True)],
