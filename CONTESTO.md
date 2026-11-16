@@ -1,14 +1,39 @@
-# Meteo Accuracy – contesto per riprendere il lavoro (anche in una nuova chat)
+# Prognostica (ex Meteo Accuracy) – contesto per riprendere il lavoro (anche in una nuova chat)
 
 > Da incollare all'inizio di una nuova conversazione con Claude, oppure chiedergli:
-> «aggiungi il repository `francescorossi3/meteo-accuracy` e leggi `CONTESTO.md`».
-> Ultimo aggiornamento di questo file: 14/11/2026.
+> «aggiungi i repository `francescorossi3/prognostica` e `francescorossi3/torricelli` e leggi `CONTESTO.md`».
+> Ultimo aggiornamento di questo file: 16/11/2026.
+
+## Famiglia di progetti (nomi dalla letteratura latina/italiana)
+| Repository | Ruolo | Linguaggio | Visibilità | Sito |
+|---|---|---|---|---|
+| **prognostica** (ex meteo-accuracy) | front end meteo: previsione accurata, mappe 10 m, atmosfera nel punto | JS (sito) + Python (pipeline verifica) | pubblico | https://francescorossi3.github.io/prognostica/ |
+| **columella** (ex campi-aperti) | front end agricoltura | JS | pubblico | https://francescorossi3.github.io/columella/ |
+| **torricelli** | back end atmosferico: LUT 6S, database orario per correzione atmosferica | Python | pubblico | https://francescorossi3.github.io/torricelli/ |
+| **census** | back end privato: statistiche d'uso (GoatCounter → CSV + REPORT.md) | Python | **privato** | – |
+
+Comunicazione: Torricelli legge da Prognostica `data/stations.csv` e `config.yaml` (siti di calibrazione); Prognostica legge da Torricelli
+`data/rt/lut_s2.json` (con copia locale di riserva in `web/data/rt/`); i siti mandano eventi anonimi a GoatCounter (`site.goatcounter`
+in config.yaml, vuoto = spento) che Census scarica ogni notte. Significato dei nomi nei README.
+Lingua: **inglese principale** con traduzione italiana (pulsante EN/IT; `web/i18n.js` in Prognostica traduce per dizionario + regex).
+Licenza: © 2026 Francesco Rossi, **codice tutti i diritti riservati, dati CC BY-NC 4.0** (`LICENSE`).
 
 ## Dove sta tutto
-- **Repository**: https://github.com/francescorossi3/meteo-accuracy (pubblico; l'app GitHub di Claude è installata e può fare push).
-- **Sito**: https://francescorossi3.github.io/meteo-accuracy/ (GitHub Pages, interfaccia in **inglese**).
-- **Copia locale**: `C:\Users\franc\Desktop\meteo-accuracy` (può essere indietro: fa fede GitHub; aggiornarla con `git pull`).
+- **Repository**: https://github.com/francescorossi3/prognostica (pubblico; l'app GitHub di Claude è installata e può fare push).
+- **Sito**: https://francescorossi3.github.io/prognostica/ (GitHub Pages, inglese + italiano).
+- **Copia locale**: `C:\Users\franc\Desktop\meteo-accuracy` (può essere indietro: fa fede GitHub; `git remote set-url origin https://github.com/francescorossi3/prognostica` e `git pull`).
 - Proprietario: Francesco (CNR-IMIOT). Script Python in stile lineare, adatti a Spyder (niente `main()`).
+
+## Novità 16/11/2026
+- Scheda **Forecast** prima: ricerca luoghi con suggerimenti (Photon, distorsione verso il centro mappa, frecce/Invio), coordinate “lat, lon”,
+  posizione del dispositivo, Nominatim di riserva.
+- **Atmosfera nel punto** (`web/atmos.js`): TCWV, AOD/polveri CAMS, radiazione, profili 1000–200 hPa, densità ρ=p/(Rd·Tv), RT 6S bande S2
+  (interpolazione 4D della LUT), TIR L8/9 B10 (Jiménez-Muñoz 2014: τ=1/ψ1, Ld=ψ3, Lu=−(ψ2+ψ3)/ψ1).
+- **Mappa 10 m con regression kriging** (`web/hires.js`): 49 punti campione (7×7) su riquadro 2/5/10 km (+10% margine), valore = GPR (o media
+  modelli) o grandezza atmosferica; covariate DEM Terrarium z14 (quota, pendenza, northness), EEA HRL 2018 imperviousness e tree cover
+  (ImageServer exportImage TIFF non compresso, lettore TIFF interno); trend OLS standardizzato + kriging ordinario dei residui (variogramma
+  esponenziale, minimi quadrati pesati); deviazione standard del kriging; LOOCV RK vs solo trend vs solo OK (RMSE, MAE, bias, R², copertura 95%); CSV.
+- Regione **HYPERNETS** (solo archivio, come RadCalNet): GHNA, DEGE, JAES, LOBE (coordinate da Frontiers 2024), WWUK, PEAN, IFAR, AAOT, ZEBE (approssimate “~”).
 
 ## Cosa fa
 - Confronta l'accuratezza dei provider di previsioni per **temperatura** (media, max, min) e **pioggia**,
