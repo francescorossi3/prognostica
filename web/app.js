@@ -69,11 +69,12 @@ function initStats() {
   $("#updated").textContent = S.meta.last_day
     ? `Verified up to ${S.meta.last_day} · updated ${S.meta.built?.replace("T", " ").slice(0, 16)} UTC` : "No data yet";
   document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+  const h0 = location.hash.slice(1);              // scheda richiesta nel link (prima che il punto riscriva l'indirizzo)
+  if (h0) showTab(h0.split("?")[0]);
   initStats();
   initRank(); initEvents(); initMaps(); initPoint(); initValid(); initData();
   refreshAll();
-  const h = location.hash.slice(1);
-  if (h) showTab(h.split("?")[0]);
+  if (h0) showTab(h0.split("?")[0]);
 })();
 
 const regionOf = id => S.meta.regions.find(r => r.id === id) || S.meta.regions[0];
@@ -91,7 +92,8 @@ function showTab(t) {
   track("tab-" + t);
   document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
   document.querySelectorAll(".tab").forEach(s => s.classList.toggle("active", s.id === "tab-" + t));
-  history.replaceState(null, "", "#" + t);
+  const q = location.hash.split("?")[1];
+  history.replaceState(null, "", "#" + t + (q && ["point", "atm", "hr"].includes(t) ? "?" + q : ""));
   if (t === "maps" && S.map) setTimeout(() => S.map.invalidateSize(), 50);
   if (t === "point" && S.pmap) setTimeout(() => S.pmap.invalidateSize(), 50);
   if (t === "hr" && S.hmap) setTimeout(() => S.hmap.invalidateSize(), 50);
@@ -513,7 +515,8 @@ function aggregateSeries(times, t2m, prcp, agg, tz) {
 async function runPoint() {
   const lat = +$("#p-lat").value, lon = +$("#p-lon").value;
   if (!isFinite(lat) || !isFinite(lon)) return;
-  history.replaceState(null, "", `#point?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`);
+  const curTab = document.querySelector("#tabs button.active")?.dataset.tab || "point";
+  history.replaceState(null, "", `#${["point", "atm", "hr"].includes(curTab) ? curTab : "point"}?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`);
   track("point-forecast");
   const rid = pointRegion(lat, lon);
   // fuori dalle regioni verificate: solo i modelli globali grezzi, senza combinazioni
