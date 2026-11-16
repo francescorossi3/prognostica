@@ -111,7 +111,7 @@ const I18N = (() => {
     [/^Observed – (.+)$/, "Osservato – $1"],
   ];
   let lang = "en";
-  try { lang = localStorage.getItem("lang") || (navigator.language || "").slice(0, 2) === "it" && "it" || "en"; } catch { /* nessuna memoria */ }
+  try { lang = new URLSearchParams(location.search).get("lang") || localStorage.getItem("lang") || "en"; } catch { /* nessuna memoria */ }   // inglese salvo scelta
 
   function t(x) {
     if (lang !== "it" || x == null) return x;
