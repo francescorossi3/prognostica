@@ -99,11 +99,11 @@ pd.DataFrame({"hold_start": [hold_start], "last_day": [last_day], "end": [end]})
 
 # %% 6) export
 r = lambda df: df.round(4)                                           # noqa: E731
-r(scores).to_csv(CSV_DIR / "classifica.csv", index=False)
-r(hold_scores).to_csv(CSV_DIR / "classifica_holdout.csv", index=False)
-r(sel).to_csv(CSV_DIR / "migliore_e_pesi.csv", index=False)
-r(trend).to_csv(CSV_DIR / "trend_mensile.csv", index=False)
-stations.to_csv(CSV_DIR / "stazioni.csv", index=False)
+r(scores).to_csv(CSV_DIR / "rankings.csv", index=False)
+r(hold_scores).to_csv(CSV_DIR / "rankings_holdout.csv", index=False)
+r(sel).to_csv(CSV_DIR / "best_and_weights.csv", index=False)
+r(trend).to_csv(CSV_DIR / "monthly_trend.csv", index=False)
+stations.to_csv(CSV_DIR / "stations.csv", index=False)
 
 # coppie giornaliere in formato largo (una colonna per provider) -> CSV mensili per Excel
 daily = pairs_for(start, rec_end, aggs=["24h"])
@@ -111,11 +111,11 @@ wide = daily.pivot_table(index=["date", "station", "var", "lead_day"], columns="
                          values="fc", aggfunc="first")
 wide.insert(0, "osservato", daily.groupby(["date", "station", "var", "lead_day"])["obs"].first())
 wide = wide.reset_index()
-(CSV_DIR / "coppie_giornaliere").mkdir(exist_ok=True)
+(CSV_DIR / "daily_pairs").mkdir(exist_ok=True)
 for ym, g in wide.groupby(wide["date"].dt.strftime("%Y-%m")):
     g = g.copy()
     g["date"] = g["date"].dt.strftime("%Y-%m-%d")
-    path = CSV_DIR / "coppie_giornaliere" / f"{ym}.csv"
+    path = CSV_DIR / "daily_pairs" / f"{ym}.csv"
     if path.exists():                                # si aggiornano solo i giorni ricalcolati
         old = pd.read_csv(path, dtype={"station": str})
         g = pd.concat([old[~old["date"].isin(g["date"].unique())], g], ignore_index=True)
@@ -151,7 +151,7 @@ for rid, sg in (sites.groupby("region") if len(sites) else []):
 
 # %% 7) verifica per eventi significativi, su tutto lo storico delle coppie giornaliere
 from meteoita.events import event_tables
-files = sorted((CSV_DIR / "coppie_giornaliere").glob("*.csv"))
+files = sorted((CSV_DIR / "daily_pairs").glob("*.csv"))
 if files:
     allday = pd.concat([pd.read_csv(f, dtype={"station": str}) for f in files], ignore_index=True)
     prov_cols = [c for c in allday.columns if c not in ("date", "station", "var", "lead_day", "osservato")]
@@ -161,10 +161,10 @@ if files:
     ev_scores, ev_list = event_tables(dl)
 else:
     ev_scores, ev_list = pd.DataFrame(), pd.DataFrame()
-ev_scores.round(4).to_csv(CSV_DIR / "eventi_punteggi.csv", index=False)
+ev_scores.round(4).to_csv(CSV_DIR / "event_scores.csv", index=False)
 if not ev_list.empty:
     ev_list = ev_list.merge(stations[["station", "name"]], on="station", how="left")
-    ev_list.round(2).to_csv(CSV_DIR / "eventi_elenco.csv", index=False)
+    ev_list.round(2).to_csv(CSV_DIR / "event_list.csv", index=False)
     print("Eventi osservati:", ev_list.drop_duplicates(["region", "event", "date", "station"])
           .groupby(["region", "event"]).size().to_dict())
 

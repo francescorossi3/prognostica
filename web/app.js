@@ -730,20 +730,20 @@ function initData() {
   <b>Columella</b> (agriculture, after the <i>De re rustica</i>) and <b>Torricelli</b> (atmosphere and atmospheric correction, after the inventor of the barometer).</p>
   <h3>Download the data</h3>
   <p>All results are stored in the GitHub repository, folder <a href="${d}">data/csv</a>, as CSV files (comma separator, dot decimal)
-  plus an Excel summary (file names are in Italian):</p>
+  plus an Excel summary:</p>
   <ul>
-    <li>${link("riepilogo.xlsx")} – all main tables in a single Excel file</li>
-    <li>${link("classifica.csv")} – scores by provider, variable, aggregation, lead time and time window</li>
-    <li>${link("classifica_holdout.csv")} – last days, including Best, Weighted mean and GPR</li>
-    <li>${link("migliore_e_pesi.csv")} – best provider and weights in use</li>
-    <li>${link("gpr_validazione.csv")} – GPR errors and calibration on the latest held-out days</li>
-    <li>${link("gpr_backtest.csv")} / ${link("gpr_backtest_sintesi.csv")} – historical back-test of the GPR (every fold / summary)</li>
-    <li>${link("trend_mensile.csv")} – monthly scores</li>
-    <li><code>coppie_giornaliere/YYYY-MM.csv</code> – for each day, station, variable and lead time: observation and forecast of every provider</li>
-    <li>${link("eventi_punteggi.csv")} – significant-event verification (hits, misses, false alarms, error on event days)</li>
-    <li>${link("eventi_elenco.csv")} – every observed event with the forecast of each provider</li>
+    <li>${link("summary.xlsx")} – all main tables in a single Excel file</li>
+    <li>${link("rankings.csv")} – scores by provider, variable, aggregation, lead time and time window</li>
+    <li>${link("rankings_holdout.csv")} – last days, including Best, Weighted mean and GPR</li>
+    <li>${link("best_and_weights.csv")} – best provider and weights in use</li>
+    <li>${link("gpr_validation.csv")} – GPR errors and calibration on the latest held-out days</li>
+    <li>${link("gpr_backtest.csv")} / ${link("gpr_backtest_summary.csv")} – historical back-test of the GPR (every fold / summary)</li>
+    <li>${link("monthly_trend.csv")} – monthly scores</li>
+    <li><code>daily_pairs/YYYY-MM.csv</code> – for each day, station, variable and lead time: observation and forecast of every provider</li>
+    <li>${link("event_scores.csv")} – significant-event verification (hits, misses, false alarms, error on event days)</li>
+    <li>${link("event_list.csv")} – every observed event with the forecast of each provider</li>
     <li><code>radcalnet/YYYY-MM.csv</code>, <code>hypernets/YYYY-MM.csv</code> – hourly forecasts of every model at the RadCalNet and HYPERNETS sites, for every lead time (0–7 days)</li>
-    <li>${link("stazioni.csv")} – verification stations</li>
+    <li>${link("stations.csv")} – verification stations</li>
   </ul>
   <h3>How it works</h3>
   <p><b>Regions.</b> “Italy” uses all models covering Italy (including ICON-2I, ICON-EU, ARPEGE) on a dense grid.
@@ -800,18 +800,18 @@ function dataTextIT(link, d) {
   <p>Tutti i risultati sono nel repository GitHub, cartella <a href="${d}">data/csv</a>, in file CSV (separatore virgola, decimale punto)
   più un riepilogo Excel:</p>
   <ul>
-    <li>${link("riepilogo.xlsx")} – tutte le tabelle principali in un unico file Excel</li>
-    <li>${link("classifica.csv")} – punteggi per fornitore, variabile, aggregazione, anticipo e finestra temporale</li>
-    <li>${link("classifica_holdout.csv")} – ultimi giorni, con Migliore, Media pesata e GPR</li>
-    <li>${link("migliore_e_pesi.csv")} – fornitore migliore e pesi in uso</li>
-    <li>${link("gpr_validazione.csv")} – errori e calibrazione della GPR negli ultimi giorni esclusi dall'addestramento</li>
-    <li>${link("gpr_backtest.csv")} / ${link("gpr_backtest_sintesi.csv")} – back-test storico della GPR (ogni blocco / sintesi)</li>
-    <li>${link("trend_mensile.csv")} – punteggi mensili</li>
-    <li><code>coppie_giornaliere/AAAA-MM.csv</code> – per ogni giorno, stazione, variabile e anticipo: osservazione e previsione di ogni fornitore</li>
-    <li>${link("eventi_punteggi.csv")} – verifica degli eventi significativi (colti, mancati, falsi allarmi, errore nei giorni di evento)</li>
-    <li>${link("eventi_elenco.csv")} – ogni evento osservato con la previsione di ogni fornitore</li>
+    <li>${link("summary.xlsx")} – tutte le tabelle principali in un unico file Excel</li>
+    <li>${link("rankings.csv")} – punteggi per fornitore, variabile, aggregazione, anticipo e finestra temporale</li>
+    <li>${link("rankings_holdout.csv")} – ultimi giorni, con Migliore, Media pesata e GPR</li>
+    <li>${link("best_and_weights.csv")} – fornitore migliore e pesi in uso</li>
+    <li>${link("gpr_validation.csv")} – errori e calibrazione della GPR negli ultimi giorni esclusi dall'addestramento</li>
+    <li>${link("gpr_backtest.csv")} / ${link("gpr_backtest_summary.csv")} – back-test storico della GPR (ogni blocco / sintesi)</li>
+    <li>${link("monthly_trend.csv")} – punteggi mensili</li>
+    <li><code>daily_pairs/AAAA-MM.csv</code> – per ogni giorno, stazione, variabile e anticipo: osservazione e previsione di ogni fornitore</li>
+    <li>${link("event_scores.csv")} – verifica degli eventi significativi (colti, mancati, falsi allarmi, errore nei giorni di evento)</li>
+    <li>${link("event_list.csv")} – ogni evento osservato con la previsione di ogni fornitore</li>
     <li><code>radcalnet/AAAA-MM.csv</code>, <code>hypernets/AAAA-MM.csv</code> – previsioni orarie di ogni modello ai siti RadCalNet e HYPERNETS, per ogni anticipo (0–7 giorni)</li>
-    <li>${link("stazioni.csv")} – stazioni di verifica</li>
+    <li>${link("stations.csv")} – stazioni di verifica</li>
   </ul>
   <h3>Come funziona</h3>
   <p><b>Regioni.</b> “Italia” usa tutti i modelli che coprono l'Italia (compresi ICON-2I, ICON-EU, ARPEGE) su una griglia fitta.

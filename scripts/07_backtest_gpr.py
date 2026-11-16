@@ -10,7 +10,7 @@ Per ogni "piega" (fold) di test di 14 giorni, andando indietro nel tempo:
         GPR, migliore ex-ante, media pesata, ogni singolo modello,
         e il migliore ex-post (il modello che a posteriori e' andato meglio:
         un riferimento "imbattibile" che nessun metodo puo' conoscere prima)
-Risultati: data/csv/gpr_backtest.csv (ogni fold) e gpr_backtest_sintesi.csv,
+Risultati: data/csv/gpr_backtest.csv (ogni fold) e gpr_backtest_summary.csv,
            build/site/data/gpr_backtest.json per il sito.
 
 E' pesante: di default gira al massimo una volta a settimana (o con --force).
@@ -52,8 +52,8 @@ if OUT_CSV.exists() and not args.force:
     if (pd.Timestamp.now() - pd.Timestamp(last)).days < 7:
         print(f"Backtest recente ({last}): salto (usa --force per rifarlo)")
         # copia comunque il JSON per il sito
-        if (CSV_DIR / "gpr_backtest_sintesi.csv").exists():
-            s = pd.read_csv(CSV_DIR / "gpr_backtest_sintesi.csv")
+        if (CSV_DIR / "gpr_backtest_summary.csv").exists():
+            s = pd.read_csv(CSV_DIR / "gpr_backtest_summary.csv")
             with open(SITE_DATA / "gpr_backtest.json", "w") as f:
                 json.dump(json.loads(s.to_json(orient="records")), f)
         sys.exit(0)
@@ -213,7 +213,7 @@ for (rid, var, agg, lead), g in bt.groupby(["region", "var", "agg", "lead_day"])
                  "first_test": g["test_start"].min(), "last_test": g["test_start"].max()})
 summ = pd.DataFrame(summ)
 summ["skill_vs_best_pct"] = 100 * (1 - summ["rmse_gpr"] / summ["rmse_best_exante"])
-summ.round(4).to_csv(CSV_DIR / "gpr_backtest_sintesi.csv", index=False)
+summ.round(4).to_csv(CSV_DIR / "gpr_backtest_summary.csv", index=False)
 with open(SITE_DATA / "gpr_backtest.json", "w") as f:
     json.dump(json.loads(summ.round(4).to_json(orient="records")), f)
 print("\nGPR vs migliore ex-ante (RMSE, media sui fold):")

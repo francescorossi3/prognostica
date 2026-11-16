@@ -64,15 +64,15 @@ if len(obs) and st_csv.exists():
     print(f"Osservazioni recenti: {len(out['stations'])} stazioni")
 
 # riepilogo Excel con le tabelle principali (un foglio per tabella)
-sheets = {"classifica_90g": "classifica.csv", "holdout_e_combinazioni": "classifica_holdout.csv",
-          "migliore_e_pesi": "migliore_e_pesi.csv", "gpr_validazione": "gpr_validazione.csv",
-          "trend_mensile": "trend_mensile.csv", "eventi_punteggi": "eventi_punteggi.csv",
-          "eventi_elenco": "eventi_elenco.csv", "stazioni": "stazioni.csv"}
-with pd.ExcelWriter(CSV_DIR / "riepilogo.xlsx", engine="openpyxl") as xw:
+sheets = {"rankings_90d": "rankings.csv", "holdout_and_combos": "rankings_holdout.csv",
+          "best_and_weights": "best_and_weights.csv", "gpr_validation": "gpr_validation.csv",
+          "monthly_trend": "monthly_trend.csv", "event_scores": "event_scores.csv",
+          "event_list": "event_list.csv", "stations": "stations.csv"}
+with pd.ExcelWriter(CSV_DIR / "summary.xlsx", engine="openpyxl") as xw:
     for sh, fn in sheets.items():
         if (CSV_DIR / fn).exists():
             df = pd.read_csv(CSV_DIR / fn)
-            if sh == "classifica_90g" and "window" in df:
+            if sh == "rankings_90d" and "window" in df:
                 df = df[df["window"] == f"{CFG['verification']['primary_window_days']}d"]
             df.to_excel(xw, sheet_name=sh, index=False)
             ws = xw.sheets[sh]

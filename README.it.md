@@ -127,17 +127,17 @@ I parametri si passano da riga di comando o si cambiano i default in testa allo 
 
 | File | Contenuto |
 |---|---|
-| `csv/riepilogo.xlsx` | tutte le tabelle principali in un file Excel |
-| `csv/classifica.csv` | metriche per provider × variabile × aggregazione × anticipo × finestra (30/90/365 giorni, tutto) |
-| `csv/classifica_holdout.csv` | ultimi 14 giorni, con Migliore, Media pesata e GPR (scelti/addestrati *prima* di quei giorni) |
-| `csv/migliore_e_pesi.csv` | provider migliore e pesi in uso |
-| `csv/gpr_validazione.csv` | MAE, RMSE, bias, CRPS, copertura 68% e 95% del GPR (ultimi 14 giorni) |
-| `csv/gpr_backtest.csv`, `gpr_backtest_sintesi.csv` | backtest storico: GPR vs migliore ex-ante, media pesata, migliore ex-post, per blocco e in sintesi |
-| `csv/trend_mensile.csv` | metriche mese per mese |
-| `csv/eventi_punteggi.csv` | verifica per eventi significativi: osservati, colti, mancati, falsi allarmi, POD/FAR/CSI, errore nei giorni di evento |
+| `csv/summary.xlsx` | tutte le tabelle principali in un file Excel |
+| `csv/rankings.csv` | metriche per provider × variabile × aggregazione × anticipo × finestra (30/90/365 giorni, tutto) |
+| `csv/rankings_holdout.csv` | ultimi 14 giorni, con Migliore, Media pesata e GPR (scelti/addestrati *prima* di quei giorni) |
+| `csv/best_and_weights.csv` | provider migliore e pesi in uso |
+| `csv/gpr_validation.csv` | MAE, RMSE, bias, CRPS, copertura 68% e 95% del GPR (ultimi 14 giorni) |
+| `csv/gpr_backtest.csv`, `gpr_backtest_summary.csv` | backtest storico: GPR vs migliore ex-ante, media pesata, migliore ex-post, per blocco e in sintesi |
+| `csv/monthly_trend.csv` | metriche mese per mese |
+| `csv/event_scores.csv` | verifica per eventi significativi: osservati, colti, mancati, falsi allarmi, POD/FAR/CSI, errore nei giorni di evento |
 | `csv/radcalnet/AAAA-MM.csv` | previsioni orarie di ogni modello sui siti RadCalNet (colonne `t2m_<modello>`, `prcp_<modello>`), per sito e anticipo |
-| `csv/eventi_elenco.csv` | ogni evento osservato (giorno × stazione) con la previsione di ciascun provider a ogni anticipo |
-| `csv/coppie_giornaliere/AAAA-MM.csv` | per giorno/stazione/variabile/anticipo: osservato e previsione di ogni provider |
+| `csv/event_list.csv` | ogni evento osservato (giorno × stazione) con la previsione di ciascun provider a ogni anticipo |
+| `csv/daily_pairs/AAAA-MM.csv` | per giorno/stazione/variabile/anticipo: osservato e previsione di ogni provider |
 | `stats/daily_stats.parquet` | somme giornaliere da cui si ricava qualsiasi metrica su qualsiasi periodo |
 | `forecasts/<provider>/AAAA-MM.parquet` | previsioni orarie archiviate (compatte) |
 | `observations/AAAA-MM.parquet` | osservazioni orarie |
@@ -184,7 +184,7 @@ il sito calcola stima e incertezza **nel browser** con le stesse formule (`web/g
 - errore (MAE/RMSE) confrontato con il miglior provider e con la media pesata sugli stessi giorni;
 - **calibrazione**: l'osservato deve cadere nell'intervallo 68% circa il 68% delle volte e nel 95% circa il 95%.
 
-Il risultato è nella scheda «Affidabilità GPR» del sito, in `gpr_validazione.csv` e come cerchi sulle mappe (errore per stazione).
+Il risultato è nella scheda «Affidabilità GPR» del sito, in `gpr_validation.csv` e come cerchi sulle mappe (errore per stazione).
 
 ## 5. Scalabilità
 

@@ -144,7 +144,7 @@ with open(OUT / "index.json", "w") as f:
 val = pd.DataFrame(valid_rows)
 if not val.empty:
     val = val[["region", "var", "agg", "lead_day", "n_train", "n", "bias", "mae", "rmse", "r2", "crps", "cov68", "cov95", "mean_unc"]]
-    val.round(4).to_csv(CSV_DIR / "gpr_validazione.csv", index=False)
+    val.round(4).to_csv(CSV_DIR / "gpr_validation.csv", index=False)
     print("\nCalibrazione GPR (ideale: cov68 ~ 0.68, cov95 ~ 0.95):")
     print(val.groupby(["region", "var", "agg"])[["mae", "r2", "cov68", "cov95"]].mean().round(3).to_string())
 
@@ -153,7 +153,7 @@ hold = pd.read_parquet(BUILD / "holdout_pairs.parquet")          # tutti i provi
 combo = pd.read_parquet(BUILD / "holdout_combo.parquet")
 allh = pd.concat([hold, combo] + hold_pairs, ignore_index=True)
 hs = score_table(allh).round(4)
-hs.to_csv(CSV_DIR / "classifica_holdout.csv", index=False)
+hs.to_csv(CSV_DIR / "rankings_holdout.csv", index=False)
 
 # GPR fuori campione nello storico -> entra nelle classifiche normali (30/90/365 giorni, tutto)
 STATS = DATA / "stats" / "daily_stats.parquet"
@@ -162,8 +162,8 @@ if hold_pairs:
     stats = merge_stats(pd.read_parquet(STATS), daily_stats(gpr_pairs))
     stats.to_parquet(STATS, index=False, compression="zstd")
     scores, trend = rankings(stats, provider_names())
-    scores.round(4).to_csv(CSV_DIR / "classifica.csv", index=False)
-    trend.round(4).to_csv(CSV_DIR / "trend_mensile.csv", index=False)
+    scores.round(4).to_csv(CSV_DIR / "rankings.csv", index=False)
+    trend.round(4).to_csv(CSV_DIR / "monthly_trend.csv", index=False)
     for name, df in (("scores.json", scores), ("trend.json", trend)):
         with open(SITE_DATA / name, "w") as f:
             json.dump(json.loads(df.round(4).to_json(orient="records")), f, separators=(",", ":"))

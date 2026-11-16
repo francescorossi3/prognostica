@@ -88,12 +88,12 @@ scripts/00_setup_stations   01_fetch_forecasts   02_fetch_observations   03_veri
         05_build_maps       06_build_site        07_backtest_gpr         08_backfill_window
         09_reuse_published_maps   demo_generate
 web/                        index.html, app.js, gp.js, style.css, vendor (Leaflet, Chart.js)
-data/                       forecasts/, observations/, stats/daily_stats.parquet, csv/ (CSV + riepilogo.xlsx)
+data/                       forecasts/, observations/, stats/daily_stats.parquet, csv/ (CSV + summary.xlsx)
 tests/test_gp_consistency   sklearn = export JSON = gp.js
 ```
-I nomi dei CSV sono in italiano: `classifica.csv`, `classifica_holdout.csv`, `migliore_e_pesi.csv`,
-`gpr_validazione.csv`, `gpr_backtest(_sintesi).csv`, `trend_mensile.csv`, `eventi_*.csv`,
-`coppie_giornaliere/`, `radcalnet/`, `stazioni.csv`.
+I nomi dei CSV sono in inglese (rinominati il 16/11/2026): `rankings.csv`, `rankings_holdout.csv`, `best_and_weights.csv`,
+`gpr_validation.csv`, `gpr_backtest(_summary).csv`, `monthly_trend.csv`, `event_*.csv`,
+`daily_pairs/`, `radcalnet/`, `stations.csv`.
 
 ## Automazione (GitHub Actions, nessun intervento necessario)
 - `daily.yml`, 06:17 UTC, con **avvio di riserva alle 10:37 UTC** che parte solo se quello del mattino non ha
