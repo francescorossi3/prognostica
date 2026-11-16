@@ -293,7 +293,7 @@ const HR = (() => {
       const opt = { agg: $("#p-agg").value, v: $("#p-var").value, period: $("#h-period").value, time: +$("#h-period").value };
       const T = await targets(kind, samples, opt, Z);
       const good = T.values.map((v, i) => (Number.isFinite(v) ? i : -1)).filter(i => i >= 0);
-      if (good.length < 12) throw new Error("too few valid sample values for this target/period");
+      if (good.length < 12) throw new Error("too few valid sample values for this variable and period (VNIR-SWIR parameters need the sun above 10°: choose a daytime hour)");
       const xyOf = (lat, lon) => [(lon - P.lon) * mlon, (lat - P.lat) * mlat];
       const F = good.map(i => covariates(Z, IMP, TCD, samples[i].lat, samples[i].lon, mlat, mlon));
       const y = good.map(i => T.values[i]), xy = good.map(i => xyOf(samples[i].lat, samples[i].lon));

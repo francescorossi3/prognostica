@@ -568,6 +568,8 @@ function obsAt(P, agg, v, key) {
 
 async function computePoint(agg, v) {
   const P = S.point, today = localParts(Date.now(), P.tz).date;
+  const nl = localParts(Date.now(), P.tz);                 // periodo in corso: quelli prima sono "passati"
+  const nowKey = agg === "24h" ? `${nl.date}T00:00` : `${nl.date}T${String(agg === "6h" ? Math.floor(nl.hour / 6) * 6 : nl.hour).padStart(2, "0")}:00`;
   const per = {};
   for (const id in P.raw) {
     const a = aggregateSeries(P.times, P.raw[id].t, P.raw[id].p, agg, P.tz);
@@ -594,7 +596,7 @@ async function computePoint(agg, v) {
     const m = ver ? await GP.load(`${DATA}gp/${P.region}/${v}_${agg}_d${ml}.json`) : null;
     const g = m ? GP.predict(m, { lat: P.lat, lon: P.lon, elev: P.elev, ...vals }) : null;
     const thr = S.meta.prcp_thresholds?.[agg]?.[0];
-    rows.push({ period: k, lead, past: lead < 0, obs: obsAt(P, agg, v, k), vals, best: bestId ? vals[bestId] : null, bestId,
+    rows.push({ period: k, lead, past: k < nowKey, obs: obsAt(P, agg, v, k), vals, best: bestId ? vals[bestId] : null, bestId,
       weighted: ws > 0.5 ? wf / ws : null, gpr: g,
       prob: g && v === "prcp" ? 100 * GP.probExceed(g, thr, m.transform) : null });
   }
