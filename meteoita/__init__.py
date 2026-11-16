@@ -1,1 +1,1 @@
-"""Meteo Accuracy - verifica e combinazione di previsioni meteo."""
+"""Prognostica - verifica e combinazione di previsioni meteo."""

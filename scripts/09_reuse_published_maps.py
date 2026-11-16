@@ -19,7 +19,7 @@ import requests
 from meteoita.config import AGGS, SITE_DATA, target_vars
 from meteoita.regions import REGIONS
 
-repo = os.environ.get("GITHUB_REPOSITORY", "francescorossi3/meteo-accuracy")
+repo = os.environ.get("GITHUB_REPOSITORY", "francescorossi3/prognostica")
 owner, name = repo.split("/")
 base = os.environ.get("SITE_URL", f"https://{owner}.github.io/{name}") + "/data/maps"
 n = 0

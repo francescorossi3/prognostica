@@ -1,5 +1,5 @@
 "use strict";
-/* Meteo Accuracy - interfaccia del sito (statico, nessun server). */
+/* Prognostica - interfaccia del sito (statico, nessun server). */
 
 const $ = s => document.querySelector(s);
 const DATA = "data/";
@@ -26,6 +26,11 @@ const varsFor = agg => (agg === "24h" ? ["t2m", "tmax", "tmin", "prcp"] : ["t2m"
 const charts = {};
 function drawChart(id, cfg) {
   if (charts[id]) charts[id].destroy();
+  if (typeof I18N !== "undefined" && I18N.lang !== "en") {          // etichette dei grafici nella lingua scelta
+    cfg.data.datasets.forEach(d => { d.label = I18N.t(d.label); });
+    if (cfg.data.labels) cfg.data.labels = cfg.data.labels.map(l => I18N.t(l));
+    Object.values(cfg.options?.scales || {}).forEach(a => { if (a.title?.text) a.title.text = I18N.t(a.title.text); });
+  }
   charts[id] = new Chart(document.getElementById(id), cfg);
 }
 
@@ -698,7 +703,12 @@ function initData() {
   const d = S.meta.data_url || "../data/csv";
   const raw = S.meta.raw_url;
   const link = f => (raw ? `<a href="${raw}/${f}">${f}</a>` : `<code>${f}</code>`);
+  if (typeof I18N !== "undefined" && I18N.lang === "it") { $("#data-text").innerHTML = dataTextIT(link, d); return; }
   $("#data-text").innerHTML = `
+  <h3>The name</h3>
+  <p><b>Prognostica</b> is the title of the Latin translation in which Cicero rendered the part of Aratus' <i>Phaenomena</i> devoted to the signs
+  that foretell the weather: the first “weather-forecasting handbook” of Latin literature. It belongs to a family of projects with
+  <b>Columella</b> (agriculture, after the <i>De re rustica</i>) and <b>Torricelli</b> (atmosphere and atmospheric correction, after the inventor of the barometer).</p>
   <h3>Download the data</h3>
   <p>All results are stored in the GitHub repository, folder <a href="${d}">data/csv</a>, as CSV files (comma separator, dot decimal)
   plus an Excel summary (file names are in Italian):</p>
@@ -756,5 +766,77 @@ function initData() {
   trend alone and with plain ordinary kriging. Note that the 10 m detail comes from the covariates: the weather models themselves have a
   resolution of 2–25 km.</p>
   <p><b>Limitations.</b> Best, Weighted mean and GPR only use models available everywhere (Open-Meteo), so they can be computed
-  at any point. Stations are mostly in lowlands or on the coast: in the mountains estimates and uncertainties are less verified.</p>`;
+  at any point. Stations are mostly in lowlands or on the coast: in the mountains estimates and uncertainties are less verified.</p>
+  <h3>Licence</h3><p>© 2026 Francesco Rossi. Code: all rights reserved. Data: CC BY-NC 4.0 (attribution, non-commercial use).
+  Third-party data remain under their own licences.</p>`;
 }
+// testo della scheda "Dati e metodo" in italiano
+function dataTextIT(link, d) {
+  return `
+  <h3>Il nome</h3>
+  <p><b>Prognostica</b> è il titolo della traduzione latina in cui Cicerone rese la parte dei <i>Fenomeni</i> di Arato dedicata ai segni che
+  annunciano il tempo: il primo “manuale di previsione meteorologica” della letteratura latina. Fa parte di una famiglia di progetti con
+  <b>Columella</b> (agricoltura, dal <i>De re rustica</i>) e <b>Torricelli</b> (atmosfera e correzione atmosferica, dall'inventore del barometro).</p>
+  <h3>Scarica i dati</h3>
+  <p>Tutti i risultati sono nel repository GitHub, cartella <a href="${d}">data/csv</a>, in file CSV (separatore virgola, decimale punto)
+  più un riepilogo Excel:</p>
+  <ul>
+    <li>${link("riepilogo.xlsx")} – tutte le tabelle principali in un unico file Excel</li>
+    <li>${link("classifica.csv")} – punteggi per fornitore, variabile, aggregazione, anticipo e finestra temporale</li>
+    <li>${link("classifica_holdout.csv")} – ultimi giorni, con Migliore, Media pesata e GPR</li>
+    <li>${link("migliore_e_pesi.csv")} – fornitore migliore e pesi in uso</li>
+    <li>${link("gpr_validazione.csv")} – errori e calibrazione della GPR negli ultimi giorni esclusi dall'addestramento</li>
+    <li>${link("gpr_backtest.csv")} / ${link("gpr_backtest_sintesi.csv")} – back-test storico della GPR (ogni blocco / sintesi)</li>
+    <li>${link("trend_mensile.csv")} – punteggi mensili</li>
+    <li><code>coppie_giornaliere/AAAA-MM.csv</code> – per ogni giorno, stazione, variabile e anticipo: osservazione e previsione di ogni fornitore</li>
+    <li>${link("eventi_punteggi.csv")} – verifica degli eventi significativi (colti, mancati, falsi allarmi, errore nei giorni di evento)</li>
+    <li>${link("eventi_elenco.csv")} – ogni evento osservato con la previsione di ogni fornitore</li>
+    <li><code>radcalnet/AAAA-MM.csv</code>, <code>hypernets/AAAA-MM.csv</code> – previsioni orarie di ogni modello ai siti RadCalNet e HYPERNETS, per ogni anticipo (0–7 giorni)</li>
+    <li>${link("stazioni.csv")} – stazioni di verifica</li>
+  </ul>
+  <h3>Come funziona</h3>
+  <p><b>Regioni.</b> “Italia” usa tutti i modelli che coprono l'Italia (compresi ICON-2I, ICON-EU, ARPEGE) su una griglia fitta.
+  “RadCalNet” (Railroad Valley, Gobabeb, La Crau, Baotou) e “HYPERNETS” (siti LANDHYPERNET e WATERHYPERNET, ad es. Gobabeb, Demmin, Järvselja,
+  Lonzée, Wytham Woods, Acqua Alta) sono siti di calibrazione/validazione della riflettanza satellitare: qui il sito mostra solo i modelli globali
+  (ECMWF, ICON, GFS, UKMO, GEM), la loro media e dispersione, senza verifica; i valori sono archiviati ogni giorno. Quando interroghi un punto la regione
+  è scelta automaticamente; giorni e blocchi di 6 ore sono nell'ora locale del punto.</p>
+  <p><b>Fornitori.</b> I modelli numerici (ItaliaMeteo ICON-2I, ECMWF, ICON, GFS, ARPEGE, UKMO, …) arrivano da Open-Meteo, che archivia per ogni ora
+  la previsione emessa 0, 1, …, 7 giorni prima, così l'archivio si può ricostruire all'indietro. I servizi solo per stazioni (MET Norway e, con le chiavi API,
+  OpenWeatherMap, WeatherAPI, Tomorrow.io, Visual Crossing) sono archiviati ogni giorno.</p>
+  <p><b>Osservazioni.</b> Stazioni sinottiche (Meteostat). Temperatura istantanea, precipitazione oraria; blocchi di 6 ore e giorni nell'ora locale di
+  ogni stazione. Un blocco è verificato solo se completo.</p>
+  <p><b>Anticipo.</b> “Oggi” = previsione emessa poche ore prima; “+1 g” = emessa circa 24 ore prima; … fino a una settimana.</p>
+  <p><b>Eventi.</b> Oltre agli errori medi si verificano gli eventi significativi osservati (pioggia forte, caldo, gelo; soglie in <code>config.yaml</code>):
+  per ogni fornitore quanti sono stati previsti, mancati e quanti falsi allarmi ha dato.</p>
+  <p><b>Migliore</b> = fornitore con l'errore più basso negli ultimi ${S.meta.window_days || 90} giorni, per quella variabile, aggregazione e anticipo.
+  <b>Media pesata</b> = media dei fornitori con pesi proporzionali a 1/MSE. <b>GPR</b> = regressione a processi gaussiani che usa posizione, quota e
+  le previsioni di tutti i modelli per stimare il valore e la sua incertezza. È controllata su giorni esclusi dall'addestramento e, ogni settimana,
+  con un back-test storico su tutto l'archivio (scheda “Affidabilità GPR”).</p>
+  <p><b>Ricerca dei luoghi</b>: suggerimenti mentre scrivi (<a href="https://photon.komoot.io/">Photon</a>, dati OpenStreetMap, ordinati per vicinanza alla mappa),
+  coordinate (“41.90, 12.50”), posizione del dispositivo, e <a href="https://nominatim.openstreetmap.org/">Nominatim</a> come riserva.</p>
+  <h3>Atmosfera e correzione atmosferica</h3>
+  <p>Per il punto scelto: vapore acqueo in colonna, pressione al suolo, temperatura, umidità, nuvolosità, irradianza (ECMWF IFS 0,25°), spessore ottico degli
+  aerosol a 550 nm e polveri (CAMS), e il profilo sui livelli di pressione 1000–200 hPa (temperatura, umidità, altezza geopotenziale, vento).
+  La densità dell'aria è ρ = p / (R<sub>d</sub> T<sub>v</sub>) con la temperatura virtuale T<sub>v</sub>. I parametri di trasferimento radiativo delle bande
+  Sentinel-2 (trasmittanza di diffusione in discesa e in salita, trasmittanza gassosa, radianza di percorso, irradianza diretta e diffusa, albedo sferico)
+  sono interpolati da una tabella calcolata con il codice 6S (vapore × AOD × zenit solare × quota; vista al nadir, aerosol continentale, ozono 0,30 cm-atm).
+  Per l'infrarosso termico, trasmittanza e radianze in salita/discesa della banda 10 di Landsat 8/9 vengono dalle funzioni del vapore acqueo di
+  Jiménez-Muñoz et al. (2014). L'archivio orario alle stazioni e ai siti di calibrazione è tenuto dal repository di back end <b>Torricelli</b>.</p>
+  <h3>Mappe a 10 m (regression kriging)</h3>
+  <p>Il valore è calcolato in 49 punti campione intorno al luogo (previsione GPR dove disponibile, altrimenti media dei modelli; grandezze atmosferiche
+  dalle stesse fonti, con la tabella 6S alla quota a 10 m) e poi mappato su una griglia a 10 m come <i>trend + residuo krigato</i>: il trend è una regressione
+  lineare su covariate Copernicus (quota, pendenza ed esposizione nord dal Copernicus DEM / EU-DEM, impermeabilizzazione e densità della copertura arborea
+  dagli EEA High Resolution Layers 2018), i residui sono interpolati con kriging ordinario e variogramma esponenziale. La mappa della deviazione standard del
+  kriging mostra dove l'interpolazione è meno sicura. La validazione è leave-one-out sui punti campione: RMSE, MAE, bias, R² e copertura dell'intervallo al 95%,
+  confrontati con il solo trend e con il kriging ordinario semplice. Il dettaglio a 10 m viene dalle covariate: i modelli meteo hanno una risoluzione di 2–25 km.</p>
+  <p><b>Limiti.</b> Migliore, Media pesata e GPR usano solo modelli disponibili ovunque (Open-Meteo), così si possono calcolare in qualsiasi punto.
+  Le stazioni sono soprattutto in pianura o sulla costa: in montagna stime e incertezze sono meno verificate.</p>
+  <h3>Licenza</h3><p>© 2026 Francesco Rossi. Codice: tutti i diritti riservati. Dati: CC BY-NC 4.0 (attribuzione, uso non commerciale).
+  I dati di terzi restano soggetti alle loro licenze.</p>`;
+}
+function onLang() {
+  if (!S.meta) return;
+  initData(); refreshAll();
+  if (S.point) renderPoint();
+}
+

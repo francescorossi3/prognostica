@@ -18,7 +18,7 @@ import requests
 
 from .config import CFG
 
-UA = os.environ.get("METEO_USER_AGENT", "meteo-accuracy/1.0 (github.com)")
+UA = os.environ.get("METEO_USER_AGENT", "prognostica/1.0 (github.com/francescorossi3/prognostica)")
 OM_KEY = os.environ.get("OPENMETEO_API_KEY", "")
 
 

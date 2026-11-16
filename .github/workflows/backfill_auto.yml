@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     env:
-      METEO_USER_AGENT: "meteo-accuracy github.com/${{ github.repository }}"
+      METEO_USER_AGENT: "prognostica github.com/${{ github.repository }}"
       OPENMETEO_API_KEY: ${{ secrets.OPENMETEO_API_KEY }}
     steps:
       - uses: actions/checkout@v4

@@ -74,3 +74,8 @@ h2.section .hint { font-weight: 400; }
 .suggest div.sel, .suggest div:hover { background: #eef4ff; }
 .suggest small { color: var(--muted); display: block; }
 button#p-geo, button#h-csv { font: inherit; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: .42rem .7rem; cursor: pointer; }
+
+.name-note { font-size: .78rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+.lang { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.lang button { font: inherit; font-size: .8rem; border: 0; background: #fff; padding: .2rem .55rem; cursor: pointer; color: var(--muted); }
+.lang button.on { background: var(--accent); color: #fff; }

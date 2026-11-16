@@ -42,7 +42,7 @@ jobs:
       WEATHERAPI_KEY: ${{ secrets.WEATHERAPI_KEY }}
       TOMORROW_API_KEY: ${{ secrets.TOMORROW_API_KEY }}
       VISUALCROSSING_KEY: ${{ secrets.VISUALCROSSING_KEY }}
-      METEO_USER_AGENT: "meteo-accuracy github.com/${{ github.repository }}"
+      METEO_USER_AGENT: "prognostica github.com/${{ github.repository }}"
       OPENMETEO_API_KEY: ${{ secrets.OPENMETEO_API_KEY }}
     needs: check
     if: needs.check.outputs.skip != 'true'

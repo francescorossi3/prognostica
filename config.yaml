@@ -1,5 +1,5 @@
 # =====================================================================
-#  Meteo Accuracy - configurazione
+#  Prognostica - configurazione
 #  Tutto il progetto e' guidato da questo file: per aggiungere provider,
 #  stazioni, orizzonti o aggregazioni basta modificarlo.
 # =====================================================================
@@ -179,9 +179,9 @@ grid:
 #  SITO
 # ---------------------------------------------------------------------
 site:
-  title: "Meteo Accuracy"
+  title: "Prognostica"
   openmeteo_url: "https://api.open-meteo.com/v1/forecast"
-  # back end atmosferico (altro repository): LUT 6S e database per la correzione atmosferica
-  atmos_url: "https://francescorossi3.github.io/atmos-correction/"
+  # back end atmosferico (repository Torricelli): LUT 6S e database per la correzione atmosferica
+  atmos_url: "https://francescorossi3.github.io/torricelli/"
 # Con un piano a pagamento Open-Meteo: mettere la chiave nel Secret OPENMETEO_API_KEY
 # -> si usano gli endpoint "customer-" senza il limite di ~10.000 chiamate/giorno.
