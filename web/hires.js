@@ -340,7 +340,7 @@ const HR = (() => {
             sd[i] = Math.sqrt(Math.max(0, sill - q));
           } else sd[i] = sd[Math.floor(r / SD_STEP) * SD_STEP * N + Math.floor(c / SD_STEP) * SD_STEP];
         }
-        if (r % 100 === 99) { st.textContent = `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`; await new Promise(res => setTimeout(res, 0)); }
+        if (r % 20 === 19) { st.textContent = `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`; await new Promise(res => setTimeout(res, 0)); }
       }
       HR.out = { N, cell: CELL, est, trd, sd, imp, elev, lat0, lon0, mlat, mlon, half, T, M, cv, samples: good.map(i => samples[i]), y, P };
       draw(); report();
