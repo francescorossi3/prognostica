@@ -94,6 +94,8 @@ function showTab(t) {
   history.replaceState(null, "", "#" + t);
   if (t === "maps" && S.map) setTimeout(() => S.map.invalidateSize(), 50);
   if (t === "point" && S.pmap) setTimeout(() => S.pmap.invalidateSize(), 50);
+  if (t === "hr" && S.hmap) setTimeout(() => S.hmap.invalidateSize(), 50);
+  if (t === "atm" || t === "hr") Object.values(charts).forEach(c => c.resize());
 }
 
 // ================================================================== CLASSIFICA
@@ -776,7 +778,7 @@ function initData() {
   ozone 0.30 cm-atm). For the thermal infrared, transmittance and up/down-welling radiance of Landsat 8/9 band 10 come from the water-vapour functions
   of Jiménez-Muñoz et al. (2014). The hourly archive at the stations and calibration sites is kept by the atmospheric back-end repository.</p>
   <h3>10 m maps (regression kriging)</h3>
-  <p>The value is computed at 49 sample points around the place (GPR forecast where available, otherwise the model mean; atmospheric quantities
+  <p>The value is computed at 49–121 sample points around the place (7×7 to 11×11 depending on the area, 2–30 km; GPR forecast where available, otherwise the model mean; atmospheric quantities
   from the same sources as above, with the 6S table at the 10 m elevation). It is then mapped on a 10 m grid as
   <i>trend + kriged residual</i>: the trend is a linear regression on Copernicus covariates (elevation, slope and northness from the
   Copernicus DEM / EU-DEM, imperviousness and tree-cover density from the EEA High Resolution Layers 2018), the residuals are interpolated by
@@ -842,7 +844,7 @@ function dataTextIT(link, d) {
   Per l'infrarosso termico, trasmittanza e radianze in salita/discesa della banda 10 di Landsat 8/9 vengono dalle funzioni del vapore acqueo di
   Jiménez-Muñoz et al. (2014). L'archivio orario alle stazioni e ai siti di calibrazione è tenuto dal repository di back end <b>Torricelli</b>.</p>
   <h3>Mappe a 10 m (regression kriging)</h3>
-  <p>Il valore è calcolato in 49 punti campione intorno al luogo (previsione GPR dove disponibile, altrimenti media dei modelli; grandezze atmosferiche
+  <p>Il valore è calcolato in 49–121 punti campione intorno al luogo (da 7×7 a 11×11 secondo l'area, 2–30 km; previsione GPR dove disponibile, altrimenti media dei modelli; grandezze atmosferiche
   dalle stesse fonti, con la tabella 6S alla quota a 10 m) e poi mappato su una griglia a 10 m come <i>trend + residuo krigato</i>: il trend è una regressione
   lineare su covariate Copernicus (quota, pendenza ed esposizione nord dal Copernicus DEM / EU-DEM, impermeabilizzazione e densità della copertura arborea
   dagli EEA High Resolution Layers 2018), i residui sono interpolati con kriging ordinario e variogramma esponenziale. La mappa della deviazione standard del

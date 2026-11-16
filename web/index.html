@@ -22,6 +22,8 @@
 
 <nav id="tabs">
   <button data-tab="point" class="active">Forecast</button>
+  <button data-tab="atm">Atmosphere</button>
+  <button data-tab="hr">10 m map</button>
   <button data-tab="maps">Maps</button>
   <button data-tab="rank">Model accuracy</button>
   <button data-tab="events">Events</button>
@@ -100,7 +102,12 @@
   <div class="card"><canvas id="p-chart"></canvas></div>
   <div class="card"><div class="table-wrap"><table id="p-table" class="plain"></table></div></div>
 
-  <h2 class="section">Atmosphere at the point <span class="hint">· water vapour, aerosols, radiation, profiles, air density and radiative-transfer parameters for atmospheric correction</span></h2>
+</section>
+
+<!-- ============================ ATMOSPHERE ============================ -->
+<section id="tab-atm" class="tab">
+  <p class="hint" id="a-point">Choose a place in the Forecast tab (search, map click or calibration site).</p>
+  <p class="hint">Water vapour, aerosols, radiation, profiles, air density and radiative-transfer parameters for atmospheric correction.</p>
   <div class="controls"><label>Hour <select id="a-hour"></select></label>
     <span class="hint">Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).</span></div>
   <div id="a-box"></div>
@@ -109,20 +116,31 @@
     <div class="card"><h3>Vertical profile</h3><canvas id="a-prof"></canvas></div>
   </div>
   <div class="card"><h3>Pressure levels</h3><div class="table-wrap"><table id="a-proft" class="plain"></table></div></div>
+  <div class="card"><h3>Spectral radiative transfer <span class="hint">· 6S, nadir view, continental aerosol, 400–2500 nm</span></h3>
+    <div class="controls"><label>Resolution <select id="a-specset"></select></label><button id="a-speccsv">Download spectrum (CSV)</button>
+      <span class="hint" id="a-specnote"></span></div>
+    <div class="grid2"><div><canvas id="a-spec-t"></canvas></div><div><canvas id="a-spec-l"></canvas></div></div></div>
   <div class="card"><h3>VNIR–SWIR radiative transfer, Sentinel-2 bands <span class="hint">· 6S, nadir view, continental aerosol</span></h3>
     <div class="table-wrap"><table id="a-rt" class="plain"></table></div></div>
   <div class="card"><h3>Next days</h3><canvas id="a-ts"></canvas></div>
 
-  <h2 class="section">10 m map around the point <span class="hint">· regression kriging on Copernicus covariates</span></h2>
+</section>
+
+<!-- ============================ 10 M MAP ============================ -->
+<section id="tab-hr" class="tab">
+  <p class="hint" id="h-point">Choose a place in the Forecast tab: the map is built around it.</p>
   <div class="controls">
     <label>Variable <select id="h-target"></select></label>
+    <label id="h-wl-wrap">Wavelength <select id="h-wl"></select></label>
     <label>Period / hour <select id="h-period"></select></label>
     <label>Area <select id="h-size"></select></label>
+    <label>Cell <select id="h-cell"></select></label>
     <button id="h-go" class="primary">Build 10 m map</button>
     <label>Layer <select id="h-layer"></select></label>
+    <button id="h-tif">Download GeoTIFF</button>
     <button id="h-csv">Download CSV</button>
   </div>
-  <p class="hint" id="h-status">The forecast is computed at 49 sample points around the place (with the GPR where available, otherwise the model mean), then
+  <p class="hint" id="h-status">The value is computed at 49–121 sample points around the place (with the GPR where available, otherwise the model mean), then
     interpolated to 10 m: a linear trend on Copernicus covariates (elevation, slope and northness from the EU-DEM/Copernicus DEM, imperviousness and
     tree-cover density HRL 2018) plus ordinary kriging of the residuals. Leave-one-out validation compares it with the trend alone and with plain kriging.</p>
   <div class="card map-card"><div id="hmap" class="map"></div><div id="h-legend" class="legend"></div></div>

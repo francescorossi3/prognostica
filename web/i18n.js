@@ -84,6 +84,25 @@ const I18N = (() => {
     "1/4 · downloading Copernicus covariates (DEM, imperviousness, tree cover)…": "1/4 · scarico le covariate Copernicus (DEM, impermeabilizzazione, copertura arborea)…",
     "3/4 · fitting trend + variogram, leave-one-out validation…": "3/4 · stima di trend e variogramma, validazione leave-one-out…",
     "4/4 · predicting on the 10 m grid…": "4/4 · previsione sulla griglia a 10 m…",
+    "Atmosphere": "Atmosfera", "10 m map": "Mappa 10 m", "Resolution": "Risoluzione", "Download spectrum (CSV)": "Scarica spettro (CSV)",
+    "Spectral radiative transfer": "Trasferimento radiativo spettrale", "· 6S, nadir view, continental aerosol, 400–2500 nm": "· 6S, vista al nadir, aerosol continentale, 400–2500 nm",
+    "Sentinel-2 bands (13)": "Bande Sentinel-2 (13)", "The hyperspectral table is being computed by Torricelli: Sentinel-2 bands for now.":
+      "La tabella iperspettrale è in calcolo su Torricelli: per ora bande Sentinel-2.",
+    "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.": "Sole sotto i 10° a quest'ora: nessuno spettro VNIR-SWIR.",
+    "Wavelength [nm]": "Lunghezza d'onda [nm]", "Transmittance": "Trasmittanza", "Total transmittance": "Trasmittanza totale", "Path radiance": "Radianza di percorso",
+    "Irradiance": "Irradianza", "E direct [W m⁻² µm⁻¹]": "E diretta [W m⁻² µm⁻¹]", "E diffuse [W m⁻² µm⁻¹]": "E diffusa [W m⁻² µm⁻¹]",
+    "Water vapour, aerosols, radiation, profiles, air density and radiative-transfer parameters for atmospheric correction.":
+      "Vapore acqueo, aerosol, radiazione, profili, densità dell'aria e parametri di trasferimento radiativo per la correzione atmosferica.",
+    "Choose a place in the Forecast tab (search, map click or calibration site).": "Scegli un luogo nella scheda Previsione (ricerca, clic sulla mappa o sito di calibrazione).",
+    "Choose a place in the Forecast tab: the map is built around it.": "Scegli un luogo nella scheda Previsione: la mappa viene costruita intorno a esso.",
+    "(change the place in the Forecast tab)": "(cambia il luogo nella scheda Previsione)",
+    "Wavelength": "Lunghezza d'onda", "Cell": "Cella", "Download GeoTIFF": "Scarica GeoTIFF",
+    "Forecast variable shown in the Forecast tab (GPR)": "Variabile di previsione della scheda Previsione (GPR)",
+    "Total transmittance (T↓·T↑·T gas)": "Trasmittanza totale (T↓·T↑·T gas)", "Downward scattering transmittance T↓": "Trasmittanza di diffusione in discesa T↓",
+    "Upward scattering transmittance T↑": "Trasmittanza di diffusione in salita T↑", "Gaseous transmittance": "Trasmittanza gassosa",
+    "Direct irradiance [W m⁻² µm⁻¹]": "Irradianza diretta [W m⁻² µm⁻¹]", "Diffuse irradiance [W m⁻² µm⁻¹]": "Irradianza diffusa [W m⁻² µm⁻¹]",
+    "The value is computed at 49–121 sample points around the place (with the GPR where available, otherwise the model mean), then interpolated to 10 m: a linear trend on Copernicus covariates (elevation, slope and northness from the EU-DEM/Copernicus DEM, imperviousness and tree-cover density HRL 2018) plus ordinary kriging of the residuals. Leave-one-out validation compares it with the trend alone and with plain kriging.":
+      "Il valore è calcolato in 49–121 punti campione intorno al luogo (con la GPR dove disponibile, altrimenti media dei modelli) e poi interpolato a 10 m: trend lineare su covariate Copernicus (quota, pendenza ed esposizione nord dal DEM EU-DEM/Copernicus, impermeabilizzazione e densità della copertura arborea HRL 2018) più kriging ordinario dei residui. La validazione leave-one-out lo confronta con il solo trend e con il kriging semplice.",
     // affidabilità GPR
     "Historical back-test": "Back-test storico", "Latest 14 days": "Ultimi 14 giorni",
     "Does the GPR really beat the individual providers? It is checked in two independent ways, always on data": "La GPR batte davvero i singoli fornitori? Lo si controlla in due modi indipendenti, sempre su dati",
@@ -103,7 +122,10 @@ const I18N = (() => {
   const R = [
     [/^\+(\d+) days$/, "+$1 giorni"], [/^\+(\d+)d$/, "+$1g"],
     [/^Verified up to (.+) · updated (.+) UTC$/, "Verificato fino al $1 · aggiornato $2 UTC"],
-    [/^Done · (\d+) × (\d+) cells of 10 m · (\d+) sample points$/, "Fatto · $1 × $2 celle da 10 m · $3 punti campione"],
+    [/^Done · (\d+) × (\d+) cells of (\d+) m · (\d+) sample points$/, "Fatto · $1 × $2 celle da $3 m · $4 punti campione"],
+    [/^4\/4 · predicting on the (\d+) m grid…(.*)$/, "4/4 · previsione sulla griglia a $1 m…$2"],
+    [/^6S every (\d+) nm \((\d+) wavelengths\)$/, "6S ogni $1 nm ($2 lunghezze d'onda)"],
+    [/^(.+) at (\d+ nm|Sentinel-2 .+ nm) · (.+)$/, "$1 a $2 · $3"],
     [/^2\/4 · downloading the forecast at (\d+) sample points…$/, "2/4 · scarico la previsione in $1 punti campione…"],
     [/^(\d+) × (\d+) km \((.+)\)$/, "$1 × $2 km ($3)"],
     [/^Path radiance S2 (.+) nm$/, "Radianza di percorso S2 $1 nm"], [/^Total transmittance S2 (.+) nm$/, "Trasmittanza totale S2 $1 nm"],

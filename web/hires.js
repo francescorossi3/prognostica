@@ -6,8 +6,8 @@
 "use strict";
 
 const HR = (() => {
-  const CELL = 10;                                  // m
-  const NS = 7;                                     // punti campione per lato (7 x 7 = 49)
+  let CELL = 10;                                    // m (scelto dall'utente: 10, 20, 30)
+  let NS = 7;                                       // punti campione per lato (7 x 7 = 49 ... 11 x 11 = 121)
   const EEA = "https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLandPublic/";
 
   // ---------------------------------------------------------------- TIFF non compresso (EEA ImageServer)
@@ -64,12 +64,21 @@ const HR = (() => {
       })());
     }
     await Promise.all(jobs);
-    const at = (fx, fy) => { const tx = Math.floor(fx), ty = Math.floor(fy), t = tiles.get(`${tx}/${ty}`);
-      if (!t) return NaN; return t[Math.min(255, Math.floor((fy - ty) * 256)) * 256 + Math.min(255, Math.floor((fx - tx) * 256))]; };
-    return (lat, lon) => {                           // bilineare
-      const [fx, fy] = tile(lat, lon), u = fx * 256 - 0.5, v = fy * 256 - 0.5, i = Math.floor(u), j = Math.floor(v), a = u - i, b = v - j;
-      const e = (ii, jj) => at(ii / 256 + 1e-9, jj / 256 + 1e-9);
-      return (1 - a) * (1 - b) * e(i, j) + a * (1 - b) * e(i + 1, j) + (1 - a) * b * e(i, j + 1) + a * b * e(i + 1, j + 1);
+    // mosaico unico dei tasselli (accesso veloce, senza chiavi testuali)
+    const tx0 = Math.floor(x0), ty0 = Math.floor(y0), ntx = Math.floor(x1) - tx0 + 1, nty = Math.floor(y1) - ty0 + 1, MW = ntx * 256, MH = nty * 256;
+    const M = new Float32Array(MW * MH).fill(NaN);
+    for (let tx = 0; tx < ntx; tx++) for (let ty = 0; ty < nty; ty++) {
+      const t = tiles.get(`${tx0 + tx}/${ty0 + ty}`); if (!t) continue;
+      for (let r = 0; r < 256; r++) M.set(t.subarray(r * 256, r * 256 + 256), (ty * 256 + r) * MW + tx * 256);
+    }
+    const n2 = 2 ** z * 256, D2R = Math.PI / 180;
+    return (lat, lon) => {                           // bilineare sul mosaico
+      const la = lat * D2R, u = (lon + 180) / 360 * n2 - tx0 * 256 - 0.5,
+        v = (1 - Math.log(Math.tan(la) + 1 / Math.cos(la)) / Math.PI) / 2 * n2 - ty0 * 256 - 0.5;
+      let i = Math.floor(u), j = Math.floor(v); const a = u - i, b = v - j;
+      i = Math.max(0, Math.min(MW - 2, i)); j = Math.max(0, Math.min(MH - 2, j));
+      const o = j * MW + i;
+      return (1 - a) * (1 - b) * M[o] + a * (1 - b) * M[o + 1] + (1 - a) * b * M[o + MW] + a * b * M[o + MW + 1];
     };
   }
 
@@ -156,7 +165,11 @@ const HR = (() => {
     const row = f => [1, ...f.map((v, j) => (use[j] ? (v - mu[j]) / sd[j] : 0)).filter((_, j) => use[j])];
     const X = F.map(row), beta = ols(X, y), tr = X.map(r => dot(r, beta)), res = y.map((v, i) => v - tr[i]);
     const vg = variogram(xy, res);
-    return { mu, sd, use, beta, row, res, vg, trend: f => dot(row(f), beta) };
+    // trend veloce: b0 + somma di c_j * f_j sulle sole covariate usate
+    const cj = new Float64Array(p); let c0 = beta[0], kk = 1;
+    for (let j = 0; j < p; j++) if (use[j]) { cj[j] = beta[kk] / sd[j]; c0 -= cj[j] * mu[j]; kk++; }
+    const trend = f => { let t = c0; for (let j = 0; j < p; j++) t += cj[j] * f[j]; return t; };
+    return { mu, sd, use, beta, row, res, vg, trend };
   }
 
   function metrics(obs, pred) {
@@ -208,12 +221,13 @@ const HR = (() => {
       return { values: vals, unit: VAR_UNIT[v], label: `${m ? "GPR" : "Model mean"} · ${VAR_LABEL[v]} · ${AGG_LABEL[agg]} ${key.replace("T", " ")}` };
     }
     // grandezze atmosferiche all'ora scelta
-    const d = await ATM.fetchMulti(samples, 1, 3, false), L = await ATM.lut(), t = opt.time;
-    const [name, band] = kind.split(":");
+    const [name, qty] = kind.split(":"), band = opt.band;
+    const L = await ATM.lut(band && band.startsWith("WL_") ? "hyper" : "s2");
+    const d = await ATM.fetchMulti(samples, 1, 3, false), t = opt.time;
     const vals = d.map((x, i) => {
       const k = x.times.indexOf(t);
       if (k < 0) return NaN;
-      const o = ATM.derive(x, k, samples[i].lat, samples[i].lon, Z(samples[i].lat, samples[i].lon), L);
+      const o = ATM.derive(x, k, samples[i].lat, samples[i].lon, Z(samples[i].lat, samples[i].lon), L, band && L?.bands[band] ? [band] : []);
       if (name === "tcwv") return o.tcwv;
       if (name === "aod") return o.aod;
       if (name === "rho") return o.rho;
@@ -222,43 +236,44 @@ const HR = (() => {
       if (name === "tirtau") return o.tir.tau;
       if (name === "tirlu") return o.tir.lu;
       if (name === "tirld") return o.tir.ld;
-      if (!o.rt) return NaN;
+      if (name !== "spec" || !o.rt || !o.rt[band]) return NaN;
       const r = o.rt[band];
-      if (name === "lpath") return r.l_path;
-      if (name === "ttot") return r.t_down * r.t_up * r.t_gas;
-      if (name === "tdown") return r.t_down;
-      if (name === "tup") return r.t_up;
-      if (name === "edir") return r.e_dir;
-      if (name === "edif") return r.e_dif;
-      return NaN;
+      return qty === "t_tot" ? r.t_down * r.t_up * r.t_gas : r[qty];
     });
-    const lab = $("#h-target").selectedOptions[0].textContent;
+    const lab = $("#h-target").selectedOptions[0].textContent + (name === "spec" ? ` at ${$("#h-wl").selectedOptions[0].textContent}` : "");
     return { values: vals, unit: "", label: `${lab} · ${$("#h-period").selectedOptions[0].textContent}` };
   }
 
   // ---------------------------------------------------------------- interfaccia
   function targetOptions() {
-    const o = [["forecast", "Forecast variable shown above (GPR)"], ["tcwv", "Water vapour column [kg m⁻²]"], ["aod", "AOD 550 nm"],
+    return [["forecast", "Forecast variable shown in the Forecast tab (GPR)"], ["tcwv", "Water vapour column [kg m⁻²]"], ["aod", "AOD 550 nm"],
       ["t2m", "Air temperature 2 m [°C]"], ["rho", "Air density [kg m⁻³]"], ["ghi", "Global irradiance [W m⁻²]"],
-      ["tirtau", "TIR L8/9 B10 transmittance"], ["tirlu", "TIR L8/9 B10 upwelling radiance"], ["tirld", "TIR L8/9 B10 downwelling radiance"]];
-    for (const b of ["S2_02", "S2_04", "S2_8A", "S2_11", "S2_12"]) {
-      const n = ATM.S2NAME[b.slice(3)];
-      o.push([`lpath:${b}`, `Path radiance S2 ${n} nm`], [`ttot:${b}`, `Total transmittance S2 ${n} nm`],
-        [`edir:${b}`, `Direct irradiance S2 ${n} nm`], [`edif:${b}`, `Diffuse irradiance S2 ${n} nm`]);
-    }
-    return o;
+      ["tirtau", "TIR L8/9 B10 transmittance"], ["tirlu", "TIR L8/9 B10 upwelling radiance"], ["tirld", "TIR L8/9 B10 downwelling radiance"],
+      ["spec:t_tot", "Total transmittance (T↓·T↑·T gas)"], ["spec:t_down", "Downward scattering transmittance T↓"], ["spec:t_up", "Upward scattering transmittance T↑"],
+      ["spec:t_gas", "Gaseous transmittance"], ["spec:l_path", "Path radiance [W m⁻² sr⁻¹ µm⁻¹]"], ["spec:e_dir", "Direct irradiance [W m⁻² µm⁻¹]"],
+      ["spec:e_dif", "Diffuse irradiance [W m⁻² µm⁻¹]"], ["spec:s_alb", "Spherical albedo"]];
+  }
+  async function wavelengths() {
+    const H = await ATM.lut("hyper"), L = await ATM.lut("s2"), o = [];
+    if (H) Object.entries(H.bands).forEach(([b, v]) => o.push([b, `${Math.round(v.wl_um * 1000)} nm`]));
+    if (L) Object.keys(L.bands).forEach(b => o.push([b, `Sentinel-2 ${ATM.S2NAME[b.slice(3)]} nm`]));
+    opts($("#h-wl"), o, $("#h-wl").value || (H ? "WL_550" : "S2_04"));
   }
   function init() {
-    opts($("#h-target"), targetOptions(), "forecast");
-    opts($("#h-size"), [[2, "2 × 2 km (200 × 200 cells)"], [5, "5 × 5 km (500 × 500)"], [10, "10 × 10 km (1000 × 1000)"]], 5);
+    opts($("#h-target"), targetOptions(), "spec:t_tot");
+    opts($("#h-size"), [[2, "2 × 2 km"], [5, "5 × 5 km"], [10, "10 × 10 km"], [30, "30 × 30 km"]], 30);
+    opts($("#h-cell"), [[10, "10 m"], [20, "20 m"], [30, "30 m"]], 10);
     opts($("#h-layer"), [["est", "Estimate (trend + kriged residual)"], ["sd", "Kriging standard deviation"], ["trend", "Trend only"], ["imp", "Covariate: imperviousness"], ["elev", "Covariate: elevation"]], "est");
-    $("#h-target").onchange = periods;
+    const tg = () => { $("#h-wl-wrap").style.display = $("#h-target").value.startsWith("spec:") ? "" : "none"; periods(); };
+    $("#h-target").onchange = tg;
     $("#h-layer").onchange = () => HR.out && draw();
     $("#h-go").onclick = run;
     $("#h-csv").onclick = csv;
+    $("#h-tif").onclick = geotiff;
     S.hmap = L.map("hmap");
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(S.hmap);
-    S.hmap.setView([41.9, 12.5], 12);
+    S.hmap.setView([41.9, 12.5], 10);
+    tg(); wavelengths();
   }
   // periodi disponibili per il bersaglio scelto
   async function periods() {
@@ -277,20 +292,22 @@ const HR = (() => {
     const P = S.point; if (!P) return;
     track("map-10m-" + $("#h-target").value.split(":")[0]);
     const st = $("#h-status"), size = +$("#h-size").value * 1000, kind = $("#h-target").value;
+    CELL = +$("#h-cell").value;
+    NS = size <= 5000 ? 7 : size <= 10000 ? 9 : 11;
     const mlat = 111320, mlon = 111320 * Math.cos(P.lat * Math.PI / 180);
     const half = size / 2, pad = size * 0.1;
     const bb = { s: P.lat - (half + pad) / mlat, n: P.lat + (half + pad) / mlat, w: P.lon - (half + pad) / mlon, e: P.lon + (half + pad) / mlon };
     try {
       st.textContent = "1/4 · downloading Copernicus covariates (DEM, imperviousness, tree cover)…";
       const npx = Math.min(4000, Math.ceil((size + 2 * pad) / CELL));
-      const [Z, IMP, TCD] = await Promise.all([dem(bb), hrl("HRL_ImperviousnessDensity_2018", bb, npx, npx).catch(() => null),
+      const [Z, IMP, TCD] = await Promise.all([dem(bb, size <= 10000 ? 14 : 13), hrl("HRL_ImperviousnessDensity_2018", bb, npx, npx).catch(() => null),
         hrl("HRL_TreeCoverDensity_2018", bb, npx, npx).catch(() => null)]);
       // punti campione: griglia regolare 7 x 7 sul riquadro (bordi compresi)
       const samples = [];
       for (let i = 0; i < NS; i++) for (let j = 0; j < NS; j++)
         samples.push({ lat: bb.s + (bb.n - bb.s) * (i + 0.5) / NS, lon: bb.w + (bb.e - bb.w) * (j + 0.5) / NS });
       st.textContent = `2/4 · downloading the forecast at ${samples.length} sample points…`;
-      const opt = { agg: $("#p-agg").value, v: $("#p-var").value, period: $("#h-period").value, time: +$("#h-period").value };
+      const opt = { agg: $("#p-agg").value, v: $("#p-var").value, period: $("#h-period").value, time: +$("#h-period").value, band: $("#h-wl").value };
       const T = await targets(kind, samples, opt, Z);
       const good = T.values.map((v, i) => (Number.isFinite(v) ? i : -1)).filter(i => i >= 0);
       if (good.length < 12) throw new Error("too few valid sample values for this variable and period (VNIR-SWIR parameters need the sun above 10°: choose a daytime hour)");
@@ -300,34 +317,39 @@ const HR = (() => {
       st.textContent = "3/4 · fitting trend + variogram, leave-one-out validation…";
       await new Promise(r => setTimeout(r, 20));
       const M = fit(F, y, xy), cv = loocv(F, y, xy);
-      st.textContent = "4/4 · predicting on the 10 m grid…";
+      st.textContent = `4/4 · predicting on the ${CELL} m grid…`;
       await new Promise(r => setTimeout(r, 20));
       const N = Math.round(size / CELL), est = new Float32Array(N * N), trd = new Float32Array(N * N), sd = new Float32Array(N * N),
         imp = new Float32Array(N * N), elev = new Float32Array(N * N);
       const A = okSystem(xy, M.vg), n = xy.length, alpha = solve(A, [...M.res, 0]);
       const Ainv = invert(A), lat0 = P.lat + half / mlat, lon0 = P.lon - half / mlon;
-      const SD_STEP = 5;
+      const SD_STEP = Math.max(5, Math.round(50 / CELL)), qx = Float64Array.from(xy, q => q[0]), qy = Float64Array.from(xy, q => q[1]);
+      const k = new Float64Array(n + 1), sill = M.vg.nug + M.vg.sill;
       for (let r = 0; r < N; r++) {
         const lat = lat0 - (r + 0.5) * CELL / mlat;
         for (let c = 0; c < N; c++) {
-          const lon = lon0 + (c + 0.5) * CELL / mlon, f = covariates(Z, IMP, TCD, lat, lon, mlat, mlon), p = xyOf(lat, lon);
-          const k = xy.map(q => cov(M.vg, Math.hypot(q[0] - p[0], q[1] - p[1])));
+          const lon = lon0 + (c + 0.5) * CELL / mlon, f = covariates(Z, IMP, TCD, lat, lon, mlat, mlon);
+          const px = (lon - P.lon) * mlon, py = (lat - P.lat) * mlat;
+          let kr = alpha[n];
+          for (let j = 0; j < n; j++) { const h = Math.hypot(qx[j] - px, qy[j] - py); k[j] = h === 0 ? sill : M.vg.sill * Math.exp(-h / M.vg.a); kr += k[j] * alpha[j]; }
           const t = M.trend(f), i = r * N + c;
-          trd[i] = t; est[i] = t + dot(k, alpha.slice(0, n)) + alpha[n]; imp[i] = f[3]; elev[i] = f[0];
+          trd[i] = t; est[i] = t + kr; imp[i] = f[3]; elev[i] = f[0];
           if (r % SD_STEP === 0 && c % SD_STEP === 0) {
-            const kk = [...k, 1]; let q = 0;
-            for (let a = 0; a <= n; a++) { let s = 0; for (let b = 0; b <= n; b++) s += Ainv[a][b] * kk[b]; q += kk[a] * s; }
-            sd[i] = Math.sqrt(Math.max(0, M.vg.nug + M.vg.sill - q));
+            k[n] = 1; let q = 0;
+            for (let a2 = 0; a2 <= n; a2++) { let s2 = 0; const row = Ainv[a2]; for (let b2 = 0; b2 <= n; b2++) s2 += row[b2] * k[b2]; q += k[a2] * s2; }
+            sd[i] = Math.sqrt(Math.max(0, sill - q));
           } else sd[i] = sd[Math.floor(r / SD_STEP) * SD_STEP * N + Math.floor(c / SD_STEP) * SD_STEP];
         }
+        if (r % 100 === 99) { st.textContent = `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`; await new Promise(res => setTimeout(res, 0)); }
       }
-      HR.out = { N, est, trd, sd, imp, elev, lat0, lon0, mlat, mlon, half, T, M, cv, samples: good.map(i => samples[i]), y, P };
+      HR.out = { N, cell: CELL, est, trd, sd, imp, elev, lat0, lon0, mlat, mlon, half, T, M, cv, samples: good.map(i => samples[i]), y, P };
       draw(); report();
       st.textContent = `Done · ${N} × ${N} cells of ${CELL} m · ${good.length} sample points`;
+      $("#h-csv").disabled = N * N > 1500000;
     } catch (e) { st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
 
-  function draw() {
+  async function draw() {
     const o = HR.out, key = $("#h-layer").value, a = { est: o.est, sd: o.sd, trend: o.trd, imp: o.imp, elev: o.elev }[key];
     let lo = Infinity, hi = -Infinity;
     for (const v of a) if (Number.isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; }
@@ -340,7 +362,9 @@ const HR = (() => {
     g.putImageData(im, 0, 0);
     if (S.hlayer) S.hmap.removeLayer(S.hlayer);
     const bounds = [[o.P.lat - o.half / o.mlat, o.P.lon - o.half / o.mlon], [o.P.lat + o.half / o.mlat, o.P.lon + o.half / o.mlon]];
-    S.hlayer = L.imageOverlay(c.toDataURL(), bounds, { opacity: 0.85 }).addTo(S.hmap);
+    if (S.hurl) URL.revokeObjectURL(S.hurl);
+    S.hurl = URL.createObjectURL(await new Promise(res => c.toBlob(res)));
+    S.hlayer = L.imageOverlay(S.hurl, bounds, { opacity: 0.85 }).addTo(S.hmap);
     (S.hpts || []).forEach(m => S.hmap.removeLayer(m));
     S.hpts = o.samples.map((s, i) => L.circleMarker([s.lat, s.lon], { radius: 3, color: "#111", weight: 1, fillOpacity: 1 }).bindTooltip(`sample: ${fmt(o.y[i], 3)}`).addTo(S.hmap));
     S.hmap.fitBounds(bounds);
@@ -349,7 +373,7 @@ const HR = (() => {
     $("#h-legend").innerHTML = `<div>${$("#h-layer").selectedOptions[0].textContent}${key === "est" || key === "trend" || key === "sd" ? ` · ${o.T.label}` : ""}</div>
       <div class="bar" style="background:linear-gradient(90deg,${grad})"></div><div class="ticks"><span>${fmt(lo, 3)}</span><span>${fmt((lo + hi) / 2, 3)}</span><span>${fmt(hi, 3)}</span></div>`;
     S.hmap.off("click"); S.hmap.on("click", e => {
-      const r = Math.floor((o.lat0 - e.latlng.lat) * o.mlat / CELL), cc = Math.floor((e.latlng.lng - o.lon0) * o.mlon / CELL);
+      const r = Math.floor((o.lat0 - e.latlng.lat) * o.mlat / o.cell), cc = Math.floor((e.latlng.lng - o.lon0) * o.mlon / o.cell);
       if (r < 0 || cc < 0 || r >= o.N || cc >= o.N) return;
       const i = r * o.N + cc;
       L.popup().setLatLng(e.latlng).setContent(`<b>${fmt(o.est[i], 3)}</b> ± ${fmt(o.sd[i], 3)} (kriging SD)<br>trend ${fmt(o.trd[i], 3)} · elev ${fmt(o.elev[i], 0)} m · imperv. ${fmt(o.imp[i], 0)} %`).openOn(S.hmap);
@@ -370,16 +394,51 @@ const HR = (() => {
 
   function csv() {
     const o = HR.out; if (!o) return;
+    if (o.N * o.N > 1500000) return;
     track("download-csv-10m");
     const lines = ["lat,lon,estimate,kriging_sd,trend,elevation_m,imperviousness_pct"];
     for (let r = 0; r < o.N; r++) for (let c = 0; c < o.N; c++) {
       const i = r * o.N + c;
-      lines.push(`${(o.lat0 - (r + 0.5) * CELL / o.mlat).toFixed(6)},${(o.lon0 + (c + 0.5) * CELL / o.mlon).toFixed(6)},${o.est[i].toFixed(4)},${o.sd[i].toFixed(4)},${o.trd[i].toFixed(4)},${o.elev[i].toFixed(1)},${o.imp[i]}`);
+      lines.push(`${(o.lat0 - (r + 0.5) * o.cell / o.mlat).toFixed(6)},${(o.lon0 + (c + 0.5) * o.cell / o.mlon).toFixed(6)},${o.est[i].toFixed(4)},${o.sd[i].toFixed(4)},${o.trd[i].toFixed(4)},${o.elev[i].toFixed(1)},${o.imp[i]}`);
     }
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv" }));
     a.download = `rk10m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.csv`; a.click();
   }
 
-  return { init, periods, run, readTiff, variogram, fit, loocv, okPredict, metrics };
+  // GeoTIFF Float32 (EPSG:4326) dello strato mostrato: si apre in QGIS / Python (rasterio)
+  function geotiff() {
+    const o = HR.out; if (!o) return;
+    track("download-geotiff-10m");
+    const key = $("#h-layer").value, a = { est: o.est, sd: o.sd, trend: o.trd, imp: o.imp, elev: o.elev }[key];
+    const W = o.N, H = o.N, dx = o.cell / o.mlon, dy = o.cell / o.mlat;
+    const tags = [];                                     // [tag, type, count, values]
+    const geokeys = [1, 1, 0, 3, 1024, 0, 1, 2, 1025, 0, 1, 1, 2048, 0, 1, 4326];
+    const desc = `${o.T.label} | ${$("#h-layer").selectedOptions[0].textContent} | regression kriging, Prognostica`;
+    const descB = new TextEncoder().encode(desc + "\0");
+    tags.push([256, 4, 1, [W]], [257, 4, 1, [H]], [258, 3, 1, [32]], [259, 3, 1, [1]], [262, 3, 1, [1]], [270, 2, descB.length, descB],
+      [273, 4, 1, [0]], [277, 3, 1, [1]], [278, 4, 1, [H]], [279, 4, 1, [W * H * 4]], [284, 3, 1, [1]], [339, 3, 1, [3]],
+      [33550, 12, 3, [dx, dy, 0]], [33922, 12, 6, [0, 0, 0, o.lon0, o.lat0, 0]], [34735, 3, geokeys.length, geokeys], [42113, 2, 4, new TextEncoder().encode("nan\0")]);
+    const nT = tags.length, ifd = 8, extra0 = ifd + 2 + nT * 12 + 4;
+    const size = { 2: 1, 3: 2, 4: 4, 12: 8 };
+    let extra = extra0; const place = [];
+    tags.forEach(t => { const len = size[t[1]] * t[2]; if (len > 4) { place.push(extra); extra += len + (len % 2); } else place.push(-1); });
+    const dataOff = extra + (extra % 4 ? 4 - extra % 4 : 0);
+    tags.find(t => t[0] === 273)[3] = [dataOff];
+    const buf = new ArrayBuffer(dataOff + W * H * 4), dv = new DataView(buf);
+    dv.setUint16(0, 0x4949); dv.setUint16(2, 42, true); dv.setUint32(4, ifd, true); dv.setUint16(ifd, nT, true);
+    const put = (off, type, vals) => vals.forEach((v, j) => {
+      if (type === 2) dv.setUint8(off + j, v); else if (type === 3) dv.setUint16(off + 2 * j, v, true);
+      else if (type === 4) dv.setUint32(off + 4 * j, v, true); else dv.setFloat64(off + 8 * j, v, true); });
+    tags.forEach((t, j) => {
+      const e = ifd + 2 + j * 12; dv.setUint16(e, t[0], true); dv.setUint16(e + 2, t[1], true); dv.setUint32(e + 4, t[2], true);
+      if (place[j] < 0) put(e + 8, t[1], Array.from(t[3])); else { dv.setUint32(e + 8, place[j], true); put(place[j], t[1], Array.from(t[3])); }
+    });
+    new Float32Array(buf, dataOff, W * H).set(a);
+    const el = document.createElement("a");
+    el.href = URL.createObjectURL(new Blob([buf], { type: "image/tiff" }));
+    el.download = `rk_${key}_${o.cell}m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.tif`; el.click();
+  }
+
+  return { init, periods, run, geotiff, readTiff, variogram, fit, loocv, okPredict, metrics };
 })();

@@ -39,13 +39,14 @@ const ATM = (() => {
   }
 
   // ---------------------------------------------------------------- LUT 6S
-  let lutP = null;
-  function lut() {
-    if (!lutP) {
-      const urls = [S.meta.atmos_url ? S.meta.atmos_url.replace(/\/?$/, "/") + "data/rt/lut_s2.json" : null, DATA + "rt/lut_s2.json"].filter(Boolean);
-      lutP = (async () => { for (const u of urls) { try { const r = await fetch(u); if (r.ok) return await r.json(); } catch { /* prossimo */ } } return null; })();
+  const lutP = {};
+  function lut(set = "s2") {                      // set: "s2" (bande Sentinel-2) o "hyper" (400-2500 nm ogni 10 nm)
+    if (!lutP[set]) {
+      const f = `data/rt/lut_${set}.json`;
+      const urls = [S.meta.atmos_url ? S.meta.atmos_url.replace(/\/?$/, "/") + f : null, DATA + f.replace("data/", "")].filter(Boolean);
+      lutP[set] = (async () => { for (const u of urls) { try { const r = await fetch(u); if (r.ok) return await r.json(); } catch { /* prossimo */ } } return null; })();
     }
-    return lutP;
+    return lutP[set];
   }
   function bracket(ax, x) {
     x = Math.max(ax[0], Math.min(ax[ax.length - 1], x));
@@ -89,7 +90,7 @@ const ATM = (() => {
   }
 
   // tutte le grandezze derivate in un'ora (k) di un punto
-  function derive(d, k, lat, lon, elevM, L) {
+  function derive(d, k, lat, lon, elevM, L, only = null) {
     const h = d.h, g = v => (h[v] ? h[v][k] : null);
     const w = g("total_column_integrated_water_vapour") / 10, aod = d.aod[k], z = sza(d.times[k] - 1800000, lat, lon);
     const o = { time: d.times[k], tcwv: g("total_column_integrated_water_vapour"), w, aod, dust: d.dust[k], sza: z,
@@ -104,7 +105,8 @@ const ATM = (() => {
     o.rt = null;
     if (L && Number.isFinite(w) && z < 80) {
       const a = Number.isFinite(aod) ? aod : 0.1;
-      o.rt = Object.fromEntries(Object.keys(L.bands).map(b => [b, rtBand(L, b, w, a, z, Math.max(0, (elevM || 0) / 1000))]));
+      o.rt = Object.fromEntries((only || Object.keys(L.bands)).map(b => [b, rtBand(L, b, w, a, z, Math.max(0, (elevM || 0) / 1000))]));
+      o.rtIn = { w, aot: a, sza: z, alt: Math.max(0, (elevM || 0) / 1000) };
     }
     return o;
   }
@@ -112,11 +114,21 @@ const ATM = (() => {
   // ---------------------------------------------------------------- pannello nel punto
   async function render(P) {
     const box = $("#a-box");
+    $("#a-point").innerHTML = `<b>${P.label || "Point"}</b> · ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} · ${fmt(P.elev, 0)} m · local time ${P.tz}
+      <span class="hint">(change the place in the Forecast tab)</span>`;
     box.innerHTML = '<p class="hint">Downloading atmospheric data…</p>';
     let d, L;
-    try { [[d], L] = await Promise.all([fetchMulti([{ lat: P.lat, lon: P.lon }], 1, 3, true), lut()]); }
+    let H;
+    try { [[d], L, H] = await Promise.all([fetchMulti([{ lat: P.lat, lon: P.lon }], 1, 3, true), lut("s2"), lut("hyper")]); }
     catch (e) { box.innerHTML = `<p class="error">Atmosphere download error: ${e.message}</p>`; return; }
-    ATM.cur = { d, L, P };
+    box.innerHTML = "";
+    ATM.cur = { d, L, H, P };
+    const sets = [...(H ? [["hyper", `6S every ${Math.round((H.bands[Object.keys(H.bands)[1]].wl_um - H.bands[Object.keys(H.bands)[0]].wl_um) * 1000)} nm (${Object.keys(H.bands).length} wavelengths)`]] : []),
+      ["s2", "Sentinel-2 bands (13)"]];
+    opts($("#a-specset"), sets, $("#a-specset").value && sets.some(x => x[0] === $("#a-specset").value) ? $("#a-specset").value : sets[0][0]);
+    $("#a-specnote").textContent = H ? "" : "The hyperspectral table is being computed by Torricelli: Sentinel-2 bands for now.";
+    $("#a-specset").onchange = () => renderHour(+$("#a-hour").value);
+    $("#a-speccsv").onclick = specCSV;
     // ora proposta: la prossima con il sole più alto (circa il passaggio dei satelliti eliosincroni ~10:30 locali)
     const now = Date.now();
     const idx = d.times.map((t, k) => k).filter(k => d.times[k] >= now - 3600000);
@@ -138,9 +150,10 @@ const ATM = (() => {
   }
 
   function renderHour(k) {
-    const { d, L, P } = ATM.cur;
+    const { d, L, H, P } = ATM.cur;
     const o = derive(d, k, P.lat, P.lon, P.elev, L);
     ATM.hour = o;
+    renderSpectrum(d, k, P, $("#a-specset").value === "hyper" ? H : L);
     const f = (v, n = 2) => fmt(v, n);
     $("#a-surf").innerHTML = `<dl class="kv">
       <dt>Water vapour column</dt><dd>${f(o.tcwv, 1)} kg m⁻² · ${f(o.w, 2)} g cm⁻²</dd>
@@ -172,5 +185,44 @@ const ATM = (() => {
         <td>${f(r.t_gas, 4)}</td><td>${f(r.t_down * r.t_up * r.t_gas, 4)}</td><td>${f(r.l_path, 3)}</td><td>${f(r.e_dir, 1)}</td><td>${f(r.e_dif, 1)}</td><td>${f(r.s_alb, 4)}</td></tr>`).join("") + "</tbody>";
   }
 
-  return { LEVELS, S2NAME, fetchMulti, derive, render, lut, sza, tir, rho, rtBand };
+  // spettro di trasmittanze, radianza di percorso e irradianze all'ora scelta
+  function spectrum(d, k, P, LL) {
+    const o = derive(d, k, P.lat, P.lon, P.elev, LL);
+    if (!o.rt) return { o, rows: [] };
+    const rows = Object.entries(o.rt).map(([b, r]) => ({ band: b, wl: LL.bands[b].wl_um ? LL.bands[b].wl_um * 1000 : S2WL[b.replace("S2_", "")], ...r,
+      t_tot: r.t_down * r.t_up * r.t_gas })).sort((a, b) => a.wl - b.wl);
+    return { o, rows };
+  }
+  function renderSpectrum(d, k, P, LL) {
+    ATM.spec = null;
+    if (!LL) return;
+    const { o, rows } = spectrum(d, k, P, LL);
+    ATM.spec = { o, rows, time: d.times[k], P };
+    if (!rows.length) { $("#a-specnote").textContent = "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum."; drawChart("a-spec-t", { type: "line", data: { datasets: [] } }); return; }
+    const xy = key => rows.map(r => ({ x: r.wl, y: r[key] }));
+    const line = (label, key, color, extra = {}) => ({ label, data: xy(key), borderColor: color, backgroundColor: color, pointRadius: rows.length < 20 ? 3 : 0, borderWidth: 1.6, showLine: true, ...extra });
+    const xs = { type: "linear", min: 400, max: 2500, title: { display: true, text: "Wavelength [nm]" } };
+    drawChart("a-spec-t", { type: "scatter", data: { datasets: [line("T↓ scattering", "t_down", "#1f6feb"), line("T↑ scattering", "t_up", "#17becf"),
+      line("T gas", "t_gas", "#9467bd"), line("Total transmittance", "t_tot", "#111827", { borderWidth: 2.4 })] },
+      options: { animation: false, plugins: { legend: { position: "bottom" } }, scales: { x: xs, y: { min: 0, max: 1, title: { display: true, text: "Transmittance" } } } } });
+    drawChart("a-spec-l", { type: "scatter", data: { datasets: [line("Path radiance [W m⁻² sr⁻¹ µm⁻¹]", "l_path", "#c4661f", { yAxisID: "y" }),
+      line("E direct [W m⁻² µm⁻¹]", "e_dir", "#d62728", { yAxisID: "y1" }), line("E diffuse [W m⁻² µm⁻¹]", "e_dif", "#2ca02c", { yAxisID: "y1" })] },
+      options: { animation: false, plugins: { legend: { position: "bottom" } }, scales: { x: xs, y: { title: { display: true, text: "Path radiance" }, min: 0 },
+        y1: { position: "right", min: 0, grid: { drawOnChartArea: false }, title: { display: true, text: "Irradiance" } } } } });
+  }
+  function specCSV() {
+    const s = ATM.spec; if (!s || !s.rows.length) return;
+    if (typeof track === "function") track("download-spectrum");
+    const lp = localParts(s.time, s.P.tz), i = s.o.rtIn;
+    const head = [`# Prognostica / Torricelli - 6S spectrum at ${s.P.lat.toFixed(4)}, ${s.P.lon.toFixed(4)} (${fmt(s.P.elev, 0)} m), ${lp.date} ${String(lp.hour).padStart(2, "0")}:00 ${s.P.tz}`,
+      `# inputs: water vapour ${i.w.toFixed(3)} g cm-2, AOD550 ${i.aot.toFixed(3)}, solar zenith ${i.sza.toFixed(2)} deg, altitude ${i.alt.toFixed(3)} km; nadir view, continental aerosol, ozone 0.30 cm-atm`,
+      "band,wavelength_nm,t_down_scat,t_up_scat,t_gas,t_total,path_radiance_W_m2_sr_um,e_direct_W_m2_um,e_diffuse_W_m2_um,spherical_albedo"];
+    const lines = s.rows.map(r => [r.band, r.wl, r.t_down, r.t_up, r.t_gas, r.t_tot, r.l_path, r.e_dir, r.e_dif, r.s_alb].map(v => (typeof v === "number" ? +v.toPrecision(6) : v)).join(","));
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([[...head, ...lines].join("\n")], { type: "text/csv" }));
+    a.download = `spectrum_${s.P.lat.toFixed(3)}_${s.P.lon.toFixed(3)}_${lp.date}_${String(lp.hour).padStart(2, "0")}h.csv`; a.click();
+  }
+  const S2WL = { "01": 443, "02": 490, "03": 560, "04": 665, "05": 705, "06": 740, "07": 783, "08": 842, "8A": 865, "09": 945, "10": 1375, "11": 1610, "12": 2190 };
+
+  return { LEVELS, S2NAME, S2WL, fetchMulti, derive, render, lut, sza, tir, rho, rtBand };
 })();
