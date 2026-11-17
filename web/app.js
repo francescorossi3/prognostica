@@ -36,6 +36,7 @@ function drawChart(id, cfg) {
     Object.values(cfg.options?.scales || {}).forEach(a => { if (a.title?.text) a.title.text = I18N.t(a.title.text); });
   }
   charts[id] = new Chart(document.getElementById(id), cfg);
+  return charts[id];
 }
 
 // statistiche d'uso anonime (GoatCounter, senza cookie) -> repository privato Census
@@ -67,7 +68,7 @@ function initStats() {
   $("#region").onchange = () => {
     S.region = $("#region").value; refreshAll();
     const cur = document.querySelector("#tabs button.active")?.dataset.tab;
-    if (!isVerified() && ["rank", "events", "valid"].includes(cur)) showTab("maps");   // nessuna verifica: si va alle mappe
+    if (!isVerified() && ["rank", "events"].includes(cur)) showTab("maps");   // nessuna verifica: si va alle mappe
   };
   S.italy = await fetch(DATA + "italy.geojson").then(r => r.json()).catch(() => null);
   $("#updated").textContent = S.meta.last_day
@@ -76,7 +77,7 @@ function initStats() {
   const h0 = location.hash.slice(1);              // scheda richiesta nel link (prima che il punto riscriva l'indirizzo)
   if (h0) showTab(h0.split("?")[0]);
   initStats();
-  initRank(); initEvents(); initMaps(); initPoint(); initValid(); initData();
+  initRank(); initEvents(); initMaps(); initPoint(); initData();
   refreshAll();
   if (h0) showTab(h0.split("?")[0]);
 })();
@@ -92,6 +93,7 @@ function refreshAll() {
 }
 
 function showTab(t) {
+  if (t === "valid") t = "rank";                   // vecchi link: Model accuracy e GPR reliability ora sono una scheda
   track("tab-" + t);
   document.querySelectorAll("#tabs button").forEach(b => {
     b.classList.toggle("active", b.dataset.tab === t);
@@ -101,7 +103,7 @@ function showTab(t) {
   const q = location.hash.split("?")[1];
   history.replaceState(null, "", "#" + t + (q && ["point", "atm", "hr"].includes(t) ? "?" + q : ""));
   if (t === "maps" && S.map) setTimeout(() => S.map.invalidateSize(), 50);
-  if (t === "point" && S.pmap) setTimeout(() => S.pmap.invalidateSize(), 50);
+  if (t === "point") Object.values(charts).forEach(c => c.resize());
   if (t === "hr" && S.hmap) setTimeout(() => S.hmap.invalidateSize(), 50);
   if (t === "atm" || t === "hr") Object.values(charts).forEach(c => c.resize());
 }
@@ -129,7 +131,7 @@ function initRank() {
   const upd = () => {
     opts($("#r-var"), varsFor($("#r-agg").value).map(v => [v, VAR_LABEL[v]]), $("#r-var").value || "t2m");
     opts($("#r-metric"), metricsFor($("#r-var").value, $("#r-agg").value), $("#r-metric").value || "rmse");
-    renderRank();
+    renderRank(); renderValid();
   };
   ["#r-agg", "#r-var"].forEach(s => $(s).onchange = upd);
   ["#r-win", "#r-metric", "#r-trend-lead"].forEach(s => $(s).onchange = renderRank);
@@ -411,15 +413,9 @@ function mapPopup(ll) {
 
 // ================================================================== PUNTO
 function initPoint() {
-  S.pmap = L.map("pmap", { worldCopyJump: true }).setView([30, 10], 2);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 14, attribution: "© OpenStreetMap" }).addTo(S.pmap);
-  S.pmarker = L.marker([41.9028, 12.4964]).addTo(S.pmap);
-  $("#p-more-map").addEventListener("toggle", () => S.pmap.invalidateSize());
-  S.pmap.on("click", e => { const ll = e.latlng.wrap(); setPoint(ll.lat, ll.lng); runPoint(); });
   opts($("#p-agg"), S.meta.aggs.map(a => [a, AGG_LABEL[a]]), "1h");
   const upd = () => { opts($("#p-var"), varsFor($("#p-agg").value).map(v => [v, VAR_LABEL[v]]), $("#p-var").value || "t2m"); renderPoint(); };
   $("#p-agg").onchange = upd; $("#p-var").onchange = renderPoint;
-  $("#p-go").onclick = () => { setPoint(+$("#p-lat").value, +$("#p-lon").value); runPoint(); };
   opts($("#p-past"), [[0, "none"], [3, "3 days"], [7, "7 days"], [14, "14 days"], [30, "30 days"]], 7);
   S.pastDays = 7;
   $("#p-past").onchange = () => { S.pastDays = +$("#p-past").value; if (S.point) runPoint(); };
@@ -439,8 +435,8 @@ function initPoint() {
     if (!m) return null; const a = +m[1].replace(",", "."), b = +m[2].replace(",", ".");
     return Math.abs(a) <= 90 && Math.abs(b) <= 180 ? { lat: a, lon: b } : null; };
   const photon = async q => {
-    const c = S.pmap.getCenter();
-    const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&lat=${c.lat.toFixed(3)}&lon=${c.lng.toFixed(3)}`);
+    const c = S.pending || { lat: 42, lon: 12.5 };      // risultati vicini all'ultimo luogo scelto
+    const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&lat=${c.lat.toFixed(3)}&lon=${c.lon.toFixed(3)}`);
     const js = await r.json();
     return js.features.map(f => { const p = f.properties, [lon, lat] = f.geometry.coordinates;
       const street = [p.street, p.housenumber].filter(Boolean).join(" ");
@@ -494,8 +490,7 @@ function initPoint() {
 }
 function setPoint(lat, lon, label = null) {
   S.pointLabel = label;
-  $("#p-lat").value = lat.toFixed(4); $("#p-lon").value = lon.toFixed(4);
-  S.pmarker.setLatLng([lat, lon]); S.pmap.setView([lat, lon], Math.max(S.pmap.getZoom(), 7));
+  S.pending = { lat, lon };
 }
 
 // componenti di data/ora locali (fuso tz) per un istante UTC
@@ -561,7 +556,7 @@ function aggregateSeries(times, t2m, prcp, agg, tz) {
 }
 
 async function runPoint() {
-  const lat = +$("#p-lat").value, lon = +$("#p-lon").value;
+  const { lat, lon } = S.pending || {};
   if (!isFinite(lat) || !isFinite(lon)) return;
   const curTab = document.querySelector("#tabs button.active")?.dataset.tab || "point";
   history.replaceState(null, "", `#${["point", "atm", "hr"].includes(curTab) ? curTab : "point"}?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`);
@@ -697,11 +692,24 @@ async function renderPoint() {
     const { top, bottom } = c.chartArea, g = c.ctx;
     g.save(); g.strokeStyle = "#6b7280"; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(x, top); g.lineTo(x, bottom); g.stroke();
     g.fillStyle = "#6b7280"; g.font = "11px system-ui"; g.fillText("past ◂ ▸ forecast", x + 4, top + 12); g.restore(); } };
-  drawChart("p-chart", { type: "line", data: { labels, datasets: ds }, plugins: [nowLine],
-    options: { animation: false, interaction: { mode: "index", intersect: false },
-      plugins: { legend: { position: "bottom", labels: { filter: i => !i.text.startsWith("_"), boxWidth: 10, font: { size: 11 } } } },
+  // grafico largo (larghezza per periodo) con barra di scorrimento, asse y fisso e legenda HTML sopra
+  const box = $("#p-scroll"), width = Math.max(box.clientWidth, rows.length * { "1h": 12, "6h": 36, "24h": 70 }[agg]);
+  $("#p-inner").style.width = width + "px";
+  const yAxis = { id: "yaxis", afterRender(c) {          // copia l'asse y su una tela fissa a sinistra
+    const cv = $("#p-yaxis"), r = devicePixelRatio, w = c.chartArea.left;
+    cv.width = w * r; cv.height = c.height * r; cv.style.width = w + "px"; cv.style.height = c.height + "px";
+    cv.getContext("2d").drawImage(c.canvas, 0, 0, w * r, c.height * r, 0, 0, w * r, c.height * r); } };
+  const ch = drawChart("p-chart", { type: "line", data: { labels, datasets: ds }, plugins: [nowLine, yAxis],
+    options: { animation: false, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+      plugins: { legend: { display: false } },
       scales: { y: { title: { display: true, text: `${VAR_LABEL[v]} [${u}]` }, ...(v === "prcp" ? { min: 0 } : {}) },
-        x: { ticks: { maxTicksLimit: 16 } } } } });
+        x: { ticks: { maxTicksLimit: Math.round(width / 90), maxRotation: 0 } } } } });
+  $("#p-legend").innerHTML = ch.data.datasets.map((d, k) => d.label.startsWith("_") ? ""
+    : `<button data-k="${k}"><i style="background:${d.borderColor || d.backgroundColor}"></i>${d.label}</button>`).join("");
+  $("#p-legend").querySelectorAll("button").forEach(b => b.onclick = () => {
+    const k = +b.dataset.k; ch.setDatasetVisibility(k, !ch.isDatasetVisible(k)); b.classList.toggle("off"); ch.update(); });
+  // si parte con "adesso" a un quarto della larghezza visibile
+  if (nowIdx > 0) box.scrollLeft = ch.scales.x.getPixelForValue(nowIdx) - box.clientWidth / 4;
   let html = `<thead><tr><th>Period</th><th>Lead</th>${P.station ? "<th>Observed</th>" : ""}<th>◆ GPR</th><th>±1σ</th><th>95%</th>${v === "prcp" ? "<th>P(≥ threshold)</th>" : ""}
     <th>★ Best</th><th>${pver ? "⚖ Weighted" : "Model mean"}</th>${provIds.map(id => `<th>${pname(id)}</th>`).join("")}</tr></thead><tbody>`;
   rows.forEach(r => {
@@ -722,15 +730,9 @@ function coverageClass(x, nom) {
   if (d < 0.07) return "ok";
   return d < 0.15 ? "meh" : "bad";
 }
-function initValid() {
-  opts($("#v-agg"), S.meta.aggs.map(a => [a, AGG_LABEL[a]]), "24h");
-  const upd = () => { opts($("#v-var"), varsFor($("#v-agg").value).map(v => [v, VAR_LABEL[v]]), $("#v-var").value || "t2m"); renderValid(); };
-  $("#v-agg").onchange = upd; $("#v-var").onchange = renderValid;
-  upd();
-}
 function renderValid() {
   if (!isVerified()) { $("#v-table").innerHTML = `<tr><td>${NOVER}</td></tr>`; $("#b-table").innerHTML = ""; $("#b-hint").textContent = ""; return; }
-  const v = $("#v-var").value, agg = $("#v-agg").value, u = VAR_UNIT[v];
+  const v = $("#r-var").value, agg = $("#r-agg").value, u = VAR_UNIT[v];
   renderBacktest(v, agg);
   const rows = S.gpval.filter(r => r.var === v && r.agg === agg && inR(r)).sort((a, b) => a.lead_day - b.lead_day);
   const hs = (p, l) => S.hold.find(r => r.provider === p && r.var === v && r.agg === agg && r.lead_day === l && inR(r));

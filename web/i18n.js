@@ -8,16 +8,41 @@
 
 const I18N = (() => {
   const D = {
+    // schede raggruppate, grafico scorrevole, Atmosphere RK (validazione e avanzamento)
+    "Accuracy": "Accuratezza", "Atmosphere RK": "Atmosfera RK", "How to read the GPR tables": "Come leggere le tabelle GPR",
+    "Scroll the chart sideways with the bar, the mouse wheel (Shift + wheel) or a swipe.": "Scorri il grafico di lato con la barra, la rotella del mouse (Maiusc + rotella) o con un dito.",
+    "Atmospheric parameters (or the forecast) at a 10 m resolution by regression kriging (RK) around the place.": "Parametri atmosferici (o la previsione) a 10 m di risoluzione con regression kriging (RK) intorno al luogo.",
+    "How the map is made and validated": "Come si costruisce e si valida la mappa",
+    "Sample points.": "Punti campione.",
+    "A regular grid of 49–121 points covers the area (7 × 7 up to 5 km, 9 × 9 up to 10 km, 11 × 11 above). At each point the value is computed from the Open-Meteo atmosphere (ECMWF IFS, CAMS aerosols) with the 6S tables (or, for the forecast, with the GPR). These are the “known” values: click a validation point to see it.":
+      "Una griglia regolare di 49–121 punti copre l'area (7 × 7 fino a 5 km, 9 × 9 fino a 10 km, 11 × 11 oltre). In ogni punto il valore si calcola dall'atmosfera di Open-Meteo (ECMWF IFS, aerosol CAMS) con le tabelle 6S (o, per la previsione, con il GPR). Questi sono i valori “noti”: clicca un punto di validazione per vederlo.",
+    "Trend.": "Trend.",
+    "A linear regression of these values on Copernicus covariates at 10 m: elevation, slope and northness (Copernicus DEM / EU-DEM), imperviousness and tree-cover density (EEA High Resolution Layers 2018). Covariates that are constant over the area are left out.":
+      "Una regressione lineare di questi valori su covariate Copernicus a 10 m: quota, pendenza ed esposizione a nord (Copernicus DEM / EU-DEM), impermeabilizzazione e densità della copertura arborea (EEA High Resolution Layers 2018). Le covariate costanti sull'area vengono escluse.",
+    "Kriging of the residuals.": "Kriging dei residui.",
+    "What the trend does not explain is interpolated with ordinary kriging (exponential variogram fitted on the residuals). Map = trend + kriged residual; the kriging standard deviation is its uncertainty.":
+      "Ciò che il trend non spiega viene interpolato con il kriging ordinario (variogramma esponenziale stimato sui residui). Mappa = trend + residuo interpolato; la deviazione standard del kriging è la sua incertezza.",
+    "Validation (leave-one-out).": "Validazione (leave-one-out).",
+    "Each sample point is removed in turn, the whole model is fitted again on the others and the value at the removed point is predicted. The error table compares RK with the trend alone and with kriging alone. On the map, the size of each validation point is its error. This checks the interpolation between the points, not the accuracy of the atmospheric data themselves.":
+      "Ogni punto campione viene tolto a turno, l'intero modello viene stimato di nuovo sugli altri e si predice il valore nel punto tolto. La tabella degli errori confronta l'RK con il solo trend e con il solo kriging. Sulla mappa, la dimensione di ogni punto di validazione è il suo errore. Così si verifica l'interpolazione tra i punti, non l'accuratezza dei dati atmosferici stessi.",
+    "Imperviousness": "Impermeabilizzazione",
+    "is the share of the ground sealed by buildings, roads and other artificial surfaces (0–100 % per pixel, EEA HRL 2018). It marks urban areas, which are warmer (urban heat island) and can have more aerosols near the ground.":
+      "è la quota di suolo coperta da edifici, strade e altre superfici artificiali (0–100 % per pixel, EEA HRL 2018). Indica le aree urbane, più calde (isola di calore) e con possibili aerosol in più vicino al suolo.",
+    "Validation points": "Punti di validazione", "Size = leave-one-out error of RK": "Dimensione = errore leave-one-out dell'RK",
+    "RK too high": "RK troppo alto", "RK too low": "RK troppo basso", "Value at the point:": "Valore nel punto:",
+    "Leave-one-out prediction (point left out):": "Predizione leave-one-out (punto escluso):",
+    "GPR forecast from the Open-Meteo models at this point": "Previsione GPR dai modelli Open-Meteo in questo punto",
+    "Mean of the Open-Meteo models at this point": "Media dei modelli Open-Meteo in questo punto",
+    "Open-Meteo atmosphere at this point (ECMWF IFS, CAMS aerosols) with the 6S tables for radiative transfer": "Atmosfera Open-Meteo in questo punto (ECMWF IFS, aerosol CAMS) con le tabelle 6S per il trasferimento radiativo",
     // nuovo layout, pannelli Layers / Style (mapstyle.js)
     "The name comes from Cicero's": "Il nome viene dai", "Language": "Lingua",
-    "Choose the point on the map or by coordinates": "Scegli il punto sulla mappa o con le coordinate", "Table of values": "Tabella dei valori",
+    "Table of values": "Tabella dei valori",
     "Spectral radiative transfer (6S, 400–2500 nm)": "Trasferimento radiativo spettrale (6S, 400–2500 nm)",
     "6S, nadir view, continental aerosol.": "6S, vista al nadir, aerosol continentale.", "About this tab": "Informazioni su questa scheda",
     "Choose a place with the search above (or a map click, or a calibration site).": "Scegli un luogo con la ricerca in alto (o con un clic sulla mappa, o un sito di calibrazione).",
     "Choose a place with the search above: the map is built around it.": "Scegli un luogo con la ricerca in alto: la mappa viene costruita intorno a esso.",
-    "Validation (leave-one-out) and model": "Validazione (leave-one-out) e modello", "How the 10 m map is made": "Come si costruisce la mappa a 10 m",
+    "Validation (leave-one-out) and model": "Validazione (leave-one-out) e modello", 
     "Green = event forecast, red = missed.": "Verde = evento previsto, rosso = mancato.",
-    "How to read these tables": "Come leggere queste tabelle",
     "Add layer": "Aggiungi layer", "+ Add": "+ Aggiungi", "Add the chosen layer to the map": "Aggiungi alla mappa il layer scelto",
     "Layers": "Layer", "Style": "Stile", "OpenStreetMap": "OpenStreetMap", "Sample points": "Punti campione",
     "Circle size = MAE (hold-out)": "Dimensione del cerchio = MAE (holdout)",
@@ -39,10 +64,9 @@ const I18N = (() => {
     // previsione
     "Place": "Luogo", "Address, town, place name — or “41.90, 12.50”": "Indirizzo, comune, località — oppure “41.90, 12.50”",
     "Search": "Cerca", "◎ My location": "◎ La mia posizione", "Use my location": "Usa la mia posizione", "Calibration site": "Sito di calibrazione",
-    "— choose —": "— scegli —", "Get forecast": "Calcola previsione", "Variable": "Variabile", "Aggregation": "Aggregazione",
+    "— choose —": "— scegli —", "Variable": "Variabile", "Aggregation": "Aggregazione",
     "Past days": "Giorni passati", "none": "nessuno", "3 days": "3 giorni", "7 days": "7 giorni", "14 days": "14 giorni", "30 days": "30 giorni",
-    "Click on the map to choose the point.": "Clicca sulla mappa per scegliere il punto.",
-    "Search an address, pick a site, or enter coordinates and press “Get forecast”.": "Cerca un indirizzo, scegli un sito o inserisci le coordinate e premi “Calcola previsione”.",
+    "Search an address or a place, enter coordinates or pick a calibration site.": "Cerca un indirizzo o un luogo, inserisci le coordinate o scegli un sito di calibrazione.",
     "Downloading model forecasts…": "Scarico le previsioni dei modelli…", "Point": "Punto", "Region / time zone": "Regione / fuso orario",
     "Next period": "Prossimo periodo", "GPR estimate": "Stima GPR", "Best": "Migliore", "Weighted mean": "Media pesata", "Model mean": "Media dei modelli",
     "Period": "Periodo", "Lead": "Anticipo", "Observed": "Osservato", "past": "passato", "Model forecasts downloaded now from Open-Meteo; weights and GPR model from the latest verification.":
@@ -120,8 +144,7 @@ const I18N = (() => {
     "Total transmittance (T↓·T↑·T gas)": "Trasmittanza totale (T↓·T↑·T gas)", "Downward scattering transmittance T↓": "Trasmittanza di diffusione in discesa T↓",
     "Upward scattering transmittance T↑": "Trasmittanza di diffusione in salita T↑", "Gaseous transmittance": "Trasmittanza gassosa",
     "Direct irradiance [W m⁻² µm⁻¹]": "Irradianza diretta [W m⁻² µm⁻¹]", "Diffuse irradiance [W m⁻² µm⁻¹]": "Irradianza diffusa [W m⁻² µm⁻¹]",
-    "The value is computed at 49–121 sample points around the place (with the GPR where available, otherwise the model mean), then interpolated to 10 m: a linear trend on Copernicus covariates (elevation, slope and northness from the EU-DEM/Copernicus DEM, imperviousness and tree-cover density HRL 2018) plus ordinary kriging of the residuals. Leave-one-out validation compares it with the trend alone and with plain kriging.":
-      "Il valore è calcolato in 49–121 punti campione intorno al luogo (con la GPR dove disponibile, altrimenti media dei modelli) e poi interpolato a 10 m: trend lineare su covariate Copernicus (quota, pendenza ed esposizione nord dal DEM EU-DEM/Copernicus, impermeabilizzazione e densità della copertura arborea HRL 2018) più kriging ordinario dei residui. La validazione leave-one-out lo confronta con il solo trend e con il kriging semplice.",
+    
     // affidabilità GPR
     "Historical back-test": "Back-test storico", "Latest 14 days": "Ultimi 14 giorni",
     "Does the GPR really beat the individual providers? It is checked in two independent ways, always on data": "La GPR batte davvero i singoli fornitori? Lo si controlla in due modi indipendenti, sempre su dati",
