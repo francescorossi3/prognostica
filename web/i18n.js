@@ -116,7 +116,8 @@ const I18N = (() => {
     "Model forecasts:": "Previsioni dei modelli:", "(CC BY 4.0) · Observations:": "(CC BY 4.0) · Osservazioni:",
     "· Atmosphere: ECMWF IFS and CAMS via Open-Meteo, 6S · Covariates: Copernicus DEM / EU-DEM (Mapzen Terrarium tiles), EEA HRL 2018 (© European Union, Copernicus Land Monitoring Service) · Maps & geocoding: ©":
       "· Atmosfera: ECMWF IFS e CAMS tramite Open-Meteo, 6S · Covariate: Copernicus DEM / EU-DEM (tasselli Mapzen Terrarium), EEA HRL 2018 (© Unione Europea, Copernicus Land Monitoring Service) · Mappe e geocodifica: ©",
-    "contributors, Photon (komoot), Nominatim · © 2026 Francesco Rossi · code: all rights reserved · data:": "e collaboratori, Photon (komoot), Nominatim · © 2026 Francesco Rossi · codice: tutti i diritti riservati · dati:",
+    "contributors, Photon (komoot), Nominatim · anonymous usage statistics without cookies (GoatCounter) · © 2026 Francesco Rossi · code: all rights reserved · data:":
+      "e collaboratori, Photon (komoot), Nominatim · statistiche d'uso anonime senza cookie (GoatCounter) · © 2026 Francesco Rossi · codice: tutti i diritti riservati · dati:",
     "· part of a family with": "· fa parte di una famiglia con", "(agriculture) and": "(agricoltura) e", "(atmosphere)": "(atmosfera)",
   };
   const R = [

@@ -185,6 +185,6 @@ site:
   atmos_url: "https://francescorossi3.github.io/torricelli/"
   # statistiche d'uso anonime (senza cookie) per il repository privato Census: codice del sito GoatCounter
   # (es. "francescorossi3" per https://francescorossi3.goatcounter.com); vuoto = nessun conteggio
-  goatcounter: ""
+  goatcounter: "bradipored3"
 # Con un piano a pagamento Open-Meteo: mettere la chiave nel Secret OPENMETEO_API_KEY
 # -> si usano gli endpoint "customer-" senza il limite di ~10.000 chiamate/giorno.
