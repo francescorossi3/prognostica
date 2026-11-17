@@ -78,7 +78,7 @@ Le schede sono in tre gruppi: previsione e sua verifica (Forecast, Maps, Accurac
 |---|---|---|
 | Forecast | Previsione GPR con incertezza e singoli modelli per il luogo scelto nella barra di ricerca (grafico e tabella scorrevoli) | `app.js`, `gp.js` |
 | Atmosphere | Riepilogo dell'ora, grafici (profilo verticale, prossimi giorni, spettro 6S con spiegazioni al passaggio del mouse), scelta del modello di trasferimento radiativo, equazioni della radianza al sensore per VNIR–SWIR e LWIR | `atmos.js` |
-| Atmosphere RK | Mappa a 10 m con regression kriging, barra di avanzamento, punti di validazione leave-one-out sulla mappa, pannelli Layer e Stile, download GeoTIFF/CSV | `hires.js`, `mapstyle.js`, `gp.js` |
+| Atmosphere RK | Mappa a 10 m con regression kriging (trend sulla quota, barra di avanzamento, pannelli Layer e Stile, GeoTIFF/CSV) e validazione con le misure AERONET calcolata da Torricelli (mappa dei siti, pallino = errore) | `hires.js`, `mapstyle.js`, `gp.js` |
 | Maps | Mappe regionali: migliore, media pesata, GPR, incertezza, probabilità di pioggia; pannelli Layer e Stile | `app.js`, `mapstyle.js` |
 | Accuracy | Errore di ogni modello per anticipo e andamento mensile; holdout e backtest storico del GPR | `app.js` |
 | Events | Rilevamento di eventi di pioggia e temperatura (CSI) | `app.js` |
@@ -92,13 +92,14 @@ flowchart LR
   Co[Columella<br>agricoltura, pubblico]
   T[Torricelli<br>back end atmosfera, pubblico]
   C[Census<br>monitoraggio d'uso, privato]
-  T -->|LUT 6S e archivio orario<br>site.atmos_url| P
+  T -->|LUT 6S, archivio orario,<br>validazione AERONET<br>site.atmos_url| P
   T --> Co
   P -->|eventi GoatCounter<br>site.goatcounter| C
   Co --> C
 ```
 
 - **Torricelli** (`config.yaml → site.atmos_url`): `atmos.js` legge le tabelle 6S da Torricelli e, se non sono disponibili, usa la copia locale in `web/data/`.
+- **Validazione dell'aumento di risoluzione** (Torricelli `obs.yml`): misure AERONET (tutti i siti), ECMWF/CAMS ai siti, covariate Sentinel-2 L2A e terreno a 60/500/2000 m; random forest e gradient boosting (scikit-learn) correggono il modello, kriging dei residui; ogni gruppo di siti viene escluso a turno. Prognostica legge `data/validation/rk_validation.json`.
 - **Dati atmosferici di partenza**: ECMWF IFS 0,25° (~25 km: vapore acqueo, pressione, temperatura) e CAMS globale 0,4° (~45 km: AOD 550 nm) da Open-Meteo, valore della cella di griglia di ogni punto. La tabella 6S viene interpolata in vapore acqueo, AOD, angolo zenitale solare e quota del suolo.
 - **Census** (`config.yaml → site.goatcounter`): `app.js` invia eventi anonimi senza cookie a GoatCounter, con prefisso `prognostica/`. Census li legge.
 

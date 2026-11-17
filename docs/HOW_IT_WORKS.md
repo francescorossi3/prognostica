@@ -78,7 +78,7 @@ The tabs are in three groups: forecast and its verification (Forecast, Maps, Acc
 |---|---|---|
 | Forecast | GPR forecast with uncertainty and the single models for the place chosen in the search bar (scrollable chart and table) | `app.js`, `gp.js` |
 | Atmosphere | Summary of the hour, charts (vertical profile, next days, 6S spectrum with hover explanations), choice of the radiative transfer model, at-sensor radiance equations for VNIR–SWIR and LWIR | `atmos.js` |
-| Atmosphere RK | Regression kriging map at 10 m with progress bar, leave-one-out validation points on the map, Layers and Style panels, GeoTIFF/CSV download | `hires.js`, `mapstyle.js`, `gp.js` |
+| Atmosphere RK | Regression kriging map at 10 m (elevation trend, progress bar, Layers and Style panels, GeoTIFF/CSV) and validation against AERONET measurements computed by Torricelli (map of the sites, dot size = error) | `hires.js`, `mapstyle.js`, `gp.js` |
 | Maps | Regional maps: best model, weighted mean, GPR, uncertainty, rain probability; Layers and Style panels | `app.js`, `mapstyle.js` |
 | Accuracy | Error of each model by lead time and monthly trend; GPR hold-out and historical back-test | `app.js` |
 | Events | Detection of rain and temperature events (CSI) | `app.js` |
@@ -92,13 +92,14 @@ flowchart LR
   Co[Columella<br>agriculture, public]
   T[Torricelli<br>atmosphere back end, public]
   C[Census<br>usage monitoring, private]
-  T -->|6S LUT and hourly archive<br>site.atmos_url| P
+  T -->|6S LUT, hourly archive,<br>AERONET validation<br>site.atmos_url| P
   T --> Co
   P -->|GoatCounter events<br>site.goatcounter| C
   Co --> C
 ```
 
 - **Torricelli** (`config.yaml → site.atmos_url`): `atmos.js` reads the 6S look-up tables from Torricelli; if they are not available it uses the local copy in `web/data/`.
+- **Validation of the downscaling** (Torricelli `obs.yml`): AERONET measurements (all sites), ECMWF/CAMS at the sites, Sentinel-2 L2A and terrain covariates at 60/500/2000 m; random forest and gradient boosting (scikit-learn) correct the model, kriging of the residuals; each group of sites is left out in turn. Prognostica reads `data/validation/rk_validation.json`.
 - **Atmospheric inputs**: ECMWF IFS 0.25° (~25 km: water vapour, pressure, temperature) and CAMS global 0.4° (~45 km: AOD 550 nm) from Open-Meteo, value of the grid cell of each point. The 6S look-up table is interpolated in water vapour, AOD, solar zenith angle and ground elevation.
 - **Census** (`config.yaml → site.goatcounter`): `app.js` sends anonymous, cookie-free GoatCounter events (path prefix `prognostica/`). Census reads them.
 
