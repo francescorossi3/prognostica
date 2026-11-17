@@ -1,0 +1,10 @@
+site,name,lat,lon,elev,res
+GHNA,Gobabeb (Namibia) – desert,-23.60153,15.12589,506.0,0.0
+DEGE,Demmin (Germany) – cropland,53.868278,13.268556,21.0,0.0
+JAES,Järvselja (Estonia) – forest,58.281975,27.312959,37.0,0.0
+LOBE,Lonzée (Belgium) – cropland,50.551493,4.745911,167.0,0.0
+WWUK,Wytham Woods (UK) – forest ~,51.7746,-1.3384,151.0,0.0
+PEAN,Princess Elisabeth (Antarctica) – snow ~,-71.9401,23.347,1330.0,0.0
+IFAR,IFEVA Buenos Aires (Argentina) – grass ~,-34.589,-58.482,26.0,0.0
+AAOT,Acqua Alta (Italy) – water ~,45.3139,12.5083,0.0,0.0
+ZEBE,Zeebrugge (Belgium) – water ~,51.362,3.12,0.0,0.0
