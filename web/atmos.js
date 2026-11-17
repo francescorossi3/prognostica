@@ -1,5 +1,8 @@
 // Atmosfera nel punto: vapore acqueo, aerosol, radiazione, profili, densità dell'aria
 // e parametri di trasferimento radiativo per la correzione atmosferica (LUT 6S Sentinel-2 + TIR Landsat).
+// Input:  punto scelto (S.point di app.js), Open-Meteo Forecast (ECMWF IFS) e Air Quality (CAMS) API,
+//         LUT 6S data/rt/lut_s2.json e lut_hyper.json (da Torricelli, con copia locale di riserva).
+// Output: scheda Atmosphere (tabelle e grafici), download CSV dello spettro; oggetto globale ATM usato da hires.js.
 "use strict";
 
 const ATM = (() => {
@@ -104,9 +107,9 @@ const ATM = (() => {
     o.prof.forEach(r => { r.rho = rho(r.p, r.t, r.rh); });
     o.rt = null;
     if (L && Number.isFinite(w) && z < 80) {
-      const a = Number.isFinite(aod) ? aod : 0.1;
-      o.rt = Object.fromEntries((only || Object.keys(L.bands)).map(b => [b, rtBand(L, b, w, a, z, Math.max(0, (elevM || 0) / 1000))]));
-      o.rtIn = { w, aot: a, sza: z, alt: Math.max(0, (elevM || 0) / 1000) };
+      const a = Number.isFinite(aod) ? aod : 0.1, alt = Math.max(0, (elevM || 0) / 1000);
+      o.rt = Object.fromEntries((only || Object.keys(L.bands)).map(b => [b, rtBand(L, b, w, a, z, alt)]));
+      o.rtIn = { w, aot: a, sza: z, alt };
     }
     return o;
   }
@@ -117,8 +120,7 @@ const ATM = (() => {
     $("#a-point").innerHTML = `<b>${P.label || "Point"}</b> · ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} · ${fmt(P.elev, 0)} m · local time ${P.tz}
       <span class="hint">(change the place in the Forecast tab)</span>`;
     box.innerHTML = '<p class="hint">Downloading atmospheric data…</p>';
-    let d, L;
-    let H;
+    let d, L, H;
     try { [[d], L, H] = await Promise.all([fetchMulti([{ lat: P.lat, lon: P.lon }], 1, 3, true), lut("s2"), lut("hyper")]); }
     catch (e) { box.innerHTML = `<p class="error">Atmosphere download error: ${e.message}</p>`; return; }
     box.innerHTML = "";
@@ -135,7 +137,7 @@ const ATM = (() => {
     let best = idx[0];
     for (const k of idx.slice(0, 24)) if (sza(d.times[k] - 1800000, P.lat, P.lon) < sza(d.times[best] - 1800000, P.lat, P.lon)) best = k;
     const tz = P.tz;
-    opts($("#a-hour"), d.times.map((t, k) => [k, (() => { const l = localParts(t, tz); return `${l.date} ${String(l.hour).padStart(2, "0")}:00`; })()]), best);
+    opts($("#a-hour"), d.times.map((t, k) => { const l = localParts(t, tz); return [k, `${l.date} ${String(l.hour).padStart(2, "0")}:00`]; }), best);
     $("#a-hour").onchange = () => renderHour(+$("#a-hour").value);
     renderHour(best);
     // serie temporali di vapore acqueo e AOD
@@ -154,17 +156,16 @@ const ATM = (() => {
     const o = derive(d, k, P.lat, P.lon, P.elev, L);
     ATM.hour = o;
     renderSpectrum(d, k, P, $("#a-specset").value === "hyper" ? H : L);
-    const f = (v, n = 2) => fmt(v, n);
     $("#a-surf").innerHTML = `<dl class="kv">
-      <dt>Water vapour column</dt><dd>${f(o.tcwv, 1)} kg m⁻² · ${f(o.w, 2)} g cm⁻²</dd>
-      <dt>Aerosol optical depth 550 nm</dt><dd>${f(o.aod, 3)} <span class="hint">· dust ${f(o.dust, 0)} µg m⁻³</span></dd>
-      <dt>Solar zenith angle</dt><dd>${f(o.sza, 1)}°</dd>
-      <dt>Surface pressure</dt><dd>${f(o.ps, 1)} hPa</dd>
-      <dt>Air temperature 2 m · dew point</dt><dd>${f(o.t2m, 1)} °C · ${f(o.td, 1)} °C · RH ${f(o.rh, 0)} %</dd>
-      <dt>Air density at the surface</dt><dd>${f(o.rho, 4)} kg m⁻³</dd>
-      <dt>Cloud cover</dt><dd>${f(o.cloud, 0)} %</dd>
-      <dt>Irradiance (hour mean)</dt><dd>global ${f(o.ghi, 0)} · direct ${f(o.dir, 0)} · diffuse ${f(o.dif, 0)} · DNI ${f(o.dni, 0)} · TOA ${f(o.toa, 0)} W m⁻²</dd>
-      <dt>TIR Landsat 8/9 B10 (10.9 µm)</dt><dd>τ ${f(o.tir.tau, 3)} · L↑ ${f(o.tir.lu, 3)} · L↓ ${f(o.tir.ld, 3)} W m⁻² sr⁻¹ µm⁻¹</dd>
+      <dt>Water vapour column</dt><dd>${fmt(o.tcwv, 1)} kg m⁻² · ${fmt(o.w, 2)} g cm⁻²</dd>
+      <dt>Aerosol optical depth 550 nm</dt><dd>${fmt(o.aod, 3)} <span class="hint">· dust ${fmt(o.dust, 0)} µg m⁻³</span></dd>
+      <dt>Solar zenith angle</dt><dd>${fmt(o.sza, 1)}°</dd>
+      <dt>Surface pressure</dt><dd>${fmt(o.ps, 1)} hPa</dd>
+      <dt>Air temperature 2 m · dew point</dt><dd>${fmt(o.t2m, 1)} °C · ${fmt(o.td, 1)} °C · RH ${fmt(o.rh, 0)} %</dd>
+      <dt>Air density at the surface</dt><dd>${fmt(o.rho, 4)} kg m⁻³</dd>
+      <dt>Cloud cover</dt><dd>${fmt(o.cloud, 0)} %</dd>
+      <dt>Irradiance (hour mean)</dt><dd>global ${fmt(o.ghi, 0)} · direct ${fmt(o.dir, 0)} · diffuse ${fmt(o.dif, 0)} · DNI ${fmt(o.dni, 0)} · TOA ${fmt(o.toa, 0)} W m⁻²</dd>
+      <dt>TIR Landsat 8/9 B10 (10.9 µm)</dt><dd>τ ${fmt(o.tir.tau, 3)} · L↑ ${fmt(o.tir.lu, 3)} · L↓ ${fmt(o.tir.ld, 3)} W m⁻² sr⁻¹ µm⁻¹</dd>
     </dl>`;
     // profilo verticale
     const pr = o.prof;
@@ -175,14 +176,14 @@ const ATM = (() => {
       options: { animation: false, plugins: { legend: { position: "bottom" } },
         scales: { y: { title: { display: true, text: "Height [km]" } }, x: { title: { display: true, text: "value (scaled as in legend)" } } } } });
     $("#a-proft").innerHTML = `<thead><tr><th>Level [hPa]</th><th>Height [m]</th><th>T [°C]</th><th>RH [%]</th><th>Wind [km/h]</th><th>Density [kg m⁻³]</th></tr></thead><tbody>`
-      + pr.map(r => `<tr><td>${r.p}</td><td>${f(r.z, 0)}</td><td>${f(r.t, 1)}</td><td>${f(r.rh, 0)}</td><td>${f(r.ws, 0)}</td><td>${f(r.rho, 4)}</td></tr>`).join("") + "</tbody>";
+      + pr.map(r => `<tr><td>${r.p}</td><td>${fmt(r.z, 0)}</td><td>${fmt(r.t, 1)}</td><td>${fmt(r.rh, 0)}</td><td>${fmt(r.ws, 0)}</td><td>${fmt(r.rho, 4)}</td></tr>`).join("") + "</tbody>";
     // trasferimento radiativo per banda
     if (!L) { $("#a-rt").innerHTML = '<tbody><tr><td class="hint">Radiative-transfer table (6S) not available yet.</td></tr></tbody>'; return; }
     if (!o.rt) { $("#a-rt").innerHTML = '<tbody><tr><td class="hint">Sun below 10° elevation at this hour: VNIR-SWIR parameters not computed.</td></tr></tbody>'; return; }
     $("#a-rt").innerHTML = `<thead><tr><th>Sentinel-2 band [nm]</th><th>T↓ scattering</th><th>T↑ scattering</th><th>T gas</th><th>Total T (↓·↑·gas)</th>
       <th>Path radiance [W m⁻² sr⁻¹ µm⁻¹]</th><th>E direct [W m⁻² µm⁻¹]</th><th>E diffuse</th><th>Spherical albedo</th></tr></thead><tbody>`
-      + Object.entries(o.rt).map(([b, r]) => `<tr><td>${S2NAME[b.replace("S2_", "")] || b}</td><td>${f(r.t_down, 4)}</td><td>${f(r.t_up, 4)}</td>
-        <td>${f(r.t_gas, 4)}</td><td>${f(r.t_down * r.t_up * r.t_gas, 4)}</td><td>${f(r.l_path, 3)}</td><td>${f(r.e_dir, 1)}</td><td>${f(r.e_dif, 1)}</td><td>${f(r.s_alb, 4)}</td></tr>`).join("") + "</tbody>";
+      + Object.entries(o.rt).map(([b, r]) => `<tr><td>${S2NAME[b.replace("S2_", "")] || b}</td><td>${fmt(r.t_down, 4)}</td><td>${fmt(r.t_up, 4)}</td>
+        <td>${fmt(r.t_gas, 4)}</td><td>${fmt(r.t_down * r.t_up * r.t_gas, 4)}</td><td>${fmt(r.l_path, 3)}</td><td>${fmt(r.e_dir, 1)}</td><td>${fmt(r.e_dif, 1)}</td><td>${fmt(r.s_alb, 4)}</td></tr>`).join("") + "</tbody>";
   }
 
   // spettro di trasmittanze, radianza di percorso e irradianze all'ora scelta
