@@ -12,8 +12,13 @@ Uso:
     python scripts/01_fetch_forecasts.py                      # ultimi 3 giorni + snapshot
     python scripts/01_fetch_forecasts.py --start 2025-01-01 --end 2025-06-30 --mode openmeteo
 In Spyder: modificare i valori di default qui sotto ed eseguire.
+
+Input : data/stations.csv, config.yaml (providers, regioni), API Open-Meteo e snapshot.
+        Argomenti: --start, --end (AAAA-MM-GG), --mode all|openmeteo|snapshot.
+Output: data/forecasts/<provider>/<AAAA-MM>.parquet (aggiornati).
 """
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -73,10 +78,7 @@ if args.mode in ("all", "snapshot"):
     for p in providers("snapshot"):
         fn = SNAPSHOT_APIS[p["api"]]
         max_st, pause = SNAPSHOT_LIMITS.get(p["api"], (None, 1.0))
-        key = None
-        if p.get("api_key_env"):
-            import os
-            key = os.environ[p["api_key_env"]]
+        key = os.environ[p["api_key_env"]] if p.get("api_key_env") else None
         cov = stations[covers(p, stations["lat"], stations["lon"])].reset_index(drop=True)
         sub = cov if max_st is None or len(cov) <= max_st else cov.iloc[np.linspace(0, len(cov) - 1, max_st).astype(int)]
         parts = []

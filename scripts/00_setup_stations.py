@@ -5,7 +5,8 @@
 Per ogni regione di config.yaml sceglie n_stations stazioni Meteostat con dati
 orari recenti, ben distribuite sul territorio (preferendo le sinottiche
 ufficiali con codice WMO). Le stazioni italiane valgono anche per il Mondo.
-Risultato: data/stations.csv (apribile in Excel, modificabile a mano).
+Input : elenco stazioni Meteostat (o elenco di riserva in meteoita/demo.py), config.yaml.
+Output: data/stations.csv (apribile in Excel, modificabile a mano).
 """
 import sys
 from pathlib import Path

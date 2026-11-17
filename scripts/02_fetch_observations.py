@@ -5,6 +5,9 @@
 Di default riscarica gli ultimi 10 giorni (i dati arrivano con qualche
 giorno di ritardo e vengono completati nel tempo).
     python scripts/02_fetch_observations.py --start 2025-01-01 --end 2025-12-31
+
+Input : data/stations.csv, dump orari Meteostat. Argomenti: --start, --end (AAAA-MM-GG).
+Output: data/observations/<AAAA-MM>.parquet (aggiornati).
 """
 import argparse
 import sys

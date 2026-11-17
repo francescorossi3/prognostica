@@ -10,6 +10,14 @@ Passi:
     valutazione di BEST e WEIGHTED sugli ultimi giorni NON usati (holdout)
  5. migliore e pesi "operativi" (ultima finestra) -> sito e mappe
  6. export CSV / Excel / JSON
+
+Input : archivio parquet (data/forecasts, data/observations), data/stations.csv, config.yaml.
+        Argomenti: --recompute-days N, --from AAAA-MM-GG, --to AAAA-MM-GG.
+Output: data/stats/daily_stats.parquet; data/csv/rankings*.csv, best_and_weights.csv,
+        monthly_trend.csv, stations.csv, daily_pairs/<AAAA-MM>.csv, <regione>/<AAAA-MM>.csv
+        (siti archiviati), event_scores.csv, event_list.csv; build/holdout_*.parquet,
+        build/split.parquet; build/site/data/*.json (scores, trend, weights, stations,
+        events_*, meta_verify).
 """
 import argparse
 import json
@@ -19,13 +27,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import numpy as np
 import pandas as pd
 
-from meteoita.config import (AGGS, BUILD, CFG, CSV_DIR, DATA, SITE_DATA, provider_names)
-from meteoita.storage import read_observations
+from meteoita.config import BUILD, CFG, CSV_DIR, DATA, SITE_DATA, provider_names
+from meteoita.events import event_tables
 from meteoita.regions import REGIONS, archive_points, region_providers
-from meteoita.storage import read_forecasts
+from meteoita.storage import read_forecasts, read_observations
 from meteoita.verify import (COMBOS, best_and_weights, by_region, combo_forecasts, daily_stats, merge_stats,
                              pairs_for, rankings, score_table, station_table, stats_to_scores)
 
@@ -150,7 +157,6 @@ for rid, sg in (sites.groupby("region") if len(sites) else []):
     print(f"Archivio {rid}: {out_dir}")
 
 # %% 7) verifica per eventi significativi, su tutto lo storico delle coppie giornaliere
-from meteoita.events import event_tables
 files = sorted((CSV_DIR / "daily_pairs").glob("*.csv"))
 if files:
     allday = pd.concat([pd.read_csv(f, dtype={"station": str}) for f in files], ignore_index=True)

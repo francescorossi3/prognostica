@@ -5,7 +5,10 @@
 Stato in data/backfill_state.json: {"earliest": "AAAA-MM-GG"} = primo giorno
 gia' ricostruito. Ogni esecuzione propone i days_per_run giorni precedenti,
 fino a backfill.start. Con --done aggiorna lo stato dopo un backfill riuscito.
-Scrive start/end/todo in $GITHUB_OUTPUT (se esiste) e a schermo.
+Input : data/backfill_state.json (o data/stats/daily_stats.parquet), config.yaml (backfill).
+        Argomento: --done AAAA-MM-GG.
+Output: start/end/todo in $GITHUB_OUTPUT (se esiste) e a schermo;
+        con --done riscrive data/backfill_state.json.
 """
 import argparse
 import json

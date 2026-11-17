@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 06 - Assembla il sito statico in build/site (pubblicato su GitHub Pages).
+
+Input : web/ (pagine e script), config.yaml (site, providers), build/site/data/meta_verify.json,
+        osservazioni degli ultimi 35 giorni, data/stations.csv, data/csv/*.csv;
+        variabili d'ambiente GITHUB_REPOSITORY, GITHUB_REF_NAME.
+Output: build/site/ (copia di web/), build/site/data/meta.json, obs_recent.json,
+        data/csv/summary.xlsx.
 """
 import json
 import os
@@ -11,9 +17,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+import numpy as np
 import pandas as pd
 
 from meteoita.config import AGGS, BUILD, CFG, CSV_DIR, DATA, LEADS, SITE_DATA, gridded_ids
+from meteoita.storage import read_observations
 
 SITE = BUILD / "site"
 shutil.copytree(ROOT / "web", SITE, dirs_exist_ok=True)
@@ -40,8 +48,6 @@ if mv.exists():
 with open(SITE_DATA / "meta.json", "w") as f:
     json.dump(meta, f)
 # osservazioni recenti delle stazioni (ultimi 35 giorni) per i grafici "passato" del sito
-from meteoita.storage import read_observations
-import numpy as np
 end = pd.Timestamp.now(tz="UTC").floor("h")
 obs = read_observations(end - pd.Timedelta(days=35), end)
 st_csv = DATA / "stations.csv"

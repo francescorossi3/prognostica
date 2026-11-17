@@ -13,6 +13,9 @@ l'intera catena senza connessione e vedere il sito in locale:
 Scrive in una cartella separata (demo_data/) per non mescolare i dati veri:
 impostare la variabile d'ambiente METEOITA_DATA=demo_data prima di lanciare
 gli script (lo fa run_demo.sh).
+
+Input : meteoita/demo.py (mondo sintetico), config.yaml.
+Output: <METEOITA_DATA>/stations.csv, forecasts/ e observations/ (parquet).
 """
 import sys
 from pathlib import Path
@@ -26,7 +29,7 @@ import pandas as pd
 from meteoita import demo
 from meteoita.config import DATA, LEADS, providers
 from meteoita.providers import calendar_lead
-from meteoita.regions import covers
+from meteoita.regions import RID, archive_points, covers, inside, verified
 from meteoita.storage import write_forecasts, write_observations
 
 DAYS = 75
@@ -35,7 +38,6 @@ it = pd.DataFrame(demo.SEED_STATIONS, columns=["station", "name", "lat", "lon", 
 it["tz"] = "Europe/Rome"
 st = pd.concat([it, pd.DataFrame(demo.WORLD_SEED, columns=["station", "name", "lat", "lon", "elev", "tz"])],
                ignore_index=True)
-from meteoita.regions import RID, archive_points, inside, verified
 st = st[np.any([inside(r, st["lat"], st["lon"]) for r in RID if verified(r)], axis=0)].reset_index(drop=True)
 st.to_csv(DATA / "stations.csv", index=False)
 print("stazioni:", len(st))

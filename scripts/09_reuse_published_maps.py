@@ -5,6 +5,10 @@
 Serve al workflow "Ricostruisci sito (senza API)": classifiche, GPR e pagine
 vengono rigenerati dai dati del repository, mentre le mappe di previsione
 (che richiederebbero di riscaricare i modelli) si copiano dal sito online.
+
+Input : <SITE_URL o https://<owner>.github.io/<repo>>/data/maps/<regione>/<var>_<agg>.json
+        (variabili d'ambiente GITHUB_REPOSITORY, SITE_URL).
+Output: build/site/data/maps/<regione>/<var>_<agg>.json.
 """
 import json
 import os
