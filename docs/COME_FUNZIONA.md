@@ -68,14 +68,16 @@ flowchart LR
   gp --> M
   gp --> H
   i18n[i18n.js<br>dizionario EN-IT] --> app
+  ms[mapstyle.js<br>pannelli Layer e Stile] --> M
+  ms --> H
 ```
 
 | Scheda | Cosa mostra | File |
 |---|---|---|
 | Forecast | Previsione GPR con incertezza e singoli modelli per un luogo o un sito di calibrazione | `app.js`, `gp.js` |
 | Atmosphere | Parametri di superficie e di colonna, profilo verticale, trasferimento radiativo 6S | `atmos.js` |
-| 10 m map | Mappa a 10 m con regression kriging, download GeoTIFF/CSV | `hires.js`, `gp.js` |
-| Maps | Mappe regionali: migliore, media pesata, GPR, incertezza, probabilità di pioggia | `app.js` |
+| 10 m map | Mappa a 10 m con regression kriging, pannelli Layer e Stile, download GeoTIFF/CSV | `hires.js`, `mapstyle.js`, `gp.js` |
+| Maps | Mappe regionali: migliore, media pesata, GPR, incertezza, probabilità di pioggia; pannelli Layer e Stile | `app.js`, `mapstyle.js` |
 | Model accuracy | Errore di ogni modello per anticipo e andamento mensile | `app.js` |
 | Events | Rilevamento di eventi di pioggia e temperatura (CSI) | `app.js` |
 | GPR reliability | Verifica su holdout e backtest storico del GPR | `app.js` |
@@ -151,6 +153,7 @@ gantt
 | `web/gp.js` | Predizione GPR nel browser (stessi risultati di Python) |
 | `web/atmos.js` | Scheda Atmosphere e trasferimento radiativo 6S |
 | `web/hires.js` | Mappa a 10 m con regression kriging ed export GeoTIFF |
+| `web/mapstyle.js` | Simbologia delle mappe come in QGIS: pannello Layer (mostra/nascondi, ordine) e pannello Stile (scala di colori, min/max, classi, opacità, istogramma, legenda) |
 | `web/i18n.js` | Dizionario inglese → italiano |
 | `tests/test_gp_consistency.py` | Controlla che sklearn, `meteoita.gp` e `web/gp.js` diano la stessa predizione GPR |
 
