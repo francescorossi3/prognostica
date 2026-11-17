@@ -1,54 +1,16 @@
 // Mappa ad alta risoluzione (10 m) intorno al punto con regression kriging.
 //   trend:   regressione lineare (OLS) del valore su covariate Copernicus a 10 m
-//            (quota e pendenza/esposizione da DEM, impermeabilizzazione e copertura arborea HRL 2018)
+//            (quota del DEM Copernicus: l'unica grandezza a 10 m che cambia l'atmosfera sopra il suolo)
 //   residui: kriging ordinario con variogramma esponenziale stimato sui residui
 //   verifica: leave-one-out sui punti campione (RK vs solo trend vs solo kriging)
 // Input:  punto e righe della previsione (S.point, HR.rows da app.js), grandezze atmosferiche (ATM), modelli GPR (GP),
-//         Open-Meteo Forecast API nei punti campione, DEM Terrarium (AWS), HRL EEA 2018 (ImageServer, TIFF non compresso).
-// Output: scheda "10 m map" (mappa, legenda, validazione), download CSV e GeoTIFF Float32 (EPSG:4326).
+//         Open-Meteo Forecast API nei punti campione, DEM Terrarium (AWS).
+// Output: scheda "Atmosphere RK" (mappa, legenda, punti di validazione), download CSV e GeoTIFF Float32 (EPSG:4326, con export.js).
 "use strict";
 
 const HR = (() => {
   let CELL = 10;                                    // m (scelto dall'utente: 10, 20, 30)
   let NS = 7;                                       // punti campione per lato (7 x 7 = 49 ... 11 x 11 = 121)
-  const EEA = "https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLandPublic/";
-
-  // ---------------------------------------------------------------- TIFF non compresso (EEA ImageServer)
-  function readTiff(buf) {
-    const dv = new DataView(buf), le = dv.getUint16(0) === 0x4949, off = dv.getUint32(4, le), n = dv.getUint16(off, le);
-    const T = {};
-    for (let i = 0; i < n; i++) {
-      const p = off + 2 + i * 12, tag = dv.getUint16(p, le), type = dv.getUint16(p + 2, le), cnt = dv.getUint32(p + 4, le);
-      const sz = { 3: 2, 4: 4, 12: 8 }[type] || 1, at = cnt * sz <= 4 ? p + 8 : dv.getUint32(p + 8, le);
-      const rd = k => (type === 3 ? dv.getUint16(at + 2 * k, le) : type === 4 ? dv.getUint32(at + 4 * k, le) : type === 12 ? dv.getFloat64(at + 8 * k, le) : dv.getUint8(at + k));
-      T[tag] = Array.from({ length: Math.min(cnt, 4096) }, (_, k) => rd(k));
-    }
-    if ((T[259]?.[0] || 1) !== 1) throw new Error("compressed TIFF");
-    const W = T[256][0], H = T[257][0], out = new Uint8Array(W * H);
-    if (T[322]) {                                    // a tasselli
-      const tw = T[322][0], th = T[323][0], offs = T[324], across = Math.ceil(W / tw);
-      offs.forEach((o, t) => {
-        const tx = (t % across) * tw, ty = Math.floor(t / across) * th;
-        for (let y = 0; y < th && ty + y < H; y++)
-          for (let x = 0; x < tw && tx + x < W; x++) out[(ty + y) * W + tx + x] = dv.getUint8(o + y * tw + x);
-      });
-    } else {                                         // a strisce
-      const rps = T[278]?.[0] || H; let row = 0;
-      T[273].forEach(o => { for (let y = 0; y < rps && row < H; y++, row++) for (let x = 0; x < W; x++) out[row * W + x] = dv.getUint8(o + y * W + x); });
-    }
-    return { W, H, data: out, dx: T[33550][0], dy: T[33550][1], x0: T[33922][3], y0: T[33922][4] };
-  }
-  async function hrl(svc, bb, W, H) {
-    const url = `${EEA}${svc}/ImageServer/exportImage?bbox=${bb.w},${bb.s},${bb.e},${bb.n}&bboxSR=4326&imageSR=4326`
-      + `&size=${W},${H}&format=tiff&pixelType=U8&compression=None&interpolation=RSP_NearestNeighbor&f=image`;
-    const t = readTiff(await (await fetch(url)).arrayBuffer());
-    return (lat, lon) => {
-      const x = Math.floor((lon - t.x0) / t.dx), y = Math.floor((t.y0 - lat) / t.dy);
-      if (x < 0 || y < 0 || x >= t.W || y >= t.H) return 0;
-      const v = t.data[y * t.W + x];
-      return v > 100 ? 0 : v;                       // 254/255 = fuori area / non classificato
-    };
-  }
 
   // ---------------------------------------------------------------- DEM (tasselli Terrarium: EU-DEM/Copernicus in Europa)
   async function dem(bb, z = 14) {
@@ -151,13 +113,8 @@ const HR = (() => {
   }
 
   // ---------------------------------------------------------------- covariate
-  const NAMES = ["elevation [m]", "slope [°]", "northness", "imperviousness [%]", "tree cover [%]"];
-  function covariates(z, imp, tcd, lat, lon, mlat, mlon) {
-    const e = z(lat, lon), dlat = CELL / mlat, dlon = CELL / mlon;
-    const gx = (z(lat, lon + dlon) - z(lat, lon - dlon)) / (2 * CELL), gy = (z(lat + dlat, lon) - z(lat - dlat, lon)) / (2 * CELL);
-    const slope = Math.atan(Math.hypot(gx, gy)) * 180 / Math.PI, north = Math.hypot(gx, gy) > 1e-6 ? -gy / Math.hypot(gx, gy) : 0;
-    return [e, slope, north, imp ? imp(lat, lon) : 0, tcd ? tcd(lat, lon) : 0];
-  }
+  const NAMES = ["elevation [m]"];
+  const covariates = (z, lat, lon) => [z(lat, lon)];
 
   // ---------------------------------------------------------------- regression kriging completo
   function fit(F, y, xy) {
@@ -284,9 +241,7 @@ const HR = (() => {
       { id: "samples", name: "Validation points", kind: "samples", visible: true, pane: pane("hl-samples"), group: L.layerGroup().addTo(S.hmap) },
       raster("est", "Estimate (trend + kriged residual)", "RdYlBu", true),
       raster("sd", "Kriging standard deviation", "OrRd", false),
-      raster("trend", "Trend only", "RdYlBu", false),
-      raster("imp", "Covariate: imperviousness", "Greys", false),
-      raster("elev", "Covariate: elevation", "RdYlBu", false),
+      raster("trend", "Trend only (elevation)", "RdYlBu", false),
       { id: "base", name: "OpenStreetMap", kind: "base", visible: true, pane: "hl-base", group: base },
     ];
     S.hsel = "est";
@@ -319,10 +274,8 @@ const HR = (() => {
     const bar = $("#h-progress"), t0 = performance.now();
     const step = (pct, text) => { bar.hidden = false; bar.value = pct; st.textContent = `${text} · ${((performance.now() - t0) / 1000).toFixed(0)} s`; };
     try {
-      step(2, "1/4 · downloading Copernicus covariates (DEM, imperviousness, tree cover)…");
-      const npx = Math.min(4000, Math.ceil((size + 2 * pad) / CELL));
-      const [Z, IMP, TCD] = await Promise.all([dem(bb, size <= 10000 ? 14 : 13), hrl("HRL_ImperviousnessDensity_2018", bb, npx, npx).catch(() => null),
-        hrl("HRL_TreeCoverDensity_2018", bb, npx, npx).catch(() => null)]);
+      step(2, "1/4 · downloading the elevation (Copernicus DEM)…");
+      const Z = await dem(bb, size <= 10000 ? 14 : 13);
       // punti campione: griglia regolare NS x NS sul riquadro
       const samples = [];
       for (let i = 0; i < NS; i++) for (let j = 0; j < NS; j++)
@@ -333,7 +286,7 @@ const HR = (() => {
       const good = T.values.map((v, i) => (Number.isFinite(v) ? i : -1)).filter(i => i >= 0);
       if (good.length < 12) throw new Error("too few valid sample values for this variable and period (VNIR-SWIR parameters need the sun above 10°: choose a daytime hour)");
       const xyOf = (lat, lon) => [(lon - P.lon) * mlon, (lat - P.lat) * mlat];
-      const F = good.map(i => covariates(Z, IMP, TCD, samples[i].lat, samples[i].lon, mlat, mlon));
+      const F = good.map(i => covariates(Z, samples[i].lat, samples[i].lon));
       const y = good.map(i => T.values[i]), xy = good.map(i => xyOf(samples[i].lat, samples[i].lon));
       step(35, "3/4 · fitting trend + variogram, leave-one-out validation…");
       await new Promise(r => setTimeout(r, 20));
@@ -341,7 +294,7 @@ const HR = (() => {
       step(45, `4/4 · predicting on the ${CELL} m grid…`);
       await new Promise(r => setTimeout(r, 20));
       const N = Math.round(size / CELL), est = new Float32Array(N * N), trd = new Float32Array(N * N), sd = new Float32Array(N * N),
-        imp = new Float32Array(N * N), elev = new Float32Array(N * N);
+        elev = new Float32Array(N * N);
       const A = okSystem(xy, M.vg), n = xy.length, alpha = solve(A, [...M.res, 0]);
       const Ainv = invert(A), lat0 = P.lat + half / mlat, lon0 = P.lon - half / mlon;
       const SD_STEP = Math.max(5, Math.round(50 / CELL)), qx = Float64Array.from(xy, q => q[0]), qy = Float64Array.from(xy, q => q[1]);
@@ -349,12 +302,12 @@ const HR = (() => {
       for (let r = 0; r < N; r++) {
         const lat = lat0 - (r + 0.5) * CELL / mlat;
         for (let c = 0; c < N; c++) {
-          const lon = lon0 + (c + 0.5) * CELL / mlon, f = covariates(Z, IMP, TCD, lat, lon, mlat, mlon);
+          const lon = lon0 + (c + 0.5) * CELL / mlon, f = covariates(Z, lat, lon);
           const px = (lon - P.lon) * mlon, py = (lat - P.lat) * mlat;
           let kr = alpha[n];
           for (let j = 0; j < n; j++) { const h = Math.hypot(qx[j] - px, qy[j] - py); k[j] = h === 0 ? sill : M.vg.sill * Math.exp(-h / M.vg.a); kr += k[j] * alpha[j]; }
           const t = M.trend(f), i = r * N + c;
-          trd[i] = t; est[i] = t + kr; imp[i] = f[3]; elev[i] = f[0];
+          trd[i] = t; est[i] = t + kr; elev[i] = f[0];
           if (r % SD_STEP === 0 && c % SD_STEP === 0) {
             k[n] = 1; let q = 0;
             for (let a2 = 0; a2 <= n; a2++) { let s2 = 0; const row = Ainv[a2]; for (let b2 = 0; b2 <= n; b2++) s2 += row[b2] * k[b2]; q += k[a2] * s2; }
@@ -363,7 +316,7 @@ const HR = (() => {
         }
         if (r % 20 === 19) { step(45 + 55 * (r + 1) / N, `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`); await new Promise(res => setTimeout(res, 0)); }
       }
-      HR.out = { N, cell: CELL, est, trd, sd, imp, elev, lat0, lon0, mlat, mlon, half, T, M, cv, samples: good.map(i => samples[i]), y, P };
+      HR.out = { N, cell: CELL, est, trd, sd, elev, lat0, lon0, mlat, mlon, half, T, M, cv, samples: good.map(i => samples[i]), y, P };
       draw(true); report();
       bar.hidden = true;
       st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${N} × ${N} cells of ${CELL} m · ${good.length} sample points`;
@@ -371,7 +324,7 @@ const HR = (() => {
     } catch (e) { bar.hidden = true; st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
 
-  const rasterOf = key => ({ est: HR.out.est, sd: HR.out.sd, trend: HR.out.trd, imp: HR.out.imp, elev: HR.out.elev }[key]);
+  const rasterOf = key => ({ est: HR.out.est, sd: HR.out.sd, trend: HR.out.trd }[key]);
   // layer scelto nel pannello per GeoTIFF/legenda: quello selezionato, altrimenti la stima
   const selRaster = () => S.hl.find(l => l.id === S.hsel && l.kind === "raster") || S.hl.find(l => l.key === "est");
 
@@ -387,7 +340,7 @@ const HR = (() => {
     l.overlay = L.imageOverlay(l.url, bounds, { pane: l.pane }).addTo(S.hmap);
     l.overlay.getElement().style.imageRendering = "pixelated";
     const lab = ["est", "trend", "sd"].includes(l.key) ? `${l.name} · ${o.T.label}` : l.name;
-    return MapStyle.legend(lab, l.key === "imp" ? "%" : l.key === "elev" ? "m" : "", C);
+    return MapStyle.legend(lab, "", C);
   }
 
   async function draw(fit = false, keepPanels = false) {
@@ -425,7 +378,7 @@ const HR = (() => {
       const r = Math.floor((o.lat0 - e.latlng.lat) * o.mlat / o.cell), cc = Math.floor((e.latlng.lng - o.lon0) * o.mlon / o.cell);
       if (r < 0 || cc < 0 || r >= o.N || cc >= o.N) return;
       const i = r * o.N + cc;
-      L.popup().setLatLng(e.latlng).setContent(`<b>${fmt(o.est[i], 3)}</b> ± ${fmt(o.sd[i], 3)} (kriging SD)<br>trend ${fmt(o.trd[i], 3)} · elev ${fmt(o.elev[i], 0)} m · imperv. ${fmt(o.imp[i], 0)} %`).openOn(S.hmap);
+      L.popup().setLatLng(e.latlng).setContent(`<b>${fmt(o.est[i], 3)}</b> ± ${fmt(o.sd[i], 3)} (kriging SD)<br>trend ${fmt(o.trd[i], 3)} · elevation ${fmt(o.elev[i], 0)} m`).openOn(S.hmap);
     });
   }
 
@@ -453,52 +406,22 @@ const HR = (() => {
   }
 
   function csv() {
-    const o = HR.out; if (!o) return;
-    if (o.N * o.N > 1500000) return;
-    track("download-csv-10m");
-    const lines = ["lat,lon,estimate,kriging_sd,trend,elevation_m,imperviousness_pct"];
+    const o = HR.out; if (!o || o.N * o.N > 1500000) return;
+    const rows = [["lat", "lon", "estimate", "kriging_sd", "trend", "elevation_m"]];
     for (let r = 0; r < o.N; r++) for (let c = 0; c < o.N; c++) {
       const i = r * o.N + c;
-      lines.push(`${(o.lat0 - (r + 0.5) * o.cell / o.mlat).toFixed(6)},${(o.lon0 + (c + 0.5) * o.cell / o.mlon).toFixed(6)},${o.est[i].toFixed(4)},${o.sd[i].toFixed(4)},${o.trd[i].toFixed(4)},${o.elev[i].toFixed(1)},${o.imp[i]}`);
+      rows.push([+(o.lat0 - (r + 0.5) * o.cell / o.mlat).toFixed(6), +(o.lon0 + (c + 0.5) * o.cell / o.mlon).toFixed(6), o.est[i], o.sd[i], o.trd[i], o.elev[i]]);
     }
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv" }));
-    a.download = `rk10m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.csv`; a.click();
+    EXPORT.save(EXPORT.csv(rows, [o.T.label]), `rk_${o.cell}m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.csv`);
   }
 
-  // GeoTIFF Float32 (EPSG:4326) dello strato mostrato: si apre in QGIS / Python (rasterio)
+  // GeoTIFF dello strato selezionato nel pannello Layers
   function geotiff() {
     const o = HR.out; if (!o) return;
-    track("download-geotiff-10m");
-    const lay = selRaster(), a = rasterOf(lay.key);
-    const W = o.N, H = o.N, dx = o.cell / o.mlon, dy = o.cell / o.mlat;
-    const tags = [];                                     // [tag, type, count, values]
-    const geokeys = [1, 1, 0, 3, 1024, 0, 1, 2, 1025, 0, 1, 1, 2048, 0, 1, 4326];
-    const desc = `${o.T.label} | ${lay.name} | regression kriging, Prognostica`;
-    const descB = new TextEncoder().encode(desc + "\0");
-    tags.push([256, 4, 1, [W]], [257, 4, 1, [H]], [258, 3, 1, [32]], [259, 3, 1, [1]], [262, 3, 1, [1]], [270, 2, descB.length, descB],
-      [273, 4, 1, [0]], [277, 3, 1, [1]], [278, 4, 1, [H]], [279, 4, 1, [W * H * 4]], [284, 3, 1, [1]], [339, 3, 1, [3]],
-      [33550, 12, 3, [dx, dy, 0]], [33922, 12, 6, [0, 0, 0, o.lon0, o.lat0, 0]], [34735, 3, geokeys.length, geokeys], [42113, 2, 4, new TextEncoder().encode("nan\0")]);
-    const nT = tags.length, ifd = 8, extra0 = ifd + 2 + nT * 12 + 4;
-    const size = { 2: 1, 3: 2, 4: 4, 12: 8 };
-    let extra = extra0; const place = [];
-    tags.forEach(t => { const len = size[t[1]] * t[2]; if (len > 4) { place.push(extra); extra += len + (len % 2); } else place.push(-1); });
-    const dataOff = extra + (extra % 4 ? 4 - extra % 4 : 0);
-    tags.find(t => t[0] === 273)[3] = [dataOff];
-    const buf = new ArrayBuffer(dataOff + W * H * 4), dv = new DataView(buf);
-    dv.setUint16(0, 0x4949); dv.setUint16(2, 42, true); dv.setUint32(4, ifd, true); dv.setUint16(ifd, nT, true);
-    const put = (off, type, vals) => vals.forEach((v, j) => {
-      if (type === 2) dv.setUint8(off + j, v); else if (type === 3) dv.setUint16(off + 2 * j, v, true);
-      else if (type === 4) dv.setUint32(off + 4 * j, v, true); else dv.setFloat64(off + 8 * j, v, true); });
-    tags.forEach((t, j) => {
-      const e = ifd + 2 + j * 12; dv.setUint16(e, t[0], true); dv.setUint16(e + 2, t[1], true); dv.setUint32(e + 4, t[2], true);
-      if (place[j] < 0) put(e + 8, t[1], Array.from(t[3])); else { dv.setUint32(e + 8, place[j], true); put(place[j], t[1], Array.from(t[3])); }
-    });
-    new Float32Array(buf, dataOff, W * H).set(a);
-    const el = document.createElement("a");
-    el.href = URL.createObjectURL(new Blob([buf], { type: "image/tiff" }));
-    el.download = `rk_${key}_${o.cell}m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.tif`; el.click();
+    const lay = selRaster();
+    EXPORT.geotiff(rasterOf(lay.key), o.N, o.N, o.lon0, o.lat0, o.cell / o.mlon, o.cell / o.mlat, `${o.T.label} | ${lay.name} | regression kriging, Prognostica`,
+      `rk_${lay.key}_${o.cell}m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.tif`);
   }
 
-  return { init, periods, run, geotiff, readTiff, variogram, fit, loocv, okPredict, metrics };
+  return { init, periods, run, geotiff, variogram, fit, loocv, okPredict, metrics };
 })();
