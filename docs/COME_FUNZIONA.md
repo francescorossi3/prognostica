@@ -58,12 +58,11 @@ flowchart LR
   idx[index.html] --> app[app.js<br>interfaccia principale]
   app --> F[Forecast]
   app --> M[Maps]
-  app --> R[Model accuracy]
+  app --> R[Accuracy<br>modelli + affidabilità GPR]
   app --> E[Events]
-  app --> V[GPR reliability]
   app --> DM[Data & method]
   atm[atmos.js] --> A[Atmosphere]
-  hr[hires.js] --> H[10 m map]
+  hr[hires.js] --> H[Atmosphere RK<br>regression kriging 10 m]
   gp[gp.js<br>predizione GPR] --> F
   gp --> M
   gp --> H
@@ -72,15 +71,16 @@ flowchart LR
   ms --> H
 ```
 
+Le schede sono in tre gruppi: previsione e sua verifica (Forecast, Maps, Accuracy, Events), atmosfera (Atmosphere, Atmosphere RK) e Data & method.
+
 | Scheda | Cosa mostra | File |
 |---|---|---|
-| Forecast | Previsione GPR con incertezza e singoli modelli per un luogo o un sito di calibrazione | `app.js`, `gp.js` |
+| Forecast | Previsione GPR con incertezza e singoli modelli per il luogo scelto nella barra di ricerca (grafico e tabella scorrevoli) | `app.js`, `gp.js` |
 | Atmosphere | Parametri di superficie e di colonna, profilo verticale, trasferimento radiativo 6S | `atmos.js` |
-| 10 m map | Mappa a 10 m con regression kriging, pannelli Layer e Stile, download GeoTIFF/CSV | `hires.js`, `mapstyle.js`, `gp.js` |
+| Atmosphere RK | Mappa a 10 m con regression kriging, barra di avanzamento, punti di validazione leave-one-out sulla mappa, pannelli Layer e Stile, download GeoTIFF/CSV | `hires.js`, `mapstyle.js`, `gp.js` |
 | Maps | Mappe regionali: migliore, media pesata, GPR, incertezza, probabilità di pioggia; pannelli Layer e Stile | `app.js`, `mapstyle.js` |
-| Model accuracy | Errore di ogni modello per anticipo e andamento mensile | `app.js` |
+| Accuracy | Errore di ogni modello per anticipo e andamento mensile; holdout e backtest storico del GPR | `app.js` |
 | Events | Rilevamento di eventi di pioggia e temperatura (CSI) | `app.js` |
-| GPR reliability | Verifica su holdout e backtest storico del GPR | `app.js` |
 | Data & method | Download, metodo, crediti | `app.js` |
 
 ## 4. Collegamenti con Torricelli e Census
@@ -152,7 +152,7 @@ gantt
 | `web/app.js` | Interfaccia principale: Forecast, Maps, accuratezza, eventi, GPR, dati |
 | `web/gp.js` | Predizione GPR nel browser (stessi risultati di Python) |
 | `web/atmos.js` | Scheda Atmosphere e trasferimento radiativo 6S |
-| `web/hires.js` | Mappa a 10 m con regression kriging ed export GeoTIFF |
+| `web/hires.js` | Atmosphere RK: regression kriging a 10 m (valori in 49–121 punti campione da Open-Meteo + 6S, trend su covariate Copernicus, kriging dei residui, validazione leave-one-out) ed export GeoTIFF |
 | `web/mapstyle.js` | Simbologia delle mappe come in QGIS: pannello Layer (mostra/nascondi, ordine) e pannello Stile (scala di colori, min/max, classi, opacità, istogramma, legenda) |
 | `web/i18n.js` | Dizionario inglese → italiano |
 | `tests/test_gp_consistency.py` | Controlla che sklearn, `meteoita.gp` e `web/gp.js` diano la stessa predizione GPR |

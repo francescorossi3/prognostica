@@ -1,6 +1,6 @@
 # Prognostica – istruzioni per Claude
 
-Front end meteo: previsione accurata (modelli Open-Meteo verificati + GPR), schede Forecast / Atmosphere / 10 m map / Maps / Model accuracy / Events / GPR reliability / Data & method.
+Front end meteo: previsione accurata (modelli Open-Meteo verificati + GPR), schede in tre gruppi: Forecast / Maps / Accuracy (accuratezza modelli + affidabilità GPR) / Events · Atmosphere / Atmosphere RK (regression kriging 10 m) · Data & method.
 Contesto completo e storia: **CONTESTO.md** (leggerlo solo se serve).
 
 ## Mappa del codice

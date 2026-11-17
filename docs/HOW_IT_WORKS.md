@@ -58,12 +58,11 @@ flowchart LR
   idx[index.html] --> app[app.js<br>main UI]
   app --> F[Forecast]
   app --> M[Maps]
-  app --> R[Model accuracy]
+  app --> R[Accuracy<br>models + GPR reliability]
   app --> E[Events]
-  app --> V[GPR reliability]
   app --> DM[Data & method]
   atm[atmos.js] --> A[Atmosphere]
-  hr[hires.js] --> H[10 m map]
+  hr[hires.js] --> H[Atmosphere RK<br>10 m regression kriging]
   gp[gp.js<br>GPR prediction] --> F
   gp --> M
   gp --> H
@@ -72,15 +71,16 @@ flowchart LR
   ms --> H
 ```
 
+The tabs are in three groups: forecast and its verification (Forecast, Maps, Accuracy, Events), atmosphere (Atmosphere, Atmosphere RK) and Data & method.
+
 | Tab | What it shows | File |
 |---|---|---|
-| Forecast | GPR forecast with uncertainty and the single models for a place or a calibration site | `app.js`, `gp.js` |
+| Forecast | GPR forecast with uncertainty and the single models for the place chosen in the search bar (scrollable chart and table) | `app.js`, `gp.js` |
 | Atmosphere | Surface and column parameters, vertical profile, 6S radiative transfer | `atmos.js` |
-| 10 m map | Regression kriging map at 10 m, Layers and Style panels, GeoTIFF/CSV download | `hires.js`, `mapstyle.js`, `gp.js` |
+| Atmosphere RK | Regression kriging map at 10 m with progress bar, leave-one-out validation points on the map, Layers and Style panels, GeoTIFF/CSV download | `hires.js`, `mapstyle.js`, `gp.js` |
 | Maps | Regional maps: best model, weighted mean, GPR, uncertainty, rain probability; Layers and Style panels | `app.js`, `mapstyle.js` |
-| Model accuracy | Error of each model by lead time and monthly trend | `app.js` |
+| Accuracy | Error of each model by lead time and monthly trend; GPR hold-out and historical back-test | `app.js` |
 | Events | Detection of rain and temperature events (CSI) | `app.js` |
-| GPR reliability | Hold-out and historical back-test of GPR | `app.js` |
 | Data & method | Downloads, method, credits | `app.js` |
 
 ## 4. Links with Torricelli and Census
@@ -152,7 +152,7 @@ gantt
 | `web/app.js` | Main UI: Forecast, Maps, accuracy, events, GPR, data |
 | `web/gp.js` | GPR prediction in the browser (same results as Python) |
 | `web/atmos.js` | Atmosphere tab and 6S radiative transfer |
-| `web/hires.js` | 10 m regression kriging map and GeoTIFF export |
+| `web/hires.js` | Atmosphere RK: 10 m regression kriging (values at 49–121 sample points from Open-Meteo + 6S, trend on Copernicus covariates, kriging of the residuals, leave-one-out validation) and GeoTIFF export |
 | `web/mapstyle.js` | QGIS-like map symbology: Layers panel (show/hide, order) and Style panel (colour ramp, min/max, classes, opacity, histogram, legend) |
 | `web/i18n.js` | English → Italian dictionary |
 | `tests/test_gp_consistency.py` | Checks that sklearn, `meteoita.gp` and `web/gp.js` give the same GPR prediction |
