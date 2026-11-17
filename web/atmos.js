@@ -2,7 +2,7 @@
 // e parametri di trasferimento radiativo per la correzione atmosferica (LUT 6S Sentinel-2 + TIR Landsat).
 // Input:  punto scelto (S.point di app.js), Open-Meteo Forecast (ECMWF IFS) e Air Quality (CAMS) API,
 //         LUT 6S data/rt/lut_s2.json e lut_hyper.json (da Torricelli, con copia locale di riserva).
-// Output: scheda Atmosphere (tabelle e grafici), download CSV dello spettro; oggetto globale ATM usato da hires.js.
+// Output: scheda Atmosphere (riepilogo e grafici, CSV dei grafici con export.js); oggetto globale ATM usato da hires.js.
 "use strict";
 
 const ATM = (() => {
@@ -114,6 +114,16 @@ const ATM = (() => {
     return o;
   }
 
+  // spiegazioni delle grandezze (al passaggio del mouse sulla legenda), nell'ordine delle serie dei due grafici
+  const TIPS = ["Downward transmittance (Sun → ground) left by scattering of molecules and aerosols, direct + diffuse",
+    "Upward transmittance (ground → sensor) left by scattering, direct + diffuse",
+    "Transmittance of gas absorption (water vapour, ozone, O₂, CO₂, CH₄…) along the Sun – ground – sensor path",
+    "Share of the surface signal that reaches the sensor: T↓ · T↑ · T gas",
+    "Reflectance of the atmosphere for light coming from below: reflections between ground and atmosphere",
+    "Light scattered by the atmosphere into the sensor without touching the ground",
+    "Solar irradiance reaching a horizontal ground directly from the Sun",
+    "Irradiance reaching the ground from the whole sky, after scattering"];
+
   // ---------------------------------------------------------------- pannello nel punto
   async function render(P) {
     const box = $("#a-box");
@@ -130,7 +140,6 @@ const ATM = (() => {
     opts($("#a-specset"), sets, $("#a-specset").value && sets.some(x => x[0] === $("#a-specset").value) ? $("#a-specset").value : sets[0][0]);
     $("#a-specnote").textContent = H ? "" : "The hyperspectral table is being computed by Torricelli: Sentinel-2 bands for now.";
     $("#a-specset").onchange = () => renderHour(+$("#a-hour").value);
-    $("#a-speccsv").onclick = specCSV;
     // ora proposta: la prossima con il sole più alto (circa il passaggio dei satelliti eliosincroni ~10:30 locali)
     const now = Date.now();
     const idx = d.times.map((t, k) => k).filter(k => d.times[k] >= now - 3600000);
@@ -175,17 +184,7 @@ const ATM = (() => {
       { label: "Air density [kg m⁻³] ×20", data: pr.map(r => ({ x: r.rho * 20, y: r.z / 1000 })), showLine: true, borderColor: "#2ca02c", backgroundColor: "#2ca02c" }] },
       options: { animation: false, plugins: { legend: { position: "bottom" } },
         scales: { y: { title: { display: true, text: "Height [km]" } }, x: { title: { display: true, text: "value (scaled as in legend)" } } } } });
-    $("#a-proft").innerHTML = `<thead><tr><th>Level [hPa]</th><th>Height [m]</th><th>T [°C]</th><th>RH [%]</th><th>Wind [km/h]</th><th>Density [kg m⁻³]</th></tr></thead><tbody>`
-      + pr.map(r => `<tr><td>${r.p}</td><td>${fmt(r.z, 0)}</td><td>${fmt(r.t, 1)}</td><td>${fmt(r.rh, 0)}</td><td>${fmt(r.ws, 0)}</td><td>${fmt(r.rho, 4)}</td></tr>`).join("") + "</tbody>";
-    // trasferimento radiativo per banda
-    if (!L) { $("#a-rt").innerHTML = '<tbody><tr><td class="hint">Radiative-transfer table (6S) not available yet.</td></tr></tbody>'; return; }
-    if (!o.rt) { $("#a-rt").innerHTML = '<tbody><tr><td class="hint">Sun below 10° elevation at this hour: VNIR-SWIR parameters not computed.</td></tr></tbody>'; return; }
-    $("#a-rt").innerHTML = `<thead><tr><th>Sentinel-2 band [nm]</th><th>T↓ scattering</th><th>T↑ scattering</th><th>T gas</th><th>Total T (↓·↑·gas)</th>
-      <th>Path radiance [W m⁻² sr⁻¹ µm⁻¹]</th><th>E direct [W m⁻² µm⁻¹]</th><th>E diffuse</th><th>Spherical albedo</th></tr></thead><tbody>`
-      + Object.entries(o.rt).map(([b, r]) => `<tr><td>${S2NAME[b.replace("S2_", "")] || b}</td><td>${fmt(r.t_down, 4)}</td><td>${fmt(r.t_up, 4)}</td>
-        <td>${fmt(r.t_gas, 4)}</td><td>${fmt(r.t_down * r.t_up * r.t_gas, 4)}</td><td>${fmt(r.l_path, 3)}</td><td>${fmt(r.e_dir, 1)}</td><td>${fmt(r.e_dif, 1)}</td><td>${fmt(r.s_alb, 4)}</td></tr>`).join("") + "</tbody>";
   }
-
   // spettro di trasmittanze, radianza di percorso e irradianze all'ora scelta
   function spectrum(d, k, P, LL) {
     const o = derive(d, k, P.lat, P.lon, P.elev, LL);
@@ -199,29 +198,30 @@ const ATM = (() => {
     if (!LL) return;
     const { o, rows } = spectrum(d, k, P, LL);
     ATM.spec = { o, rows, time: d.times[k], P };
-    if (!rows.length) { $("#a-specnote").textContent = "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum."; drawChart("a-spec-t", { type: "line", data: { datasets: [] } }); return; }
+    if (!rows.length) {
+      $("#a-specnote").textContent = "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.";
+      ["a-spec-t", "a-spec-l"].forEach(id => drawChart(id, { type: "line", data: { datasets: [] } })); $("#a-leg-t").innerHTML = $("#a-leg-l").innerHTML = "";
+      return;
+    }
+    const lp = localParts(d.times[k], P.tz), i = o.rtIn;
+    const csvName = `spectrum_${P.lat.toFixed(3)}_${P.lon.toFixed(3)}_${lp.date}_${String(lp.hour).padStart(2, "0")}h`;
+    const csvHead = [`Prognostica / Torricelli - 6S at ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} (${fmt(P.elev, 0)} m), ${lp.date} ${String(lp.hour).padStart(2, "0")}:00 ${P.tz}`,
+      `inputs: water vapour ${i.w.toFixed(3)} g cm-2, AOD550 ${i.aot.toFixed(3)}, solar zenith ${i.sza.toFixed(2)} deg, altitude ${i.alt.toFixed(3)} km; nadir view, continental aerosol, ozone 0.30 cm-atm`];
     const xy = key => rows.map(r => ({ x: r.wl, y: r[key] }));
     const line = (label, key, color, extra = {}) => ({ label, data: xy(key), borderColor: color, backgroundColor: color, pointRadius: rows.length < 20 ? 3 : 0, borderWidth: 1.6, showLine: true, ...extra });
     const xs = { type: "linear", min: 400, max: 2500, title: { display: true, text: "Wavelength [nm]" } };
-    drawChart("a-spec-t", { type: "scatter", data: { datasets: [line("T↓ scattering", "t_down", "#1f6feb"), line("T↑ scattering", "t_up", "#17becf"),
-      line("T gas", "t_gas", "#9467bd"), line("Total transmittance", "t_tot", "#111827", { borderWidth: 2.4 })] },
-      options: { animation: false, plugins: { legend: { position: "bottom" } }, scales: { x: xs, y: { min: 0, max: 1, title: { display: true, text: "Transmittance" } } } } });
-    drawChart("a-spec-l", { type: "scatter", data: { datasets: [line("Path radiance [W m⁻² sr⁻¹ µm⁻¹]", "l_path", "#c4661f", { yAxisID: "y" }),
-      line("E direct [W m⁻² µm⁻¹]", "e_dir", "#d62728", { yAxisID: "y1" }), line("E diffuse [W m⁻² µm⁻¹]", "e_dif", "#2ca02c", { yAxisID: "y1" })] },
-      options: { animation: false, plugins: { legend: { position: "bottom" } }, scales: { x: xs, y: { title: { display: true, text: "Path radiance" }, min: 0 },
-        y1: { position: "right", min: 0, grid: { drawOnChartArea: false }, title: { display: true, text: "Irradiance" } } } } });
-  }
-  function specCSV() {
-    const s = ATM.spec; if (!s || !s.rows.length) return;
-    if (typeof track === "function") track("download-spectrum");
-    const lp = localParts(s.time, s.P.tz), i = s.o.rtIn;
-    const head = [`# Prognostica / Torricelli - 6S spectrum at ${s.P.lat.toFixed(4)}, ${s.P.lon.toFixed(4)} (${fmt(s.P.elev, 0)} m), ${lp.date} ${String(lp.hour).padStart(2, "0")}:00 ${s.P.tz}`,
-      `# inputs: water vapour ${i.w.toFixed(3)} g cm-2, AOD550 ${i.aot.toFixed(3)}, solar zenith ${i.sza.toFixed(2)} deg, altitude ${i.alt.toFixed(3)} km; nadir view, continental aerosol, ozone 0.30 cm-atm`,
-      "band,wavelength_nm,t_down_scat,t_up_scat,t_gas,t_total,path_radiance_W_m2_sr_um,e_direct_W_m2_um,e_diffuse_W_m2_um,spherical_albedo"];
-    const lines = s.rows.map(r => [r.band, r.wl, r.t_down, r.t_up, r.t_gas, r.t_tot, r.l_path, r.e_dir, r.e_dif, r.s_alb].map(v => (typeof v === "number" ? +v.toPrecision(6) : v)).join(","));
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([[...head, ...lines].join("\n")], { type: "text/csv" }));
-    a.download = `spectrum_${s.P.lat.toFixed(3)}_${s.P.lon.toFixed(3)}_${lp.date}_${String(lp.hour).padStart(2, "0")}h.csv`; a.click();
+    const ct = drawChart("a-spec-t", { type: "scatter", data: { datasets: [line("T↓ scattering", "t_down", "#1f6feb"), line("T↑ scattering", "t_up", "#17becf"),
+      line("T gas", "t_gas", "#9467bd"), line("Total T (↓·↑·gas)", "t_tot", "#111827", { borderWidth: 2.4 }),
+      line("Spherical albedo S", "s_alb", "#8c564b", { borderDash: [4, 3] })] },
+      options: { animation: false, csvName: csvName + "_transmittance", csvHead, plugins: { legend: { display: false } },
+        scales: { x: xs, y: { min: 0, max: 1, title: { display: true, text: "Transmittance · spherical albedo" } } } } });
+    const cl = drawChart("a-spec-l", { type: "scatter", data: { datasets: [line("Path radiance [W m⁻² sr⁻¹ µm⁻¹]", "l_path", "#c4661f", { yAxisID: "y" }),
+      line("E direct [W m⁻² µm⁻¹]", "e_dir", "#d62728", { yAxisID: "y1" }), line("E diffuse [W m⁻² µm⁻¹]", "e_dif", "#2ca02c", { yAxisID: "y1" }) ] },
+      options: { animation: false, csvName: csvName + "_radiance_irradiance", csvHead, plugins: { legend: { display: false } },
+        scales: { x: xs, y: { title: { display: true, text: "Path radiance" }, min: 0 },
+          y1: { position: "right", min: 0, grid: { drawOnChartArea: false }, title: { display: true, text: "Irradiance" } } } } });
+    htmlLegend(ct, $("#a-leg-t"), TIPS.slice(0, 5));
+    htmlLegend(cl, $("#a-leg-l"), TIPS.slice(5));
   }
   const S2WL = { "01": 443, "02": 490, "03": 560, "04": 665, "05": 705, "06": 740, "07": 783, "08": 842, "8A": 865, "09": 945, "10": 1375, "11": 1610, "12": 2190 };
 
