@@ -10,7 +10,10 @@ prossimi giorni e per ogni aggregazione:
     gpr       -> stima GPR
     gpr_unc   -> incertezza GPR (semi-ampiezza intervallo 68%)
     gpr_p     -> (solo pioggia) probabilita' di superare la 1a soglia
-Uscita: build/site/data/maps/<regione>/<var>_<agg>.json
+Input : build/site/data/weights.json (da 03), modelli GPR build/site/data/gp/ (da 04),
+        Open-Meteo Forecast API (o mondo sintetico con --demo), data/grid_<regione>.csv.
+Output: build/site/data/maps/<regione>/<var>_<agg>.json; aggiorna data/grid_<regione>.csv
+        (quote) con i dati reali.
 Fusi: con map_timezone "local" i giorni sono quelli locali di ogni punto e
 le mappe orarie e a 6 ore sono in UTC (stessa ora per tutto il mondo).
     python scripts/05_build_maps.py          (dati reali)
@@ -32,7 +35,7 @@ from meteoita.config import AGGS, CFG, DATA, LEADS, SITE_DATA, providers, target
 from meteoita.grid import region_grid
 from meteoita.providers import openmeteo_forecast
 from meteoita.regions import REGIONS, region_providers, tz_from_lon, verified
-from meteoita.verify import aggregate
+from meteoita.verify import aggregate, weighted_mean
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--demo", action="store_true")
@@ -130,10 +133,7 @@ for R in REGIONS:
                     best = sel.loc[sel["is_best"], "provider"].iloc[0]
                     pv = [p for p in sel["provider"] if p in Wp]
                     w = sel.set_index("provider").loc[pv, "weight"].values
-                    F = Wp[pv].values
-                    M = ~np.isnan(F)
-                    ws = M.astype(float) @ w
-                    wavg = np.where(ws > 0.5, (np.where(M, F, 0) @ w) / np.maximum(ws, 1e-9), np.nan)
+                    wavg = weighted_mean(Wp[pv].values, w)
                     # "migliore": il primo della classifica disponibile in quel punto
                     bvals = np.full(len(grid), np.nan)
                     for prov in sel.sort_values("score")["provider"]:

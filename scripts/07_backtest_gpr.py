@@ -15,6 +15,11 @@ Risultati: data/csv/gpr_backtest.csv (ogni fold) e gpr_backtest_summary.csv,
 
 E' pesante: di default gira al massimo una volta a settimana (o con --force).
     python scripts/07_backtest_gpr.py --force --folds 6
+
+Input : data/stats/daily_stats.parquet, archivio parquet, config.yaml (gpr).
+Output: data/csv/gpr_backtest.csv, data/csv/gpr_backtest_summary.csv,
+        build/site/data/gpr_backtest.json; aggiunge a daily_stats.parquet
+        GPR/BEST/WEIGHTED fuori campione.
 """
 import argparse
 import json
@@ -34,7 +39,8 @@ from joblib import Parallel, delayed
 from meteoita import gp
 from meteoita.config import AGGS, CFG, CSV_DIR, DATA, LEADS, SITE_DATA, gridded_ids, target_vars
 from meteoita.regions import REGIONS, region_providers
-from meteoita.verify import best_and_weights, by_region, daily_stats, pairs_for, score_table, station_table
+from meteoita.verify import (best_and_weights, by_region, daily_stats, pairs_for, score_table, station_table,
+                             weighted_mean, wide_pairs)
 
 warnings.filterwarnings("ignore")
 os.environ["PYTHONWARNINGS"] = "ignore"
@@ -80,18 +86,11 @@ if not folds:
     sys.exit(0)
 
 
-def wide(sub):
-    w = sub.pivot_table(index=["station", "period", "date"], columns="provider", values="fc", aggfunc="first")
-    w["obs"] = sub.groupby(["station", "period", "date"])["obs"].first()
-    w = w.reset_index().join(stations[["lat", "lon", "elev"]], on="station")
-    return w.dropna(subset=["lat", "lon", "obs"])
-
-
 def run_fold_case(k, rid, agg, var, lead, sub, t0, seed):
     """Un fold per un caso: GPR vs migliore/pesata ex-ante vs modelli, sulle stesse righe."""
     rng = np.random.default_rng(seed)
     tr = gp.transform_of(var)
-    w = wide(sub)
+    w = wide_pairs(sub, stations)
     train = w[w["date"] < t0]
     test = w[w["date"] >= t0]
     provs = [p for p in region_providers(rid) if p in w and train[p].notna().mean() >= G["min_model_coverage"]]
@@ -117,11 +116,7 @@ def run_fold_case(k, rid, agg, var, lead, sub, t0, seed):
     test["GPR"], test["_mu"], test["_sd"] = o["est"], pm, ps
     # media pesata (pesi rinormalizzati sui modelli presenti)
     pw = [p for p in wts.index if p in test]
-    F = test[pw].values
-    M = ~np.isnan(F)
-    wv = wts.loc[pw].values
-    ws = M.astype(float) @ wv
-    test["WEIGHTED"] = np.where(ws > 0.5, (np.where(M, F, 0) @ wv) / np.maximum(ws, 1e-9), np.nan)
+    test["WEIGHTED"] = weighted_mean(test[pw].values, wts.loc[pw].values)
     test["BEST"] = test[best] if best in test else np.nan
     # stesse righe per tutti: dove GPR, BEST e WEIGHTED esistono
     t = test.dropna(subset=["GPR", "BEST", "WEIGHTED"])

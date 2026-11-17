@@ -1,4 +1,10 @@
-"""Accoppiamento previsioni-osservazioni, aggregazioni, metriche e combinazioni."""
+"""Accoppiamento previsioni-osservazioni, aggregazioni, metriche e combinazioni.
+
+Input : archivio parquet (storage.read_forecasts / read_observations),
+        data/stations.csv, config.yaml (verification).
+Output: DataFrame di coppie, punteggi, statistiche giornaliere, migliore e pesi;
+        nessun file scritto (li salvano gli script 03, 04, 07).
+"""
 import numpy as np
 import pandas as pd
 
@@ -6,7 +12,6 @@ from .config import AGGS, CFG, DATA, target_vars
 from .providers import SNAPSHOT_HOURLY_MAX_LEAD
 
 VCFG = CFG["verification"]
-BLOCK_H = {"1h": 1, "6h": 6, "24h": 24}
 MIN_T = {"1h": 1, "6h": 5, "24h": 20}      # ore minime per medie / max / min di temperatura
 MIN_P = {"1h": 1, "6h": 6, "24h": 23}      # ore minime per somme di pioggia (23: giorno con cambio ora)
 
@@ -77,7 +82,6 @@ def hourly_pairs(fc, obs, stations=None):
 
 def aggregate_pairs(hp, agg):
     """-> coppie long: station, provider, lead_day, period, agg, var, fc, obs"""
-    hp = hp
     if agg == "1h":                                 # niente 1h per provider a passo 3-6 h
         lim = hp["provider"].map(SNAPSHOT_HOURLY_MAX_LEAD).fillna(99)
         hp = hp[hp["lead_day"] <= lim]
@@ -159,6 +163,14 @@ def score_table(pairs, by=("region", "provider", "agg", "var", "lead_day")):
 
 
 # ---------------------------------------------------------------- combinazioni
+def weighted_mean(F, w):
+    """Media pesata per riga di F (righe x provider) con pesi w, rinormalizzati
+    sui provider presenti; NaN se manca piu' di meta' del peso."""
+    M = ~np.isnan(F)
+    ws = M.astype(float) @ w
+    return np.where(ws > 0.5, (np.where(M, F, 0) @ w) / np.maximum(ws, 1e-9), np.nan)
+
+
 def best_and_weights(scores):
     """Per ogni (regione, agg, var, lead) -> provider migliore e pesi 1/MSE.
     Entrano solo i modelli che coprono tutta la regione, cosi' le
@@ -197,11 +209,7 @@ def combo_forecasts(pairs, sel):
             continue
         best = s.loc[s["is_best"], "provider"].iloc[0]
         w = s.set_index("provider").loc[provs, "weight"].values
-        F = sub[provs].values
-        M = ~np.isnan(F)
-        wf = np.where(M, F, 0) @ w
-        ws = M.astype(float) @ w
-        weighted = np.where(ws > 0.5, wf / np.maximum(ws, 1e-9), np.nan)  # serve >= meta' del peso
+        weighted = weighted_mean(sub[provs].values, w)
         b = sub[best].values if best in sub.columns else np.full(len(sub), np.nan)
         for name, vals in (("BEST", b), ("WEIGHTED", weighted)):
             d = sub.index.to_frame(index=False)
@@ -265,6 +273,16 @@ def stats_to_scores(stats, by=("region", "provider", "agg", "var", "lead_day")):
     keep = list(by) + ["n", "bias", "mae", "rmse", "corr", "r2", "obs_mean"] + \
         [c for c in s.columns if c.split("_")[0] in ("pod", "far", "csi", "ets", "fbias")]
     return s[keep]
+
+
+def wide_pairs(sub, stations):
+    """Coppie long -> una riga per (stazione, periodo) con una colonna per provider,
+    obs e lat, lon, elev della stazione (stations indicizzato per station)."""
+    keys = ["station", "period", "date"]
+    w = sub.pivot_table(index=keys, columns="provider", values="fc", aggfunc="first")
+    w["obs"] = sub.groupby(keys)["obs"].first()
+    w = w.reset_index().join(stations[["lat", "lon", "elev"]], on="station")
+    return w.dropna(subset=["lat", "lon", "obs"])
 
 
 def by_region(pairs, stations):

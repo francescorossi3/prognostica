@@ -8,6 +8,13 @@ Per ciascun caso:
         e' il controllo che dice se stime e incertezze GPR sono affidabili
   b) riaddestra sugli ultimi train_days (holdout incluso) ed esporta il
      modello in JSON per il sito (mappe + interrogazione di un punto)
+
+Input : build/split.parquet, build/holdout_pairs.parquet, build/holdout_combo.parquet
+        (da 03), archivio parquet, data/stats/daily_stats.parquet, config.yaml (gpr).
+Output: build/site/data/gp/<regione>/<var>_<agg>_d<lead>.json e gp/index.json,
+        data/csv/gpr_validation.csv, rankings_holdout.csv, rankings.csv, monthly_trend.csv,
+        build/site/data/scores*.json, trend.json, gpr_validation.json, gpr_station_errors.json;
+        aggiorna data/stats/daily_stats.parquet con il GPR fuori campione.
 """
 import json
 import os
@@ -26,7 +33,8 @@ from joblib import Parallel, delayed
 from meteoita import gp
 from meteoita.config import AGGS, BUILD, CFG, CSV_DIR, DATA, LEADS, SITE_DATA, gridded_ids, provider_names, target_vars
 from meteoita.regions import REGIONS, region_providers
-from meteoita.verify import by_region, daily_stats, merge_stats, pairs_for, rankings, score_table, station_table
+from meteoita.verify import (by_region, daily_stats, merge_stats, pairs_for, rankings, score_table, station_table,
+                             wide_pairs)
 
 warnings.filterwarnings("ignore")                       # avvisi di convergenza sklearn
 os.environ["PYTHONWARNINGS"] = "ignore"                  # anche nei processi paralleli
@@ -38,6 +46,8 @@ st_all = station_table()
 stations = st_all.set_index("station")
 GRID = gridded_ids()
 T0 = end - pd.Timedelta(days=G["train_days"] + CFG["verification"]["holdout_days"] + 1)
+OUT = SITE_DATA / "gp"
+OUT.mkdir(parents=True, exist_ok=True)
 MAX_KEYS = 8000          # (stazione, periodo) campionati per aggregazione: il GPR usa <= n_train_max punti
 
 
@@ -52,16 +62,6 @@ def sample_pairs(agg, seed):
         keep.append(part.iloc[rng.choice(len(part), min(len(part), MAX_KEYS), replace=False)] if len(part) else part)
     keep = pd.concat(keep)
     return by_region(p.merge(keep[["station", "period"]], on=["station", "period"]), st_all)
-OUT = SITE_DATA / "gp"
-OUT.mkdir(parents=True, exist_ok=True)
-
-
-def wide_table(sub):
-    w = sub.pivot_table(index=["station", "period", "date"], columns="provider", values="fc", aggfunc="first")
-    w["obs"] = sub.groupby(["station", "period", "date"])["obs"].first()
-    w = w.reset_index()
-    w = w.join(stations[["lat", "lon", "elev"]], on="station")
-    return w.dropna(subset=["lat", "lon", "obs"])
 
 
 def run_case(rid, agg, var, lead, sub, seed):
@@ -70,7 +70,7 @@ def run_case(rid, agg, var, lead, sub, seed):
     take = lambda idx, n: idx if len(idx) <= n else rng.choice(idx, n, replace=False)   # noqa: E731
     res = {"valid": None, "hold": None, "st_err": None, "index": None, "log": ""}
     tr = gp.transform_of(var)
-    w = wide_table(sub)
+    w = wide_pairs(sub, stations)
     cov = {p: w[p].notna().mean() for p in region_providers(rid) if p in w}
     provs = [p for p, c in cov.items() if c >= G["min_model_coverage"]]
     if not provs:
