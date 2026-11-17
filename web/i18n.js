@@ -2,6 +2,8 @@
 // Si traducono i nodi di testo e gli attributi che corrispondono esattamente a una voce del dizionario
 // (spazi normalizzati) o a una delle regole con espressioni regolari; il contenuto aggiunto dopo viene
 // tradotto al volo (MutationObserver). La scelta resta memorizzata nel browser.
+// Input:  testi della pagina (index.html e contenuto generato da app.js, atmos.js, hires.js), pulsante EN/IT.
+// Output: testi tradotti nel DOM, oggetto globale I18N (t, set, lang); chiama onLang() di app.js al cambio lingua.
 "use strict";
 
 const I18N = (() => {
@@ -68,10 +70,8 @@ const I18N = (() => {
     // mappa 10 m
     "10 m map around the point": "Mappa a 10 m intorno al punto", "· regression kriging on Copernicus covariates": "· regression kriging su covariate Copernicus",
     "Period / hour": "Periodo / ora", "Area": "Area", "Build 10 m map": "Crea mappa a 10 m", "Download CSV": "Scarica CSV",
-    "The forecast is computed at 49 sample points around the place (with the GPR where available, otherwise the model mean), then interpolated to 10 m: a linear trend on Copernicus covariates (elevation, slope and northness from the EU-DEM/Copernicus DEM, imperviousness and tree-cover density HRL 2018) plus ordinary kriging of the residuals. Leave-one-out validation compares it with the trend alone and with plain kriging.":
-      "La previsione è calcolata in 49 punti campione intorno al luogo (con la GPR dove disponibile, altrimenti media dei modelli) e poi interpolata a 10 m: trend lineare su covariate Copernicus (quota, pendenza ed esposizione nord dal DEM EU-DEM/Copernicus, impermeabilizzazione e densità della copertura arborea HRL 2018) più kriging ordinario dei residui. La validazione leave-one-out lo confronta con il solo trend e con il kriging semplice.",
     "Validation (leave-one-out)": "Validazione (leave-one-out)", "Model": "Modello",
-    "Forecast variable shown above (GPR)": "Variabile di previsione mostrata sopra (GPR)", "Water vapour column [kg m⁻²]": "Vapore acqueo in colonna [kg m⁻²]",
+    "Water vapour column [kg m⁻²]": "Vapore acqueo in colonna [kg m⁻²]",
     "Air temperature 2 m [°C]": "Temperatura dell'aria 2 m [°C]", "Air density [kg m⁻³]": "Densità dell'aria [kg m⁻³]",
     "Global irradiance [W m⁻²]": "Irradianza globale [W m⁻²]", "TIR L8/9 B10 transmittance": "TIR L8/9 B10 trasmittanza",
     "TIR L8/9 B10 upwelling radiance": "TIR L8/9 B10 radianza in salita", "TIR L8/9 B10 downwelling radiance": "TIR L8/9 B10 radianza in discesa",
@@ -90,7 +90,7 @@ const I18N = (() => {
       "La tabella iperspettrale è in calcolo su Torricelli: per ora bande Sentinel-2.",
     "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.": "Sole sotto i 10° a quest'ora: nessuno spettro VNIR-SWIR.",
     "Wavelength [nm]": "Lunghezza d'onda [nm]", "Transmittance": "Trasmittanza", "Total transmittance": "Trasmittanza totale", "Path radiance": "Radianza di percorso",
-    "Irradiance": "Irradianza", "E direct [W m⁻² µm⁻¹]": "E diretta [W m⁻² µm⁻¹]", "E diffuse [W m⁻² µm⁻¹]": "E diffusa [W m⁻² µm⁻¹]",
+    "Irradiance": "Irradianza", "E diffuse [W m⁻² µm⁻¹]": "E diffusa [W m⁻² µm⁻¹]",
     "Water vapour, aerosols, radiation, profiles, air density and radiative-transfer parameters for atmospheric correction.":
       "Vapore acqueo, aerosol, radiazione, profili, densità dell'aria e parametri di trasferimento radiativo per la correzione atmosferica.",
     "Choose a place in the Forecast tab (search, map click or calibration site).": "Scegli un luogo nella scheda Previsione (ricerca, clic sulla mappa o sito di calibrazione).",
