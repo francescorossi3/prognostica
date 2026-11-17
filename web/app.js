@@ -1,5 +1,9 @@
 "use strict";
-/* Prognostica - interfaccia del sito (statico, nessun server). */
+/* Prognostica - interfaccia del sito (statico, nessun server).
+   Schede: classifica, eventi, mappe, previsione nel punto, affidabilita' GPR, dati e metodo.
+   Input:  data/*.json prodotti dagli script 03-07 (meta, scores, trend, weights, gp/, maps/, obs_recent, ...),
+           Open-Meteo Forecast API (punto), Photon/Nominatim (ricerca luoghi), italy.geojson.
+   Output: contenuto della pagina (tabelle, grafici Chart.js, mappe Leaflet); nessun file scritto. */
 
 const $ = s => document.querySelector(s);
 const DATA = "data/";
@@ -187,7 +191,7 @@ function renderRank() {
   const tprov = [...new Set(tr.map(r => r.provider))];
   drawChart("r-trend", {
     type: "line",
-    data: { labels: months, datasets: tprov.map((p, i) => ({ label: pname(p),
+    data: { labels: months, datasets: tprov.map(p => ({ label: pname(p),
       data: months.map(m => tr.find(r => r.provider === p && r.month === m)?.[met] ?? null),
       borderColor: PALETTE[provs.indexOf(p) % PALETTE.length], borderWidth: 1.5, pointRadius: 2, spanGaps: true })) },
     options: { plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: met.toUpperCase() + unit } } } },
@@ -453,11 +457,12 @@ function setPoint(lat, lon, label = null) {
 
 // componenti di data/ora locali (fuso tz) per un istante UTC
 const DTFS = {};
+const DTF_OPTS = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" };
 function localParts(ms, tz = "Europe/Rome") {
   let f = DTFS[tz];
   if (!f) {
-    try { f = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" }); }
-    catch { f = new Intl.DateTimeFormat("en-CA", { timeZone: "UTC", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" }); }
+    try { f = new Intl.DateTimeFormat("en-CA", { ...DTF_OPTS, timeZone: tz }); }
+    catch { f = new Intl.DateTimeFormat("en-CA", { ...DTF_OPTS, timeZone: "UTC" }); }
     DTFS[tz] = f;
   }
   const p = Object.fromEntries(f.formatToParts(new Date(ms)).map(x => [x.type, x.value]));
@@ -563,17 +568,16 @@ function obsAt(P, agg, v, key) {
   const st = P.station;
   if (!st) return null;
   P.obsAgg ||= {};
-  const k = `${agg}`;
-  if (!P.obsAgg[k]) {
+  if (!P.obsAgg[agg]) {
     const n = S.obs.t2m[st.id].length, times = Array.from({ length: n }, (_, i) => S.obs.start_ms + i * 3600000);
-    P.obsAgg[k] = aggregateSeries(times, S.obs.t2m[st.id], S.obs.prcp[st.id], agg, P.tz);
+    P.obsAgg[agg] = aggregateSeries(times, S.obs.t2m[st.id], S.obs.prcp[st.id], agg, P.tz);
   }
-  return P.obsAgg[k][key]?.[v] ?? null;
+  return P.obsAgg[agg][key]?.[v] ?? null;
 }
 
 async function computePoint(agg, v) {
-  const P = S.point, today = localParts(Date.now(), P.tz).date;
-  const nl = localParts(Date.now(), P.tz);                 // periodo in corso: quelli prima sono "passati"
+  const P = S.point;
+  const nl = localParts(Date.now(), P.tz), today = nl.date;   // periodo in corso: quelli prima sono "passati"
   const nowKey = agg === "24h" ? `${nl.date}T00:00` : `${nl.date}T${String(agg === "6h" ? Math.floor(nl.hour / 6) * 6 : nl.hour).padStart(2, "0")}:00`;
   const per = {};
   for (const id in P.raw) {
@@ -626,7 +630,7 @@ async function renderPoint() {
       <dt>GPR estimate</dt><dd><span class="big">${first?.gpr ? fmt(first.gpr.est, 1) : "–"}</span> ${u}
         ${first?.gpr ? ` (68%: ${fmt(first.gpr.lo68, 1)} – ${fmt(first.gpr.hi68, 1)})` : ""}</dd>
       <dt>Best</dt><dd>${fmt(first?.best, 1)} ${u} ${first?.bestId ? "· " + pname(first.bestId) : ""}</dd>
-      <dt>${P.region && regionOf(P.region).verify !== false ? "Weighted mean" : "Model mean"}</dt><dd>${fmt(first?.weighted, 1)} ${u}</dd>
+      <dt>${pver ? "Weighted mean" : "Model mean"}</dt><dd>${fmt(first?.weighted, 1)} ${u}</dd>
       ${v === "prcp" ? `<dt>Probability ≥ ${S.meta.prcp_thresholds[agg][0]} mm</dt><dd>${fmt(first?.prob, 0)} %</dd>` : ""}
     </dl><p class="hint">${!P.region ? "Point far from Italy and the calibration sites: only the global models and their mean, no verified combinations."
       : regionOf(P.region).verify === false ? `Near a ${regionOf(P.region).name} site: model data only (simple mean), no verification or GPR.`
@@ -635,7 +639,7 @@ async function renderPoint() {
   const labels = rows.map(r => r.period.replace("T", " ").replace(" 00:00", agg === "24h" ? "" : " 00:00"));
   const provIds = Object.keys(P.raw);
   const ds = provIds.map(id => ({ label: pname(id), data: rows.map(r => r.vals[id] ?? null), borderColor: "#c3c8d0",
-    borderWidth: 1, pointRadius: 0, spanGaps: true, type: v === "prcp" && agg !== "1h" ? "line" : "line" }));
+    borderWidth: 1, pointRadius: 0, spanGaps: true, type: "line" }));
   ds.push({ label: "GPR 95%", data: rows.map(r => r.gpr?.hi95 ?? null), borderWidth: 0, pointRadius: 0, backgroundColor: "rgba(17,24,39,.12)", fill: "+1" },
     { label: "_lo", data: rows.map(r => r.gpr?.lo95 ?? null), borderWidth: 0, pointRadius: 0 },
     { label: COMBO.GPR, data: rows.map(r => r.gpr?.est ?? null), borderColor: "#111827", borderWidth: 2.5, pointRadius: 0 },
@@ -668,6 +672,13 @@ async function renderPoint() {
 }
 
 // ================================================================== VALIDAZIONE
+// classe di colore della copertura di un intervallo rispetto al valore nominale
+function coverageClass(x, nom) {
+  if (x == null) return "";
+  const d = Math.abs(x - nom);
+  if (d < 0.07) return "ok";
+  return d < 0.15 ? "meh" : "bad";
+}
 function initValid() {
   opts($("#v-agg"), S.meta.aggs.map(a => [a, AGG_LABEL[a]]), "24h");
   const upd = () => { opts($("#v-var"), varsFor($("#v-agg").value).map(v => [v, VAR_LABEL[v]]), $("#v-var").value || "t2m"); renderValid(); };
@@ -677,12 +688,11 @@ function initValid() {
 function renderValid() {
   if (!isVerified()) { $("#v-table").innerHTML = `<tr><td>${NOVER}</td></tr>`; $("#b-table").innerHTML = ""; $("#b-hint").textContent = ""; return; }
   const v = $("#v-var").value, agg = $("#v-agg").value, u = VAR_UNIT[v];
-  renderBacktest(v, agg, u);
+  renderBacktest(v, agg);
   const rows = S.gpval.filter(r => r.var === v && r.agg === agg && inR(r)).sort((a, b) => a.lead_day - b.lead_day);
   const hs = (p, l) => S.hold.find(r => r.provider === p && r.var === v && r.agg === agg && r.lead_day === l && inR(r));
   const bestProv = l => S.hold.filter(r => r.var === v && r.agg === agg && r.lead_day === l && !(r.provider in COMBO) && inR(r))
     .sort((a, b) => a.rmse - b.rmse)[0];
-  const cls = (x, nom) => (x == null ? "" : Math.abs(x - nom) < 0.07 ? "ok" : Math.abs(x - nom) < 0.15 ? "meh" : "bad");
   let html = `<thead><tr><th>Lead</th><th>n</th><th>MAE GPR</th><th>RMSE GPR</th><th>RMSE best provider (ex post)</th><th>RMSE ★ Best</th>
     <th>RMSE ⚖ Weighted</th><th>R² ◆ GPR</th><th>R² ★ Best</th><th>R² ⚖ Weighted</th><th>Bias GPR</th><th>Coverage 68%</th><th>Coverage 95%</th><th>Mean uncertainty</th></tr></thead><tbody>`;
   if (!rows.length) html += `<tr><td colspan="14">No validation available yet for this case (at least 14 days of record are needed).</td></tr>`;
@@ -692,13 +702,13 @@ function renderValid() {
       <td>${bp ? fmt(bp.rmse) + ` <span class="tag">${pname(bp.provider)}</span>` : "–"}</td>
       <td>${fmt(hs("BEST", r.lead_day)?.rmse)}</td><td>${fmt(hs("WEIGHTED", r.lead_day)?.rmse)}</td>
       <td><b>${fmt(r.r2, 3)}</b></td><td>${fmt(hs("BEST", r.lead_day)?.r2, 3)}</td><td>${fmt(hs("WEIGHTED", r.lead_day)?.r2, 3)}</td><td>${fmt(r.bias)}</td>
-      <td class="${cls(r.cov68, .68)}">${fmt(100 * r.cov68, 0)}%</td><td class="${cls(r.cov95, .95)}">${fmt(100 * r.cov95, 0)}%</td>
+      <td class="${coverageClass(r.cov68, .68)}">${fmt(100 * r.cov68, 0)}%</td><td class="${coverageClass(r.cov95, .95)}">${fmt(100 * r.cov95, 0)}%</td>
       <td>${fmt(r.mean_unc)} ${u}</td></tr>`;
   });
   $("#v-table").innerHTML = html + "</tbody>";
 }
 
-function renderBacktest(v, agg, u) {
+function renderBacktest(v, agg) {
   const rows = (S.bt || []).filter(r => r.var === v && r.agg === agg && inR(r)).sort((a, b) => a.lead_day - b.lead_day);
   if (!rows.length) {
     $("#b-hint").textContent = "Not available yet: the back-test needs about two months of record. The record is rebuilt automatically "
@@ -707,7 +717,6 @@ function renderBacktest(v, agg, u) {
   }
   $("#b-hint").textContent = `Test blocks from ${rows[0].first_test} to ${rows[0].last_test} (${rows[0].folds} blocks of 14 days, each trained only on the previous 45 days). `
     + "Skill = RMSE reduction of the GPR with respect to the Best provider chosen in advance (positive = GPR better).";
-  const cls = (x, nom) => (x == null ? "" : Math.abs(x - nom) < 0.07 ? "ok" : Math.abs(x - nom) < 0.15 ? "meh" : "bad");
   const sk = x => (x == null ? "" : x > 2 ? "ok" : x > -2 ? "meh" : "bad");
   let html = `<thead><tr><th>Lead</th><th>Blocks</th><th>n</th><th>RMSE ◆ GPR</th><th>RMSE ★ Best (ex ante)</th><th>Skill vs Best</th>
     <th>GPR better than Best</th><th>RMSE ⚖ Weighted</th><th>RMSE best ex post</th><th>R² ◆ GPR</th><th>R² ★ Best</th><th>R² ⚖ Weighted</th>
@@ -717,7 +726,7 @@ function renderBacktest(v, agg, u) {
       <td>${fmt(r.rmse_best_exante)}</td><td class="${sk(r.skill_vs_best_pct)}">${fmt(r.skill_vs_best_pct, 1)}%</td>
       <td>${fmt(100 * r.share_gpr_beats_best, 0)}% of blocks</td><td>${fmt(r.rmse_weighted)}</td><td>${fmt(r.rmse_best_expost)}</td>
       <td><b>${fmt(r.r2_gpr, 3)}</b></td><td>${fmt(r.r2_best_exante, 3)}</td><td>${fmt(r.r2_weighted, 3)}</td>
-      <td class="${cls(r.cov68, .68)}">${fmt(100 * r.cov68, 0)}%</td><td class="${cls(r.cov95, .95)}">${fmt(100 * r.cov95, 0)}%</td></tr>`;
+      <td class="${coverageClass(r.cov68, .68)}">${fmt(100 * r.cov68, 0)}%</td><td class="${coverageClass(r.cov95, .95)}">${fmt(100 * r.cov95, 0)}%</td></tr>`;
   });
   $("#b-table").innerHTML = html + "</tbody>";
 }
