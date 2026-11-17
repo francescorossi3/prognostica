@@ -69,6 +69,7 @@ flowchart LR
   i18n[i18n.js<br>dizionario EN-IT] --> app
   ms[mapstyle.js<br>pannelli Layer e Stile] --> M
   ms --> H
+  ex[export.js<br>download CSV e GeoTIFF] --> app
 ```
 
 Le schede sono in tre gruppi: previsione e sua verifica (Forecast, Maps, Accuracy, Events), atmosfera (Atmosphere, Atmosphere RK) e Data & method.
@@ -76,7 +77,7 @@ Le schede sono in tre gruppi: previsione e sua verifica (Forecast, Maps, Accurac
 | Scheda | Cosa mostra | File |
 |---|---|---|
 | Forecast | Previsione GPR con incertezza e singoli modelli per il luogo scelto nella barra di ricerca (grafico e tabella scorrevoli) | `app.js`, `gp.js` |
-| Atmosphere | Parametri di superficie e di colonna, profilo verticale, trasferimento radiativo 6S | `atmos.js` |
+| Atmosphere | Riepilogo dell'ora, grafici (profilo verticale, prossimi giorni, spettro 6S con spiegazioni al passaggio del mouse), scelta del modello di trasferimento radiativo, equazioni della radianza al sensore per VNIR–SWIR e LWIR | `atmos.js` |
 | Atmosphere RK | Mappa a 10 m con regression kriging, barra di avanzamento, punti di validazione leave-one-out sulla mappa, pannelli Layer e Stile, download GeoTIFF/CSV | `hires.js`, `mapstyle.js`, `gp.js` |
 | Maps | Mappe regionali: migliore, media pesata, GPR, incertezza, probabilità di pioggia; pannelli Layer e Stile | `app.js`, `mapstyle.js` |
 | Accuracy | Errore di ogni modello per anticipo e andamento mensile; holdout e backtest storico del GPR | `app.js` |
@@ -98,6 +99,7 @@ flowchart LR
 ```
 
 - **Torricelli** (`config.yaml → site.atmos_url`): `atmos.js` legge le tabelle 6S da Torricelli e, se non sono disponibili, usa la copia locale in `web/data/`.
+- **Dati atmosferici di partenza**: ECMWF IFS 0,25° (~25 km: vapore acqueo, pressione, temperatura) e CAMS globale 0,4° (~45 km: AOD 550 nm) da Open-Meteo, valore della cella di griglia di ogni punto. La tabella 6S viene interpolata in vapore acqueo, AOD, angolo zenitale solare e quota del suolo.
 - **Census** (`config.yaml → site.goatcounter`): `app.js` invia eventi anonimi senza cookie a GoatCounter, con prefisso `prognostica/`. Census li legge.
 
 ## 5. Workflow e orari (UTC)
@@ -152,8 +154,9 @@ gantt
 | `web/app.js` | Interfaccia principale: Forecast, Maps, accuratezza, eventi, GPR, dati |
 | `web/gp.js` | Predizione GPR nel browser (stessi risultati di Python) |
 | `web/atmos.js` | Scheda Atmosphere e trasferimento radiativo 6S |
-| `web/hires.js` | Atmosphere RK: regression kriging a 10 m (valori in 49–121 punti campione da Open-Meteo + 6S, trend su covariate Copernicus, kriging dei residui, validazione leave-one-out) ed export GeoTIFF |
+| `web/hires.js` | Atmosphere RK: regression kriging a 10 m (valori in 49–121 punti campione da Open-Meteo + 6S, trend sulla sola quota, kriging dei residui, validazione leave-one-out) ed export GeoTIFF |
 | `web/mapstyle.js` | Simbologia delle mappe come in QGIS: pannello Layer (mostra/nascondi, ordine) e pannello Stile (scala di colori, min/max, classi, opacità, istogramma, legenda) |
+| `web/export.js` | Download in tutte le schede: grafici e tabelle in CSV, mappe in GeoTIFF Float32 (EPSG:4326) |
 | `web/i18n.js` | Dizionario inglese → italiano |
 | `tests/test_gp_consistency.py` | Controlla che sklearn, `meteoita.gp` e `web/gp.js` diano la stessa predizione GPR |
 
