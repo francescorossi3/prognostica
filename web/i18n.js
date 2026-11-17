@@ -14,8 +14,8 @@ const I18N = (() => {
     "CSV": "CSV", "Download the data of this chart (CSV)": "Scarica i dati di questo grafico (CSV)", "Download this table (CSV)": "Scarica questa tabella (CSV)",
     "Selected layer at the period shown": "Layer selezionato al periodo mostrato",
     "Radiative transfer model, VNIR–SWIR": "Modello di trasferimento radiativo, VNIR–SWIR", "LWIR": "LWIR",
-    "6S (look-up tables from Torricelli)": "6S (tabelle di Torricelli)", "libRadtran (not available yet)": "libRadtran (non ancora disponibile)",
-    "MODTRAN (not available yet)": "MODTRAN (non ancora disponibile)", "RTTOV (not available yet)": "RTTOV (non ancora disponibile)",
+    
+    
     "Water-vapour functions, Jiménez-Muñoz et al. 2014 (Landsat B10)": "Funzioni del vapore acqueo, Jiménez-Muñoz et al. 2014 (Landsat B10)",
     "Spectral radiative transfer, VNIR–SWIR": "Trasferimento radiativo spettrale, VNIR–SWIR",
     "6S, nadir view, continental aerosol. Hover over a legend entry to see what it is.": "6S, vista al nadir, aerosol continentale. Passa il mouse su una voce della legenda per sapere cos'è.",
@@ -36,8 +36,7 @@ const I18N = (() => {
     "Upwelling path radiance emitted by the atmosphere towards the sensor.": "Radianza di percorso emessa dall'atmosfera verso il sensore.",
     "Downwelling radiance emitted by the atmosphere towards the ground (hemispheric, divided by π), partly reflected by the surface.": "Radianza emessa dall'atmosfera verso il suolo (emisferica, divisa per π), in parte riflessa dalla superficie.",
     "Surface emissivity.": "Emissività della superficie.", "Planck radiance of a black body at the land surface temperature": "Radianza di Planck di un corpo nero alla temperatura della superficie",
-    "6S does not cover the LWIR: τ, L↑ and L↓ come from the water-vapour functions of Jiménez-Muñoz et al. (2014) for Landsat 8/9 band 10. Other models can be added in Torricelli as look-up tables with the same axes.":
-      "6S non copre il LWIR: τ, L↑ e L↓ vengono dalle funzioni del vapore acqueo di Jiménez-Muñoz et al. (2014) per la banda 10 di Landsat 8/9. Altri modelli si possono aggiungere in Torricelli come tabelle con gli stessi assi.",
+    "6S does not cover the LWIR: τ, L↑ and L↓ come from the water-vapour functions of Jiménez-Muñoz et al. (2014) for Landsat 8/9 band 10.": "6S non copre il LWIR: τ, L↑ e L↓ vengono dalle funzioni del vapore acqueo di Jiménez-Muñoz et al. (2014) per la banda 10 di Landsat 8/9.",
     "Downward transmittance (Sun → ground) left by scattering of molecules and aerosols, direct + diffuse": "Trasmittanza verso il basso (Sole → suolo) lasciata dallo scattering di molecole e aerosol, diretta + diffusa",
     "Upward transmittance (ground → sensor) left by scattering, direct + diffuse": "Trasmittanza verso l'alto (suolo → sensore) lasciata dallo scattering, diretta + diffusa",
     "Transmittance of gas absorption (water vapour, ozone, O₂, CO₂, CH₄…) along the Sun – ground – sensor path": "Trasmittanza dell'assorbimento dei gas (vapore acqueo, ozono, O₂, CO₂, CH₄…) lungo il percorso Sole – suolo – sensore",
@@ -164,8 +163,7 @@ const I18N = (() => {
     "4/4 · predicting on the 10 m grid…": "4/4 · previsione sulla griglia a 10 m…",
     "Atmosphere": "Atmosfera", "10 m map": "Mappa 10 m", "Resolution": "Risoluzione", 
     "Spectral radiative transfer": "Trasferimento radiativo spettrale", 
-    "Sentinel-2 bands (13)": "Bande Sentinel-2 (13)", "The hyperspectral table is being computed by Torricelli: Sentinel-2 bands for now.":
-      "La tabella iperspettrale è in calcolo su Torricelli: per ora bande Sentinel-2.",
+    "Sentinel-2 bands (13)": "Bande Sentinel-2 (13)", "The hyperspectral 6S table is not available yet: Sentinel-2 bands for now.": "La tabella 6S iperspettrale non è ancora disponibile: per ora bande Sentinel-2.",
     "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.": "Sole sotto i 10° a quest'ora: nessuno spettro VNIR-SWIR.",
     "Wavelength [nm]": "Lunghezza d'onda [nm]", "Transmittance": "Trasmittanza", "Total transmittance": "Trasmittanza totale", "Path radiance": "Radianza di percorso",
     "Irradiance": "Irradianza", "E diffuse [W m⁻² µm⁻¹]": "E diffusa [W m⁻² µm⁻¹]",

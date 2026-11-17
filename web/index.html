@@ -78,14 +78,9 @@
     <span class="hint">Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).</span></div>
   <div class="controls">
     <label>Radiative transfer model, VNIR–SWIR <select id="a-rtm-vs">
-      <option value="6s">6S (look-up tables from Torricelli)</option>
-      <option disabled>libRadtran (not available yet)</option>
-      <option disabled>MODTRAN (not available yet)</option></select></label>
+      <option value="6s">6S</option></select></label>
     <label>LWIR <select id="a-rtm-lw">
-      <option value="jm14">Water-vapour functions, Jiménez-Muñoz et al. 2014 (Landsat B10)</option>
-      <option disabled>MODTRAN (not available yet)</option>
-      <option disabled>libRadtran (not available yet)</option>
-      <option disabled>RTTOV (not available yet)</option></select></label>
+      <option value="jm14">Water-vapour functions, Jiménez-Muñoz et al. 2014 (Landsat B10)</option></select></label>
   </div>
   <div id="a-box"></div>
   <div class="grid2">
@@ -129,8 +124,7 @@
       <dt>ε</dt><dd>Surface emissivity.</dd>
       <dt>B(T<sub>s</sub>)</dt><dd>Planck radiance of a black body at the land surface temperature T<sub>s</sub>.</dd>
     </dl>
-    <p class="hint">6S does not cover the LWIR: τ, L↑ and L↓ come from the water-vapour functions of Jiménez-Muñoz et al. (2014) for Landsat 8/9 band 10.
-      Other models can be added in Torricelli as look-up tables with the same axes.</p>
+    <p class="hint">6S does not cover the LWIR: τ, L↑ and L↓ come from the water-vapour functions of Jiménez-Muñoz et al. (2014) for Landsat 8/9 band 10.</p>
   </details>
 </section>
 

@@ -138,7 +138,7 @@ const ATM = (() => {
     const sets = [...(H ? [["hyper", `6S every ${Math.round((H.bands[Object.keys(H.bands)[1]].wl_um - H.bands[Object.keys(H.bands)[0]].wl_um) * 1000)} nm (${Object.keys(H.bands).length} wavelengths)`]] : []),
       ["s2", "Sentinel-2 bands (13)"]];
     opts($("#a-specset"), sets, $("#a-specset").value && sets.some(x => x[0] === $("#a-specset").value) ? $("#a-specset").value : sets[0][0]);
-    $("#a-specnote").textContent = H ? "" : "The hyperspectral table is being computed by Torricelli: Sentinel-2 bands for now.";
+    $("#a-specnote").textContent = H ? "" : "The hyperspectral 6S table is not available yet: Sentinel-2 bands for now.";
     $("#a-specset").onchange = () => renderHour(+$("#a-hour").value);
     // ora proposta: la prossima con il sole più alto (circa il passaggio dei satelliti eliosincroni ~10:30 locali)
     const now = Date.now();
@@ -205,7 +205,7 @@ const ATM = (() => {
     }
     const lp = localParts(d.times[k], P.tz), i = o.rtIn;
     const csvName = `spectrum_${P.lat.toFixed(3)}_${P.lon.toFixed(3)}_${lp.date}_${String(lp.hour).padStart(2, "0")}h`;
-    const csvHead = [`Prognostica / Torricelli - 6S at ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} (${fmt(P.elev, 0)} m), ${lp.date} ${String(lp.hour).padStart(2, "0")}:00 ${P.tz}`,
+    const csvHead = [`Prognostica - 6S at ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} (${fmt(P.elev, 0)} m), ${lp.date} ${String(lp.hour).padStart(2, "0")}:00 ${P.tz}`,
       `inputs: water vapour ${i.w.toFixed(3)} g cm-2, AOD550 ${i.aot.toFixed(3)}, solar zenith ${i.sza.toFixed(2)} deg, altitude ${i.alt.toFixed(3)} km; nadir view, continental aerosol, ozone 0.30 cm-atm`];
     const xy = key => rows.map(r => ({ x: r.wl, y: r[key] }));
     const line = (label, key, color, extra = {}) => ({ label, data: xy(key), borderColor: color, backgroundColor: color, pointRadius: rows.length < 20 ? 3 : 0, borderWidth: 1.6, showLine: true, ...extra });
