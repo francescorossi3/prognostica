@@ -35,8 +35,30 @@ function drawChart(id, cfg) {
     if (cfg.data.labels) cfg.data.labels = cfg.data.labels.map(l => I18N.t(l));
     Object.values(cfg.options?.scales || {}).forEach(a => { if (a.title?.text) a.title.text = I18N.t(a.title.text); });
   }
-  charts[id] = new Chart(document.getElementById(id), cfg);
+  const cv = document.getElementById(id), host = cv.closest(".chart-box, .card");
+  charts[id] = new Chart(cv, cfg);
+  // pulsante CSV del grafico (uno per grafico, usa sempre i dati attuali)
+  if (host && !host.querySelector(`button.dl[data-for="${id}"]`)) {
+    host.classList.add("has-dl");
+    EXPORT.button(host.firstChild, "CSV", "Download the data of this chart (CSV)",
+      () => EXPORT.chart(charts[id], `${charts[id].config.options.csvName || id}.csv`, charts[id].config.options.csvHead)).dataset.for = id;
+  }
   return charts[id];
+}
+// legenda HTML sopra un grafico: clic = mostra/nascondi la serie; tips = spiegazione al passaggio del mouse
+function htmlLegend(ch, el, tips = {}) {
+  el.innerHTML = ch.data.datasets.map((d, k) => d.label.startsWith("_") ? ""
+    : `<button data-k="${k}" title="${tips[k] || "Show / hide"}"><i style="background:${d.borderColor || d.backgroundColor}"></i>${d.label}</button>`).join("");
+  el.querySelectorAll("button").forEach(b => b.onclick = () => {
+    const k = +b.dataset.k; ch.setDatasetVisibility(k, !ch.isDatasetVisible(k)); b.classList.toggle("off"); ch.update(); });
+}
+// pulsante CSV per ogni tabella del sito
+function tableDownloads() {
+  document.querySelectorAll("main table").forEach(t => {
+    const host = t.closest(".card, details");
+    host.classList.add("has-dl");
+    EXPORT.button(host.querySelector(":scope > summary")?.nextSibling || host.firstChild, "CSV", "Download this table (CSV)", () => EXPORT.table(t, `${t.id}.csv`));
+  });
 }
 
 // statistiche d'uso anonime (GoatCounter, senza cookie) -> repository privato Census
@@ -77,7 +99,7 @@ function initStats() {
   const h0 = location.hash.slice(1);              // scheda richiesta nel link (prima che il punto riscriva l'indirizzo)
   if (h0) showTab(h0.split("?")[0]);
   initStats();
-  initRank(); initEvents(); initMaps(); initPoint(); initData();
+  initRank(); initEvents(); initMaps(); initPoint(); initData(); tableDownloads();
   refreshAll();
   if (h0) showTab(h0.split("?")[0]);
 })();
@@ -290,6 +312,8 @@ function initMaps() {
   };
   $("#m-agg").onchange = upd; $("#m-var").onchange = loadMap;
   $("#m-time").oninput = () => renderMap();
+  $("#m-tif").onclick = () => mapExport("tif");
+  $("#m-csv").onclick = () => mapExport("csv");
   $("#m-add").onclick = () => { const o = $("#m-layer").selectedOptions[0]; if (o) { addMapLayer(o.value, o.text); renderMap(); } };
   S.map.on("click", e => mapPopup(e.latlng.wrap()));
   opts($("#m-var"), varsFor($("#m-agg").value).map(v => [v, VAR_LABEL[v]]), "t2m");
@@ -378,6 +402,24 @@ function renderMap(keepPanels = false) {
   const tzl = m.timezone === "locale" ? " local time" : m.timezone && m.timezone !== "Europe/Rome" ? ` ${m.timezone}` : "";
   $("#m-time-label").textContent = `${per}${tzl} (${leadLabel(m.lead_day[i])})${showBest ? ` · best: ${pname(m.best_provider[i])}` : ""}`;
   if (keepPanels !== true) mapPanels();
+}
+
+// download del layer di dati selezionato (o del più alto visibile) al periodo mostrato
+function mapExport(kind) {
+  const m = curMap(), i = +$("#m-time").value;
+  const l = S.mlayers.find(x => x.id === S.msel && x.kind === "data") || S.mlayers.find(x => x.kind === "data" && x.visible);
+  if (!m || !l) return;
+  const vals = layerValues(m, l.key, i), per = m.periods[i].replace(/[T:]/g, "-");
+  const name = `${S.region}_${$("#m-var").value}_${$("#m-agg").value}_${l.key.replace(":", "-")}_${per}`;
+  if (kind === "csv" || !m.res) {
+    return EXPORT.save(EXPORT.csv([["lat", "lon", ...(m.names ? ["name"] : []), l.key], ...vals.map((x, k) => [m.lat[k], m.lon[k], ...(m.names ? [m.names[k]] : []), x])],
+      [`${l.name} · ${m.periods[i]} · unit ${unitOf(l.key)}`]), name + ".csv");
+  }
+  const r = m.res, lon0 = Math.min(...m.lon) - r / 2, lat0 = Math.max(...m.lat) + r / 2;
+  const W = Math.round((Math.max(...m.lon) - Math.min(...m.lon)) / r) + 1, H = Math.round((Math.max(...m.lat) - Math.min(...m.lat)) / r) + 1;
+  const g = new Float32Array(W * H).fill(NaN);
+  vals.forEach((x, k) => { if (x != null) g[Math.round((lat0 - r / 2 - m.lat[k]) / r) * W + Math.round((m.lon[k] - lon0 - r / 2) / r)] = x; });
+  EXPORT.geotiff(g, W, H, lon0, lat0, r, r, `${l.name} | ${m.periods[i]} | ${unitOf(l.key)} | Prognostica`, name + ".tif");
 }
 
 function mapPanels() {
@@ -678,8 +720,8 @@ async function renderPoint() {
   const provIds = Object.keys(P.raw);
   const ds = provIds.map(id => ({ label: pname(id), data: rows.map(r => r.vals[id] ?? null), borderColor: "#c3c8d0",
     borderWidth: 1, pointRadius: 0, spanGaps: true, type: "line" }));
-  ds.push({ label: "GPR 95%", data: rows.map(r => r.gpr?.hi95 ?? null), borderWidth: 0, pointRadius: 0, backgroundColor: "rgba(17,24,39,.12)", fill: "+1" },
-    { label: "_lo", data: rows.map(r => r.gpr?.lo95 ?? null), borderWidth: 0, pointRadius: 0 },
+  ds.push({ label: "GPR 95%", csvLabel: "GPR 95% upper", data: rows.map(r => r.gpr?.hi95 ?? null), borderWidth: 0, pointRadius: 0, backgroundColor: "rgba(17,24,39,.12)", fill: "+1" },
+    { label: "_lo", csvLabel: "GPR 95% lower", data: rows.map(r => r.gpr?.lo95 ?? null), borderWidth: 0, pointRadius: 0 },
     { label: COMBO.GPR, data: rows.map(r => r.gpr?.est ?? null), borderColor: "#111827", borderWidth: 2.5, pointRadius: 0 },
     { label: COMBO.BEST, data: rows.map(r => r.best), borderColor: "#1f6feb", borderWidth: 2, pointRadius: 0, borderDash: [2, 2] },
     { label: wLabel, data: rows.map(r => r.weighted), borderColor: "#e8590c", borderWidth: 2, pointRadius: 0, borderDash: [6, 3] });
@@ -701,13 +743,10 @@ async function renderPoint() {
     cv.getContext("2d").drawImage(c.canvas, 0, 0, w * r, c.height * r, 0, 0, w * r, c.height * r); } };
   const ch = drawChart("p-chart", { type: "line", data: { labels, datasets: ds }, plugins: [nowLine, yAxis],
     options: { animation: false, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
-      plugins: { legend: { display: false } },
+      csvName: `forecast_${v}_${agg}_${P.lat.toFixed(3)}_${P.lon.toFixed(3)}`, plugins: { legend: { display: false } },
       scales: { y: { title: { display: true, text: `${VAR_LABEL[v]} [${u}]` }, ...(v === "prcp" ? { min: 0 } : {}) },
         x: { ticks: { maxTicksLimit: Math.round(width / 90), maxRotation: 0 } } } } });
-  $("#p-legend").innerHTML = ch.data.datasets.map((d, k) => d.label.startsWith("_") ? ""
-    : `<button data-k="${k}"><i style="background:${d.borderColor || d.backgroundColor}"></i>${d.label}</button>`).join("");
-  $("#p-legend").querySelectorAll("button").forEach(b => b.onclick = () => {
-    const k = +b.dataset.k; ch.setDatasetVisibility(k, !ch.isDatasetVisible(k)); b.classList.toggle("off"); ch.update(); });
+  htmlLegend(ch, $("#p-legend"));
   // si parte con "adesso" a un quarto della larghezza visibile
   if (nowIdx > 0) box.scrollLeft = ch.scales.x.getPixelForValue(nowIdx) - box.clientWidth / 4;
   let html = `<thead><tr><th>Period</th><th>Lead</th>${P.station ? "<th>Observed</th>" : ""}<th>◆ GPR</th><th>±1σ</th><th>95%</th>${v === "prcp" ? "<th>P(≥ threshold)</th>" : ""}
@@ -834,15 +873,15 @@ function initData() {
   are interpolated from a look-up table computed with the 6S code (water vapour × AOD × solar zenith × altitude; nadir view, continental aerosol,
   ozone 0.30 cm-atm). For the thermal infrared, transmittance and up/down-welling radiance of Landsat 8/9 band 10 come from the water-vapour functions
   of Jiménez-Muñoz et al. (2014). The hourly archive at the stations and calibration sites is kept by the atmospheric back-end repository.</p>
-  <h3>10 m maps (regression kriging)</h3>
+  <h3>Atmosphere RK: 10 m maps (regression kriging)</h3>
   <p>The value is computed at 49–121 sample points around the place (7×7 to 11×11 depending on the area, 2–30 km; GPR forecast where available, otherwise the model mean; atmospheric quantities
   from the same sources as above, with the 6S table at the 10 m elevation). It is then mapped on a 10 m grid as
-  <i>trend + kriged residual</i>: the trend is a linear regression on Copernicus covariates (elevation, slope and northness from the
-  Copernicus DEM / EU-DEM, imperviousness and tree-cover density from the EEA High Resolution Layers 2018), the residuals are interpolated by
+  <i>trend + kriged residual</i>: the trend is a linear regression on the ground elevation (Copernicus DEM / EU-DEM), the only 10 m quantity that
+  changes the atmosphere above the ground; land-cover layers are not used because they are not contemporaneous with the atmosphere. The residuals are interpolated by
   ordinary kriging with an exponential variogram fitted to them. The map of the kriging standard deviation shows where the interpolation is
   less certain. Validation is leave-one-out at the sample points: RMSE, MAE, bias, R² and the coverage of the 95% interval, compared with the
-  trend alone and with plain ordinary kriging. Note that the 10 m detail comes from the covariates: the weather models themselves have a
-  resolution of 2–25 km.</p>
+  trend alone and with plain ordinary kriging. Note that the 10 m detail comes from the elevation: the inputs have a resolution of
+  about 25 km (ECMWF IFS 0.25°) and 45 km (CAMS global AOD).</p>
   <p><b>Limitations.</b> Best, Weighted mean and GPR only use models available everywhere (Open-Meteo), so they can be computed
   at any point. Stations are mostly in lowlands or on the coast: in the mountains estimates and uncertainties are less verified.</p>
   <h3>Licence</h3><p>© 2026 Francesco Rossi. Code: all rights reserved. Data: CC BY-NC 4.0 (attribution, non-commercial use).
@@ -900,13 +939,13 @@ function dataTextIT(link, d) {
   sono interpolati da una tabella calcolata con il codice 6S (vapore × AOD × zenit solare × quota; vista al nadir, aerosol continentale, ozono 0,30 cm-atm).
   Per l'infrarosso termico, trasmittanza e radianze in salita/discesa della banda 10 di Landsat 8/9 vengono dalle funzioni del vapore acqueo di
   Jiménez-Muñoz et al. (2014). L'archivio orario alle stazioni e ai siti di calibrazione è tenuto dal repository di back end <b>Torricelli</b>.</p>
-  <h3>Mappe a 10 m (regression kriging)</h3>
+  <h3>Atmosphere RK: mappe a 10 m (regression kriging)</h3>
   <p>Il valore è calcolato in 49–121 punti campione intorno al luogo (da 7×7 a 11×11 secondo l'area, 2–30 km; previsione GPR dove disponibile, altrimenti media dei modelli; grandezze atmosferiche
   dalle stesse fonti, con la tabella 6S alla quota a 10 m) e poi mappato su una griglia a 10 m come <i>trend + residuo krigato</i>: il trend è una regressione
-  lineare su covariate Copernicus (quota, pendenza ed esposizione nord dal Copernicus DEM / EU-DEM, impermeabilizzazione e densità della copertura arborea
-  dagli EEA High Resolution Layers 2018), i residui sono interpolati con kriging ordinario e variogramma esponenziale. La mappa della deviazione standard del
+  lineare sulla quota del terreno (Copernicus DEM / EU-DEM), l'unica grandezza a 10 m che cambia l'atmosfera sopra il suolo; gli strati di copertura del suolo
+  non si usano perché non sono contemporanei all'atmosfera. I residui sono interpolati con kriging ordinario e variogramma esponenziale. La mappa della deviazione standard del
   kriging mostra dove l'interpolazione è meno sicura. La validazione è leave-one-out sui punti campione: RMSE, MAE, bias, R² e copertura dell'intervallo al 95%,
-  confrontati con il solo trend e con il kriging ordinario semplice. Il dettaglio a 10 m viene dalle covariate: i modelli meteo hanno una risoluzione di 2–25 km.</p>
+  confrontati con il solo trend e con il kriging ordinario semplice. Il dettaglio a 10 m viene dalla quota: i dati di partenza hanno una risoluzione di circa 25 km (ECMWF IFS 0,25°) e 45 km (AOD CAMS globale).</p>
   <p><b>Limiti.</b> Migliore, Media pesata e GPR usano solo modelli disponibili ovunque (Open-Meteo), così si possono calcolare in qualsiasi punto.
   Le stazioni sono soprattutto in pianura o sulla costa: in montagna stime e incertezze sono meno verificate.</p>
   <h3>Licenza</h3><p>© 2026 Francesco Rossi. Codice: tutti i diritti riservati. Dati: CC BY-NC 4.0 (attribuzione, uso non commerciale).

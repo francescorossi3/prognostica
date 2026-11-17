@@ -84,6 +84,16 @@ button.link { font: inherit; border: 0; background: none; color: var(--accent); 
 .chart-scroll { overflow-x: auto; overflow-y: hidden; scrollbar-width: auto; padding-bottom: .3rem; }
 .chart-inner { height: 380px; position: relative; }
 .chart-wide .y-axis { position: absolute; left: 0; top: 0; pointer-events: none; background: #fff; }
+/* pulsante CSV in alto a destra di grafici e tabelle */
+.has-dl { position: relative; }
+button.dl { position: absolute; top: .55rem; right: .6rem; z-index: 2; font: inherit; font-size: .72rem; padding: .12rem .45rem; border: 1px solid var(--line);
+  border-radius: 4px; background: #fff; color: var(--muted); cursor: pointer; }
+button.dl:hover { color: var(--accent); border-color: var(--accent); }
+details.has-dl > button.dl { top: .6rem; right: 1rem; }
+.has-dl > .chart-legend, .has-dl > h3, .chart-box .chart-legend { padding-right: 3rem; }
+.eq { font-family: "Cambria Math", "STIX Two Math", Georgia, serif; font-size: 1.1rem; background: var(--soft); padding: .7rem 1rem; border-radius: 6px; overflow-x: auto; }
+dl.glossary { display: grid; grid-template-columns: minmax(9rem, max-content) 1fr; gap: .35rem 1rem; margin: .6rem 0 1rem; font-size: .9rem; }
+dl.glossary dt { font-weight: 600; } dl.glossary dd { margin: 0; color: var(--ink); }
 .progress-row { display: flex; align-items: center; gap: .8rem; margin: 0 0 .7rem; }
 .progress-row .status { margin: 0; }
 progress { width: 220px; height: 10px; accent-color: var(--accent); }
@@ -200,6 +210,7 @@ footer a { color: inherit; }
   .time-label { white-space: normal; }
   .lg .bar { width: 160px; }
   .chart-inner { height: 320px; }
+  dl.glossary { grid-template-columns: 1fr; gap: .1rem; } dl.glossary dd { margin-bottom: .5rem; }
   progress { width: 120px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
