@@ -29,7 +29,7 @@ function opts(sel, items, value) {
 const varsFor = agg => (agg === "24h" ? ["t2m", "tmax", "tmin", "prcp"] : ["t2m", "prcp"]);
 const charts = {};
 function drawChart(id, cfg) {
-  if (charts[id]) charts[id].destroy();
+  Chart.getChart(id)?.destroy();
   if (typeof I18N !== "undefined" && I18N.lang !== "en") {          // etichette dei grafici nella lingua scelta
     cfg.data.datasets.forEach(d => { d.label = I18N.t(d.label); });
     if (cfg.data.labels) cfg.data.labels = cfg.data.labels.map(l => I18N.t(l));
@@ -740,6 +740,7 @@ async function renderPoint() {
   $("#p-inner").style.width = width + "px";
   const yAxis = { id: "yaxis", afterRender(c) {          // copia l'asse y su una tela fissa a sinistra
     const cv = $("#p-yaxis"), r = devicePixelRatio, w = c.chartArea.left;
+    if (!w || !c.canvas.width || !c.canvas.height) return;          // scheda nascosta: niente da copiare
     cv.width = w * r; cv.height = c.height * r; cv.style.width = w + "px"; cv.style.height = c.height + "px";
     cv.getContext("2d").drawImage(c.canvas, 0, 0, w * r, c.height * r, 0, 0, w * r, c.height * r); } };
   const ch = drawChart("p-chart", { type: "line", data: { labels, datasets: ds }, plugins: [nowLine, yAxis],
