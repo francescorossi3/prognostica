@@ -191,7 +191,8 @@ const HR = (() => {
       const mean = yi.reduce((a, b) => a + b, 0) / yi.length, vg0 = variogram(xyi, yi.map(v => v - mean));
       ok.push(mean + okPredict(xyi, yi.map(v => v - mean), vg0, [xy[i]])[0].est);
     }
-    return { rk: metrics(y, rk), trend: metrics(y, tr), ok: metrics(y, ok), cover95: 100 * cover.filter(Boolean).length / cover.length };
+    return { rk: metrics(y, rk), trend: metrics(y, tr), ok: metrics(y, ok), cover95: 100 * cover.filter(Boolean).length / cover.length,
+      pred: { rk, trend: tr, ok } };
   }
 
   // ---------------------------------------------------------------- valori bersaglio nei punti campione
@@ -221,7 +222,8 @@ const HR = (() => {
         const ok = Object.values(per).filter(x => x != null && isFinite(x));
         return ok.length ? ok.reduce((a, b) => a + b, 0) / ok.length : NaN;
       });
-      return { values: vals, unit: VAR_UNIT[v], label: `${m ? "GPR" : "Model mean"} · ${VAR_LABEL[v]} · ${AGG_LABEL[agg]} ${key.replace("T", " ")}` };
+      return { values: vals, unit: VAR_UNIT[v], label: `${m ? "GPR" : "Model mean"} · ${VAR_LABEL[v]} · ${AGG_LABEL[agg]} ${key.replace("T", " ")}`,
+        source: m ? "GPR forecast from the Open-Meteo models at this point" : "Mean of the Open-Meteo models at this point" };
     }
     // grandezze atmosferiche all'ora scelta
     const [name, qty] = kind.split(":"), band = opt.band;
@@ -244,7 +246,8 @@ const HR = (() => {
       return qty === "t_tot" ? r.t_down * r.t_up * r.t_gas : r[qty];
     });
     const lab = $("#h-target").selectedOptions[0].textContent + (name === "spec" ? ` at ${$("#h-wl").selectedOptions[0].textContent}` : "");
-    return { values: vals, unit: "", label: `${lab} · ${$("#h-period").selectedOptions[0].textContent}` };
+    return { values: vals, unit: "", label: `${lab} · ${$("#h-period").selectedOptions[0].textContent}`,
+      source: "Open-Meteo atmosphere at this point (ECMWF IFS, CAMS aerosols) with the 6S tables for radiative transfer" };
   }
 
   // ---------------------------------------------------------------- interfaccia
@@ -278,7 +281,7 @@ const HR = (() => {
     const raster = (key, name, ramp, visible) => ({ id: key, key, name, kind: "raster", visible, pane: pane("hl-" + key),
       style: MapStyle.create(ramp, 0.67), values: () => HR.out ? rasterOf(key) : [] });
     S.hl = [
-      { id: "samples", name: "Sample points", kind: "samples", visible: true, pane: pane("hl-samples"), group: L.layerGroup().addTo(S.hmap) },
+      { id: "samples", name: "Validation points", kind: "samples", visible: true, pane: pane("hl-samples"), group: L.layerGroup().addTo(S.hmap) },
       raster("est", "Estimate (trend + kriged residual)", "RdYlBu", true),
       raster("sd", "Kriging standard deviation", "OrRd", false),
       raster("trend", "Trend only", "RdYlBu", false),
@@ -313,8 +316,10 @@ const HR = (() => {
     const mlat = 111320, mlon = 111320 * Math.cos(P.lat * Math.PI / 180);
     const half = size / 2, pad = size * 0.1;
     const bb = { s: P.lat - (half + pad) / mlat, n: P.lat + (half + pad) / mlat, w: P.lon - (half + pad) / mlon, e: P.lon + (half + pad) / mlon };
+    const bar = $("#h-progress"), t0 = performance.now();
+    const step = (pct, text) => { bar.hidden = false; bar.value = pct; st.textContent = `${text} · ${((performance.now() - t0) / 1000).toFixed(0)} s`; };
     try {
-      st.textContent = "1/4 · downloading Copernicus covariates (DEM, imperviousness, tree cover)…";
+      step(2, "1/4 · downloading Copernicus covariates (DEM, imperviousness, tree cover)…");
       const npx = Math.min(4000, Math.ceil((size + 2 * pad) / CELL));
       const [Z, IMP, TCD] = await Promise.all([dem(bb, size <= 10000 ? 14 : 13), hrl("HRL_ImperviousnessDensity_2018", bb, npx, npx).catch(() => null),
         hrl("HRL_TreeCoverDensity_2018", bb, npx, npx).catch(() => null)]);
@@ -322,7 +327,7 @@ const HR = (() => {
       const samples = [];
       for (let i = 0; i < NS; i++) for (let j = 0; j < NS; j++)
         samples.push({ lat: bb.s + (bb.n - bb.s) * (i + 0.5) / NS, lon: bb.w + (bb.e - bb.w) * (j + 0.5) / NS });
-      st.textContent = `2/4 · downloading the forecast at ${samples.length} sample points…`;
+      step(20, `2/4 · downloading the values at ${samples.length} sample points…`);
       const opt = { agg: $("#p-agg").value, v: $("#p-var").value, period: $("#h-period").value, time: +$("#h-period").value, band: $("#h-wl").value };
       const T = await targets(kind, samples, opt, Z);
       const good = T.values.map((v, i) => (Number.isFinite(v) ? i : -1)).filter(i => i >= 0);
@@ -330,10 +335,10 @@ const HR = (() => {
       const xyOf = (lat, lon) => [(lon - P.lon) * mlon, (lat - P.lat) * mlat];
       const F = good.map(i => covariates(Z, IMP, TCD, samples[i].lat, samples[i].lon, mlat, mlon));
       const y = good.map(i => T.values[i]), xy = good.map(i => xyOf(samples[i].lat, samples[i].lon));
-      st.textContent = "3/4 · fitting trend + variogram, leave-one-out validation…";
+      step(35, "3/4 · fitting trend + variogram, leave-one-out validation…");
       await new Promise(r => setTimeout(r, 20));
       const M = fit(F, y, xy), cv = loocv(F, y, xy);
-      st.textContent = `4/4 · predicting on the ${CELL} m grid…`;
+      step(45, `4/4 · predicting on the ${CELL} m grid…`);
       await new Promise(r => setTimeout(r, 20));
       const N = Math.round(size / CELL), est = new Float32Array(N * N), trd = new Float32Array(N * N), sd = new Float32Array(N * N),
         imp = new Float32Array(N * N), elev = new Float32Array(N * N);
@@ -356,13 +361,14 @@ const HR = (() => {
             sd[i] = Math.sqrt(Math.max(0, sill - q));
           } else sd[i] = sd[Math.floor(r / SD_STEP) * SD_STEP * N + Math.floor(c / SD_STEP) * SD_STEP];
         }
-        if (r % 20 === 19) { st.textContent = `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`; await new Promise(res => setTimeout(res, 0)); }
+        if (r % 20 === 19) { step(45 + 55 * (r + 1) / N, `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`); await new Promise(res => setTimeout(res, 0)); }
       }
       HR.out = { N, cell: CELL, est, trd, sd, imp, elev, lat0, lon0, mlat, mlon, half, T, M, cv, samples: good.map(i => samples[i]), y, P };
       draw(true); report();
-      st.textContent = `Done · ${N} × ${N} cells of ${CELL} m · ${good.length} sample points`;
+      bar.hidden = true;
+      st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${N} × ${N} cells of ${CELL} m · ${good.length} sample points`;
       $("#h-csv").disabled = N * N > 1500000;
-    } catch (e) { st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
+    } catch (e) { bar.hidden = true; st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
 
   const rasterOf = key => ({ est: HR.out.est, sd: HR.out.sd, trend: HR.out.trd, imp: HR.out.imp, elev: HR.out.elev }[key]);
@@ -395,9 +401,17 @@ const HR = (() => {
       if (l.kind === "samples") {
         l.group.clearLayers();
         if (l.visible) {
-          o.samples.forEach((s, i) => L.circleMarker([s.lat, s.lon], { pane: l.pane, radius: 3, color: "#15233b", weight: 1, fillOpacity: 1 })
-            .bindTooltip(`sample: ${fmt(o.y[i], 3)}`).addTo(l.group));
-          legends.push(`<div class="lg"><div class="lg-row"><span class="dot"></span><span>Sample points</span><span>(${o.samples.length})</span></div></div>`);
+          const p = o.cv.pred, err = o.y.map((v, i) => p.rk[i] - v), mx = Math.max(...err.map(Math.abs), 1e-12);
+          o.samples.forEach((s, i) => L.circleMarker([s.lat, s.lon], { pane: l.pane, radius: 3 + 9 * Math.abs(err[i]) / mx,
+            color: "#15233b", weight: 1, fillColor: err[i] > 0 ? "#d49a3a" : "#23707e", fillOpacity: .85 })
+            .bindPopup(`<b>Sample point ${i + 1}</b> · ${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}<br>
+              Value at the point: <b>${fmt(o.y[i], 4)}</b><br><span class="hint">${o.T.source}</span><br>
+              Leave-one-out prediction (point left out):<br>RK ${fmt(p.rk[i], 4)} (error ${fmt(err[i], 4)}) · trend only ${fmt(p.trend[i], 4)} · kriging only ${fmt(p.ok[i], 4)}`)
+            .addTo(l.group));
+          legends.push(`<div class="lg"><b>Validation points</b> <span>(${o.samples.length})</span>
+            <div class="lg-row"><span class="dot"></span><span>Size = leave-one-out error of RK</span><span>(max ${fmt(mx, 4)})</span></div>
+            <div class="lg-row"><span class="sw" style="background:#d49a3a"></span><span>RK too high</span></div>
+            <div class="lg-row"><span class="sw" style="background:#23707e"></span><span>RK too low</span></div></div>`);
         }
         continue;
       }
