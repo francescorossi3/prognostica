@@ -8,6 +8,8 @@
 
 const I18N = (() => {
   const D = {
+    "Area side": "Lato dell'area", "Side of the square map centred on the place": "Lato della mappa quadrata centrata sul luogo",
+    "Size of a map cell": "Dimensione di una cella della mappa", "Selected place": "Luogo scelto",
     // download, Atmosphere (modelli RT, equazioni, glossario), Atmosphere RK con sola quota
     "CSV": "CSV", "Download the data of this chart (CSV)": "Scarica i dati di questo grafico (CSV)", "Download this table (CSV)": "Scarica questa tabella (CSV)",
     "Selected layer at the period shown": "Layer selezionato al periodo mostrato",
@@ -53,7 +55,7 @@ const I18N = (() => {
     // schede raggruppate, grafico scorrevole, Atmosphere RK (validazione e avanzamento)
     "Accuracy": "Accuratezza", "Atmosphere RK": "Atmosfera RK", "How to read the GPR tables": "Come leggere le tabelle GPR",
     "Scroll the chart sideways with the bar, the mouse wheel (Shift + wheel) or a swipe.": "Scorri il grafico di lato con la barra, la rotella del mouse (Maiusc + rotella) o con un dito.",
-    "Atmospheric parameters (or the forecast) at a 10 m resolution by regression kriging (RK) around the place.": "Parametri atmosferici (o la previsione) a 10 m di risoluzione con regression kriging (RK) intorno al luogo.",
+    "Atmospheric parameters (or the forecast) at high resolution (10 m by default) by regression kriging (RK) around the place.": "Parametri atmosferici (o la previsione) ad alta risoluzione (10 m di base) con regression kriging (RK) intorno al luogo.",
     "How the map is made and validated": "Come si costruisce e si valida la mappa",
     "Sample points.": "Punti campione.",
     "A regular grid of 49–121 points covers the area (7 × 7 up to 5 km, 9 × 9 up to 10 km, 11 × 11 above). At each point the value is computed from the Open-Meteo atmosphere (ECMWF IFS, CAMS aerosols) with the 6S tables (or, for the forecast, with the GPR). These are the “known” values: click a validation point to see it.":
@@ -146,7 +148,7 @@ const I18N = (() => {
     "Global irradiance [W m⁻²] /100": "Irradianza globale [W m⁻²] /100",
     // mappa 10 m
     "10 m map around the point": "Mappa a 10 m intorno al punto", "· regression kriging on Copernicus covariates": "· regression kriging su covariate Copernicus",
-    "Period / hour": "Periodo / ora", "Area": "Area", "Build 10 m map": "Crea mappa a 10 m", "Download CSV": "Scarica CSV",
+    "Period / hour": "Periodo / ora", "Build RK map": "Crea mappa RK", "Download CSV": "Scarica CSV",
     "Validation (leave-one-out)": "Validazione (leave-one-out)", "Model": "Modello",
     "Water vapour column [kg m⁻²]": "Vapore acqueo in colonna [kg m⁻²]",
     "Air temperature 2 m [°C]": "Temperatura dell'aria 2 m [°C]", "Air density [kg m⁻³]": "Densità dell'aria [kg m⁻³]",

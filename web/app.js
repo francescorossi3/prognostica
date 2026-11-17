@@ -629,6 +629,7 @@ async function runPoint() {
     station: (S.pastDays || 0) > 0 ? await nearestStation(lat, lon) : null };
   for (const id in raw) { raw[id].t = raw[id].t.filter((_, k) => keep[k]); raw[id].p = raw[id].p.filter((_, k) => keep[k]); }
   await renderPoint();
+  HR.point(S.point);
   await ATM.render(S.point);
   HR.periods();
 }

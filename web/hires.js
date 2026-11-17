@@ -224,8 +224,6 @@ const HR = (() => {
   }
   function init() {
     opts($("#h-target"), targetOptions(), "spec:t_tot");
-    opts($("#h-size"), [[2, "2 × 2 km"], [5, "5 × 5 km"], [10, "10 × 10 km"], [30, "30 × 30 km"]], 30);
-    opts($("#h-cell"), [[10, "10 m"], [20, "20 m"], [30, "30 m"]], 10);
     const tg = () => { $("#h-wl-wrap").style.display = $("#h-target").value.startsWith("spec:") ? "" : "none"; periods(); };
     $("#h-target").onchange = tg;
     $("#h-go").onclick = run;
@@ -265,8 +263,13 @@ const HR = (() => {
   async function run() {
     const P = S.point; if (!P) return;
     track("map-10m-" + $("#h-target").value.split(":")[0]);
-    const st = $("#h-status"), size = +$("#h-size").value * 1000, kind = $("#h-target").value;
-    CELL = +$("#h-cell").value;
+    const st = $("#h-status"), size = +$("#h-size").value * +$("#h-size-u").value, kind = $("#h-target").value;
+    CELL = +$("#h-cell").value * +$("#h-cell-u").value;
+    // limiti: almeno 10 celle per lato, al massimo 4000 (16 milioni di celle: oltre il browser non regge)
+    if (!(size > 0 && CELL > 0) || size / CELL < 10 || size / CELL > 4000) {
+      st.innerHTML = `<span class="error">Area / cell gives ${Math.round(size / CELL)} cells per side: choose values between 10 and 4000 cells per side.</span>`;
+      return;
+    }
     NS = size <= 5000 ? 7 : size <= 10000 ? 9 : 11;
     const mlat = 111320, mlon = 111320 * Math.cos(P.lat * Math.PI / 180);
     const half = size / 2, pad = size * 0.1;
@@ -423,5 +426,14 @@ const HR = (() => {
       `rk_${lay.key}_${o.cell}m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.tif`);
   }
 
-  return { init, periods, run, geotiff, variogram, fit, loocv, okPredict, metrics };
+  // punto scelto con la ricerca: marcatore sulla mappa e riga sopra i controlli
+  function point(P) {
+    $("#h-point").innerHTML = `<b>${P.label || "Point"}</b> · ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} · ${fmt(P.elev, 0)} m
+      <span class="hint">(change the place with the search above)</span>`;
+    if (S.hmark) S.hmark.setLatLng([P.lat, P.lon]);
+    else S.hmark = L.marker([P.lat, P.lon], { title: "Selected place", zIndexOffset: 1000 }).addTo(S.hmap);
+    if (!HR.out || HR.out.P !== P) S.hmap.setView([P.lat, P.lon], 11);
+  }
+
+  return { init, periods, run, point, geotiff, variogram, fit, loocv, okPredict, metrics };
 })();

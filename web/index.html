@@ -137,14 +137,16 @@
 <!-- ============================ 10 M MAP ============================ -->
 <section id="tab-hr" class="tab">
   <p class="place" id="h-point">Choose a place with the search above: the map is built around it.</p>
-  <p class="hint">Atmospheric parameters (or the forecast) at a 10 m resolution by regression kriging (RK) around the place.</p>
+  <p class="hint">Atmospheric parameters (or the forecast) at high resolution (10 m by default) by regression kriging (RK) around the place.</p>
   <div class="controls">
     <label>Variable <select id="h-target"></select></label>
     <label id="h-wl-wrap">Wavelength <select id="h-wl"></select></label>
     <label>Period / hour <select id="h-period"></select></label>
-    <label>Area <select id="h-size"></select></label>
-    <label>Cell <select id="h-cell"></select></label>
-    <button id="h-go" class="primary">Build 10 m map</button>
+    <label title="Side of the square map centred on the place">Area side <input type="number" id="h-size" min="0.1" step="any" value="30" class="short">
+      <select id="h-size-u"><option value="1000" selected>km</option><option value="1">m</option></select></label>
+    <label title="Size of a map cell">Cell <input type="number" id="h-cell" min="1" step="any" value="10" class="short">
+      <select id="h-cell-u"><option value="1" selected>m</option><option value="1000">km</option></select></label>
+    <button id="h-go" class="primary">Build RK map</button>
   </div>
   <div class="progress-row"><progress id="h-progress" max="100" value="0" hidden></progress><p class="status" id="h-status"></p></div>
   <div class="map-layout">
