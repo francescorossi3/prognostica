@@ -8,6 +8,9 @@ Per provider x tipo di evento x anticipo:
   FAR  (falsi allarmi / eventi previsti)
   CSI  (colti / (colti + mancati + falsi allarmi))
   errore medio e MAE sui soli giorni con evento osservato
+
+Input : coppie giornaliere (DataFrame) e soglie config.yaml (events).
+Output: tabelle (punteggi per evento, elenco eventi osservati); nessun file scritto.
 """
 import numpy as np
 import pandas as pd

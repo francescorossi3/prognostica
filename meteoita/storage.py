@@ -7,6 +7,9 @@ Formato in memoria ("long"):
 Su disco le previsioni sono "larghe" (una colonna per lead day) e scalate
 x10 su interi a 16 bit: ~10 volte piu' piccole di un CSV e quindi adatte a
 stare dentro un repository git per anni.
+
+Input/Output: data/forecasts/<provider>/<AAAA-MM>.parquet e
+              data/observations/<AAAA-MM>.parquet (letti e scritti).
 """
 import numpy as np
 import pandas as pd

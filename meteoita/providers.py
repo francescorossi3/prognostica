@@ -8,6 +8,10 @@ Convenzioni comuni a tutti i provider (formato restituito):
 Per aggiungere un nuovo provider "snapshot" basta scrivere una funzione
     fetch_<api>(lat, lon, elev, key) -> DataFrame(valid_time, t2m, prcp)
 e registrarla nel dizionario SNAPSHOT_APIS in fondo al file.
+
+Input : API Open-Meteo (Previous Runs, Forecast) e API dei provider snapshot;
+        variabili d'ambiente OPENMETEO_API_KEY, METEO_USER_AGENT, chiavi dei provider.
+Output: DataFrame di previsioni orarie nel formato sopra; nessun file scritto.
 """
 import os
 import time
@@ -29,6 +33,8 @@ def om_url(url):
 
 def om_params(params):
     return dict(params, apikey=OM_KEY) if OM_KEY else params
+
+
 SESSION = requests.Session()
 SESSION.headers["User-Agent"] = UA
 

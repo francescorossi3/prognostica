@@ -2,6 +2,9 @@
 
 NON sono dati reali: servono solo a verificare che codice, file e sito
 funzionino (python scripts/demo_generate.py).
+
+Input : nessuno (funzioni analitiche deterministiche).
+Output: elenchi di stazioni di riserva, campi "veri", previsioni e quote sintetiche.
 """
 import zlib
 

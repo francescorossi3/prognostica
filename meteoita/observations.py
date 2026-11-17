@@ -3,6 +3,9 @@
 Meteostat redistribuisce dati di servizi pubblici (Aeronautica Militare via
 NOAA ISD / DWD). Le serie sono in UTC; 'prcp' e' la pioggia dell'ora che
 termina all'orario indicato, come per le previsioni.
+
+Input : dump Meteostat (URL in config.yaml: observations.url_*).
+Output: DataFrame di stazioni e di osservazioni orarie; nessun file scritto.
 """
 import gzip
 import io

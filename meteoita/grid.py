@@ -1,4 +1,8 @@
-"""Griglie regolari di punti su terra per le mappe di ciascuna regione."""
+"""Griglie regolari di punti su terra per le mappe di ciascuna regione.
+
+Input : poligono e grid_res della regione (config.yaml), data/grid_<regione>.csv se esiste.
+Output: DataFrame lat, lon, elev, res; scrive data/grid_<regione>.csv quando crea la griglia.
+"""
 import numpy as np
 import pandas as pd
 from shapely import contains_xy

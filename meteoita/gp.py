@@ -12,6 +12,10 @@ Kernel    : C * RBF(ARD) + DotProduct + White
 Il modello viene esportato in JSON (punti di training, alpha, Cholesky) cosi'
 che il sito possa calcolare stima e incertezza in qualsiasi punto, nel
 browser, con lo stesso codice di predict_export() qui sotto (gp.js).
+
+Input : matrici di feature e osservazioni (array numpy).
+Output: modello sklearn, dizionario JSON esportabile, predizioni e metriche;
+        nessun file scritto (lo fanno gli script 04 e 07).
 """
 import warnings
 

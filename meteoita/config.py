@@ -1,4 +1,9 @@
-"""Caricamento configurazione e percorsi del progetto."""
+"""Caricamento configurazione e percorsi del progetto.
+
+Input : config.yaml; variabile d'ambiente METEOITA_DATA (cartella dati, default data/).
+Output: costanti CFG, percorsi (DATA, FC_DIR, OBS_DIR, CSV_DIR, BUILD, SITE_DATA),
+        elenchi di provider; crea le cartelle dati se mancano.
+"""
 import os
 from pathlib import Path
 

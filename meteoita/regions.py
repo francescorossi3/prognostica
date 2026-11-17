@@ -1,4 +1,9 @@
-"""Regioni (Italia, Mondo, ...): poligoni, stazioni e provider di ciascuna."""
+"""Regioni (Italia, Mondo, ...): poligoni, stazioni e provider di ciascuna.
+
+Input : config.yaml (regions, providers) e i GeoJSON dei poligoni indicati li'.
+Output: funzioni di supporto (punti dentro una regione, provider che la coprono,
+        fusi orari delle stazioni, siti archiviati); nessun file scritto.
+"""
 import json
 from functools import lru_cache
 
@@ -6,7 +11,6 @@ import numpy as np
 import pandas as pd
 from shapely import contains_xy
 from shapely.geometry import box, shape
-from shapely.prepared import prep
 
 from .config import CFG, ROOT, providers
 
