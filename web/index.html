@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!-- index.html – struttura del sito Prognostica.
+     Cosa fa: intestazione con ricerca del luogo (vale per tutte le schede), schede, contenuti principali in vista
+              e dettagli a scomparsa (<details>); i testi sono in inglese, i18n.js li traduce in italiano.
+     Input:   script in web/ (app.js, gp.js, atmos.js, hires.js, mapstyle.js, i18n.js) e dati in web/data.
+     Output:  la pagina mostrata nel browser. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -8,31 +13,156 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
+<header class="top">
   <div class="brand">
-    <h1>Prognostica <span class="name-note">· from Cicero's <i>Prognostica</i>, his Latin version of the weather signs in Aratus' <i>Phaenomena</i></span></h1>
+    <h1>Prognostica</h1>
     <p class="sub">The most accurate forecast for any place: verified models combined by machine learning (GPR) with uncertainty, 10 m maps and the atmospheric parameters for satellite data correction</p>
   </div>
   <div class="head-right">
-    <div class="lang"><button id="lang-en" class="on">EN</button><button id="lang-it">IT</button></div>
     <label class="region">Region <select id="region"></select></label>
-    <div class="updated" id="updated"></div>
+    <div class="lang" role="group" aria-label="Language"><button id="lang-en" class="on">EN</button><button id="lang-it">IT</button></div>
   </div>
+  <div class="search-bar">
+    <div class="search-wrap">
+      <input type="search" id="p-addr" placeholder="Address, town, place name — or “41.90, 12.50”" autocomplete="off" aria-label="Place">
+      <div id="p-suggest" class="suggest"></div>
+    </div>
+    <button id="p-search" class="primary">Search</button>
+    <button id="p-geo" class="ghost" title="Use my location">◎ My location</button>
+    <label class="site">Calibration site <select id="p-site"></select></label>
+  </div>
+  <div id="p-results" class="results"></div>
 </header>
 
-<nav id="tabs">
-  <button data-tab="point" class="active">Forecast</button>
-  <button data-tab="atm">Atmosphere</button>
-  <button data-tab="hr">10 m map</button>
-  <button data-tab="maps">Maps</button>
-  <button data-tab="rank">Model accuracy</button>
-  <button data-tab="events">Events</button>
-  <button data-tab="valid">GPR reliability</button>
-  <button data-tab="data">Data &amp; method</button>
+<nav id="tabs" aria-label="Tabs">
+  <div class="tab-group">
+    <button data-tab="point" class="active">Forecast</button>
+    <button data-tab="atm">Atmosphere</button>
+    <button data-tab="hr">10 m map</button>
+    <button data-tab="maps">Maps</button>
+  </div>
+  <div class="tab-group check">
+    <button data-tab="rank">Model accuracy</button>
+    <button data-tab="events">Events</button>
+    <button data-tab="valid">GPR reliability</button>
+    <button data-tab="data">Data &amp; method</button>
+  </div>
+  <div class="updated" id="updated"></div>
 </nav>
 
 <main>
-<!-- ============================ RANKINGS ============================ -->
+<!-- ============================ FORECAST ============================ -->
+<section id="tab-point" class="tab active">
+  <div class="card" id="p-summary"><p class="hint">Search an address, pick a site, or enter coordinates and press “Get forecast”.</p></div>
+  <div class="controls">
+    <label>Variable <select id="p-var"></select></label>
+    <label>Aggregation <select id="p-agg"></select></label>
+    <label>Past days <select id="p-past"></select></label>
+  </div>
+  <div class="card chart-card"><canvas id="p-chart"></canvas></div>
+  <details class="more" id="p-more-map">
+    <summary>Choose the point on the map or by coordinates</summary>
+    <div class="controls">
+      <label>Lat <input type="number" id="p-lat" step="0.0001" value="41.9028"></label>
+      <label>Lon <input type="number" id="p-lon" step="0.0001" value="12.4964"></label>
+      <button id="p-go" class="primary">Get forecast</button>
+    </div>
+    <div id="pmap" class="map small"></div>
+    <p class="hint">Click on the map to choose the point.</p>
+  </details>
+  <details class="more">
+    <summary>Table of values</summary>
+    <div class="table-wrap"><table id="p-table" class="plain"></table></div>
+  </details>
+</section>
+
+<!-- ============================ ATMOSPHERE ============================ -->
+<section id="tab-atm" class="tab">
+  <p class="place" id="a-point">Choose a place with the search above (or a map click, or a calibration site).</p>
+  <div class="controls"><label>Hour <select id="a-hour"></select></label>
+    <span class="hint">Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).</span></div>
+  <div id="a-box"></div>
+  <div class="grid2">
+    <div class="card"><h3>Surface and column</h3><div id="a-surf"></div></div>
+    <div class="card"><h3>Vertical profile</h3><canvas id="a-prof"></canvas></div>
+  </div>
+  <div class="card"><h3>Next days</h3><canvas id="a-ts"></canvas></div>
+  <details class="more">
+    <summary>Pressure levels</summary>
+    <div class="table-wrap"><table id="a-proft" class="plain"></table></div>
+  </details>
+  <details class="more">
+    <summary>Spectral radiative transfer (6S, 400–2500 nm)</summary>
+    <p class="hint">6S, nadir view, continental aerosol.</p>
+    <div class="controls"><label>Resolution <select id="a-specset"></select></label><button id="a-speccsv" class="ghost">Download spectrum (CSV)</button>
+      <span class="hint" id="a-specnote"></span></div>
+    <div class="grid2"><div><canvas id="a-spec-t"></canvas></div><div><canvas id="a-spec-l"></canvas></div></div>
+  </details>
+  <details class="more">
+    <summary>VNIR–SWIR radiative transfer, Sentinel-2 bands</summary>
+    <p class="hint">6S, nadir view, continental aerosol.</p>
+    <div class="table-wrap"><table id="a-rt" class="plain"></table></div>
+  </details>
+  <details class="more">
+    <summary>About this tab</summary>
+    <p class="hint">Water vapour, aerosols, radiation, profiles, air density and radiative-transfer parameters for atmospheric correction.</p>
+  </details>
+</section>
+
+<!-- ============================ 10 M MAP ============================ -->
+<section id="tab-hr" class="tab">
+  <p class="place" id="h-point">Choose a place with the search above: the map is built around it.</p>
+  <div class="controls">
+    <label>Variable <select id="h-target"></select></label>
+    <label id="h-wl-wrap">Wavelength <select id="h-wl"></select></label>
+    <label>Period / hour <select id="h-period"></select></label>
+    <label>Area <select id="h-size"></select></label>
+    <label>Cell <select id="h-cell"></select></label>
+    <button id="h-go" class="primary">Build 10 m map</button>
+  </div>
+  <p class="status" id="h-status"></p>
+  <div class="map-layout">
+    <div class="map-card"><div id="hmap" class="map"></div><div id="h-legend" class="legend"></div></div>
+    <aside class="side">
+      <div id="h-layers" class="panel"></div>
+      <details class="panel-style" open><summary>Style</summary><div id="h-style" class="panel"></div></details>
+      <div class="downloads"><button id="h-tif" class="ghost">Download GeoTIFF</button><button id="h-csv" class="ghost">Download CSV</button></div>
+    </aside>
+  </div>
+  <details class="more">
+    <summary>Validation (leave-one-out) and model</summary>
+    <div class="grid2">
+      <div><h3>Validation (leave-one-out)</h3><div class="table-wrap"><table id="h-metrics" class="plain"></table></div></div>
+      <div><h3>Model</h3><div id="h-model"></div></div>
+    </div>
+  </details>
+  <details class="more">
+    <summary>How the 10 m map is made</summary>
+    <p class="hint">The value is computed at 49–121 sample points around the place (with the GPR where available, otherwise the model mean), then
+    interpolated to 10 m: a linear trend on Copernicus covariates (elevation, slope and northness from the EU-DEM/Copernicus DEM, imperviousness and
+    tree-cover density HRL 2018) plus ordinary kriging of the residuals. Leave-one-out validation compares it with the trend alone and with plain kriging.</p>
+  </details>
+</section>
+
+<!-- ============================ MAPS ============================ -->
+<section id="tab-maps" class="tab">
+  <div class="controls">
+    <label>Variable <select id="m-var"></select></label>
+    <label>Aggregation <select id="m-agg"></select></label>
+    <label class="grow">Period <input type="range" id="m-time" min="0" max="0" value="0"> <span id="m-time-label" class="time-label"></span></label>
+  </div>
+  <div class="map-layout">
+    <div class="map-card"><div id="map" class="map"></div><div id="legend" class="legend"></div></div>
+    <aside class="side">
+      <div class="add-layer"><label>Add layer <select id="m-layer"></select></label><button id="m-add" class="ghost" title="Add the chosen layer to the map">+ Add</button></div>
+      <div id="m-layers" class="panel"></div>
+      <details class="panel-style" open><summary>Style</summary><div id="m-style" class="panel"></div></details>
+    </aside>
+  </div>
+  <p class="hint">Click on the map to see the value and open the detailed forecast.</p>
+</section>
+
+<!-- ============================ MODEL ACCURACY ============================ -->
 <section id="tab-rank" class="tab">
   <div class="controls">
     <label>Variable <select id="r-var"></select></label>
@@ -56,103 +186,24 @@
   </div>
   <p class="hint" id="e-hint"></p>
   <div class="card"><div class="table-wrap"><table id="e-table" class="plain"></table></div></div>
-  <div class="card"><h3>Events caught (CSI) versus lead time</h3><div style="height:300px"><canvas id="e-chart"></canvas></div></div>
-  <div class="card"><h3>Latest observed events <span class="hint">· green = event forecast, red = missed</span></h3>
-    <div class="table-wrap" style="max-height:480px;overflow-y:auto"><table id="e-list" class="plain"></table></div></div>
-</section>
-
-<!-- ============================ MAPS ============================ -->
-<section id="tab-maps" class="tab">
-  <div class="controls">
-    <label>Variable <select id="m-var"></select></label>
-    <label>Aggregation <select id="m-agg"></select></label>
-    <label>Layer <select id="m-layer"></select></label>
-    <label class="grow">Period <input type="range" id="m-time" min="0" max="0" value="0"> <span id="m-time-label" class="mono"></span></label>
-    <label class="check" id="m-stations-wrap"><input type="checkbox" id="m-stations"> GPR error at stations</label>
-  </div>
-  <div class="card map-card">
-    <div id="map" class="map"></div>
-    <div id="legend" class="legend"></div>
-  </div>
-  <p class="hint">Click on the map to see the value and open the detailed forecast.</p>
-</section>
-
-<!-- ============================ POINT ============================ -->
-<section id="tab-point" class="tab active">
-  <div class="controls search-row">
-    <label class="grow search-wrap">Place <input type="search" id="p-addr" placeholder="Address, town, place name — or “41.90, 12.50”" autocomplete="off">
-      <div id="p-suggest" class="suggest"></div></label>
-    <button id="p-search" class="primary">Search</button>
-    <button id="p-geo" title="Use my location">◎ My location</button>
-    <label>Calibration site <select id="p-site"></select></label>
-  </div>
-  <div id="p-results" class="results"></div>
-  <div class="controls">
-    <label>Lat <input type="number" id="p-lat" step="0.0001" value="41.9028"></label>
-    <label>Lon <input type="number" id="p-lon" step="0.0001" value="12.4964"></label>
-    <button id="p-go" class="primary">Get forecast</button>
-    <label>Variable <select id="p-var"></select></label>
-    <label>Aggregation <select id="p-agg"></select></label>
-    <label>Past days <select id="p-past"></select></label>
-  </div>
-  <div class="grid2 point-grid">
-    <div class="card"><div id="pmap" class="map small"></div><p class="hint">Click on the map to choose the point.</p></div>
-    <div class="card" id="p-summary"><p class="hint">Search an address, pick a site, or enter coordinates and press “Get forecast”.</p></div>
-  </div>
-  <div class="card"><canvas id="p-chart"></canvas></div>
-  <div class="card"><div class="table-wrap"><table id="p-table" class="plain"></table></div></div>
-
-</section>
-
-<!-- ============================ ATMOSPHERE ============================ -->
-<section id="tab-atm" class="tab">
-  <p class="hint" id="a-point">Choose a place in the Forecast tab (search, map click or calibration site).</p>
-  <p class="hint">Water vapour, aerosols, radiation, profiles, air density and radiative-transfer parameters for atmospheric correction.</p>
-  <div class="controls"><label>Hour <select id="a-hour"></select></label>
-    <span class="hint">Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).</span></div>
-  <div id="a-box"></div>
-  <div class="grid2">
-    <div class="card"><h3>Surface and column</h3><div id="a-surf"></div></div>
-    <div class="card"><h3>Vertical profile</h3><canvas id="a-prof"></canvas></div>
-  </div>
-  <div class="card"><h3>Pressure levels</h3><div class="table-wrap"><table id="a-proft" class="plain"></table></div></div>
-  <div class="card"><h3>Spectral radiative transfer <span class="hint">· 6S, nadir view, continental aerosol, 400–2500 nm</span></h3>
-    <div class="controls"><label>Resolution <select id="a-specset"></select></label><button id="a-speccsv">Download spectrum (CSV)</button>
-      <span class="hint" id="a-specnote"></span></div>
-    <div class="grid2"><div><canvas id="a-spec-t"></canvas></div><div><canvas id="a-spec-l"></canvas></div></div></div>
-  <div class="card"><h3>VNIR–SWIR radiative transfer, Sentinel-2 bands <span class="hint">· 6S, nadir view, continental aerosol</span></h3>
-    <div class="table-wrap"><table id="a-rt" class="plain"></table></div></div>
-  <div class="card"><h3>Next days</h3><canvas id="a-ts"></canvas></div>
-
-</section>
-
-<!-- ============================ 10 M MAP ============================ -->
-<section id="tab-hr" class="tab">
-  <p class="hint" id="h-point">Choose a place in the Forecast tab: the map is built around it.</p>
-  <div class="controls">
-    <label>Variable <select id="h-target"></select></label>
-    <label id="h-wl-wrap">Wavelength <select id="h-wl"></select></label>
-    <label>Period / hour <select id="h-period"></select></label>
-    <label>Area <select id="h-size"></select></label>
-    <label>Cell <select id="h-cell"></select></label>
-    <button id="h-go" class="primary">Build 10 m map</button>
-    <label>Layer <select id="h-layer"></select></label>
-    <button id="h-tif">Download GeoTIFF</button>
-    <button id="h-csv">Download CSV</button>
-  </div>
-  <p class="hint" id="h-status">The value is computed at 49–121 sample points around the place (with the GPR where available, otherwise the model mean), then
-    interpolated to 10 m: a linear trend on Copernicus covariates (elevation, slope and northness from the EU-DEM/Copernicus DEM, imperviousness and
-    tree-cover density HRL 2018) plus ordinary kriging of the residuals. Leave-one-out validation compares it with the trend alone and with plain kriging.</p>
-  <div class="card map-card"><div id="hmap" class="map"></div><div id="h-legend" class="legend"></div></div>
-  <div class="grid2">
-    <div class="card"><h3>Validation (leave-one-out)</h3><div class="table-wrap"><table id="h-metrics" class="plain"></table></div></div>
-    <div class="card"><h3>Model</h3><div id="h-model"></div></div>
-  </div>
+  <div class="card"><h3>Events caught (CSI) versus lead time</h3><div class="chart-fixed"><canvas id="e-chart"></canvas></div></div>
+  <details class="more">
+    <summary>Latest observed events</summary>
+    <p class="hint">Green = event forecast, red = missed.</p>
+    <div class="table-wrap scroll"><table id="e-list" class="plain"></table></div>
+  </details>
 </section>
 
 <!-- ============================ GPR RELIABILITY ============================ -->
 <section id="tab-valid" class="tab">
-  <div class="card prose">
+  <div class="controls">
+    <label>Variable <select id="v-var"></select></label>
+    <label>Aggregation <select id="v-agg"></select></label>
+  </div>
+  <div class="card"><h3>Historical back-test</h3><p class="hint" id="b-hint"></p><div class="table-wrap"><table id="b-table" class="plain"></table></div></div>
+  <div class="card"><h3>Latest 14 days</h3><div class="table-wrap"><table id="v-table" class="plain"></table></div></div>
+  <details class="more prose">
+    <summary>How to read these tables</summary>
     <p>Does the GPR really beat the individual providers? It is checked in two independent ways, always on data <b>never used for training</b>:</p>
     <ol>
       <li><b>Historical back-test</b> (weekly): the record is split into 14-day test blocks; for each block the GPR is trained only on the
@@ -163,13 +214,7 @@
     <p>If the uncertainty is correct, the observed value falls inside the 68% interval about 68 times out of 100 and inside the 95% interval
       about 95 times out of 100. Green cells: well-calibrated uncertainty; amber/red: use with care.
       “Best ex post” is the model that, in hindsight, did best on those days: a reference no method can know in advance.</p>
-  </div>
-  <div class="controls">
-    <label>Variable <select id="v-var"></select></label>
-    <label>Aggregation <select id="v-agg"></select></label>
-  </div>
-  <div class="card"><h3>Historical back-test</h3><p class="hint" id="b-hint"></p><div class="table-wrap"><table id="b-table" class="plain"></table></div></div>
-  <div class="card"><h3>Latest 14 days</h3><div class="table-wrap"><table id="v-table" class="plain"></table></div></div>
+  </details>
 </section>
 
 <!-- ============================ DATA ============================ -->
@@ -179,6 +224,7 @@
 </main>
 
 <footer>
+  <p class="name-note">The name comes from Cicero's <i>Prognostica</i>, his Latin version of the weather signs in Aratus' <i>Phaenomena</i>.</p>
   Model forecasts: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0) ·
   Observations: <a href="https://meteostat.net/">Meteostat</a> ·
   Atmosphere: ECMWF IFS and CAMS via Open-Meteo, 6S · Covariates: Copernicus DEM / EU-DEM (Mapzen Terrarium tiles), EEA HRL 2018 (© European Union, Copernicus Land Monitoring Service) ·
@@ -193,6 +239,7 @@
 <script src="vendor/chart.umd.js"></script>
 <script src="gp.js"></script>
 <script src="i18n.js"></script>
+<script src="mapstyle.js"></script>
 <script src="atmos.js"></script>
 <script src="hires.js"></script>
 <script src="app.js"></script>

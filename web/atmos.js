@@ -118,7 +118,7 @@ const ATM = (() => {
   async function render(P) {
     const box = $("#a-box");
     $("#a-point").innerHTML = `<b>${P.label || "Point"}</b> · ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} · ${fmt(P.elev, 0)} m · local time ${P.tz}
-      <span class="hint">(change the place in the Forecast tab)</span>`;
+      <span class="hint">(change the place with the search above)</span>`;
     box.innerHTML = '<p class="hint">Downloading atmospheric data…</p>';
     let d, L, H;
     try { [[d], L, H] = await Promise.all([fetchMulti([{ lat: P.lat, lon: P.lon }], 1, 3, true), lut("s2"), lut("hyper")]); }

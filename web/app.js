@@ -86,7 +86,6 @@ const NOVER = "This region is not verified: the site only shows the model foreca
 const isVerified = () => regionOf(S.region).verify !== false;
 function refreshAll() {
   renderRank(); renderEvents(); renderValid();
-  $("#m-stations-wrap").style.display = isVerified() ? "" : "none";
   const c = regionOf(S.region).center || [42, 12, 5];
   S.map.setView([c[0], c[1]], c[2]);
   loadMap();
@@ -94,7 +93,10 @@ function refreshAll() {
 
 function showTab(t) {
   track("tab-" + t);
-  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
+  document.querySelectorAll("#tabs button").forEach(b => {
+    b.classList.toggle("active", b.dataset.tab === t);
+    if (b.dataset.tab === t) b.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
   document.querySelectorAll(".tab").forEach(s => s.classList.toggle("active", s.id === "tab-" + t));
   const q = location.hash.split("?")[1];
   history.replaceState(null, "", "#" + t + (q && ["point", "atm", "hr"].includes(t) ? "?" + q : ""));
@@ -242,51 +244,76 @@ function renderEvents() {
 }
 
 // ================================================================== MAPPE
-const SCALES = {
-  temp: { stops: ["#313695", "#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027", "#a50026"] },
-  prcp: { stops: ["#ffffff", "#c6dbef", "#6baed6", "#2171b5", "#08306b", "#6a51a3", "#d4b9da"] },
-  unc: { stops: ["#ffffcc", "#fed976", "#fd8d3c", "#e31a1c", "#800026"] },
-  prob: { stops: ["#f7fbff", "#c6dbef", "#6baed6", "#2171b5", "#08306b"] },
-};
-function hex2rgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
-function colorAt(stops, t) {
-  t = Math.min(1, Math.max(0, t));
-  const x = t * (stops.length - 1), i = Math.min(Math.floor(x), stops.length - 2), f = x - i;
-  const a = hex2rgb(stops[i]), b = hex2rgb(stops[i + 1]);
-  return `rgb(${a.map((v, k) => Math.round(v + f * (b[k] - v))).join(",")})`;
+// Pannello Layers (accendi/spegni, ordine) e Style (simbologia) come in QGIS: vedi mapstyle.js.
+// Ogni layer ha il suo "pane" Leaflet: l'ordine nella lista (in alto = sopra) decide lo z-index.
+const mapKey = () => `${S.region}/${$("#m-var").value}_${$("#m-agg").value}`;
+const curMap = () => S.maps[mapKey()];
+
+// rampa e limiti predefiniti per layer (stessa resa delle versioni precedenti)
+function defaultStyle(key) {
+  const v = $("#m-var").value, pts = !curMap()?.res;
+  if (key === "gpr_unc" || key === "spread") return MapStyle.create("YlOrRd", pts ? .95 : .78, s => [0, Math.max(s.max, 0.5)]);
+  if (key === "gpr_p") return MapStyle.create("Blues", pts ? .95 : .78, () => [0, 100]);
+  if (v === "prcp") return MapStyle.create("Precipitation", pts ? .95 : .78, () => [0, { "1h": 5, "6h": 15, "24h": 40 }[$("#m-agg").value]]);
+  return MapStyle.create("Temperature (RdYlBu)", pts ? .95 : .78, s => [Math.floor(s.min), Math.ceil(s.max) > Math.floor(s.min) ? Math.ceil(s.max) : Math.floor(s.min) + 1]);
+}
+// stile per variabile + aggregazione + layer: le modifiche dell'utente restano finché la pagina è aperta
+const styleFor = key => (S.mstyles[`${$("#m-var").value}|${$("#m-agg").value}|${key}`] ||= defaultStyle(key));
+const unitOf = key => key === "gpr_p" ? "%" : VAR_UNIT[$("#m-var").value];
+
+function addMapLayer(key, name) {
+  if (S.mlayers.some(l => l.key === key)) { S.msel = "d:" + key; return; }
+  const id = "d:" + key, pane = "ml-" + key.replace(/\W/g, "_");
+  if (!S.map.getPane(pane)) S.map.createPane(pane);
+  S.mlayers.unshift({ id, key, name, kind: "data", visible: true, removable: true, pane, style: styleFor(key),
+    group: L.layerGroup().addTo(S.map), renderer: L.canvas({ pane }),
+    values: () => { const m = curMap(); return m ? layerValues(m, key, +$("#m-time").value) : []; } });
+  S.msel = id;
 }
 
 function initMaps() {
-  S.map = L.map("map", { preferCanvas: true, worldCopyJump: true }).setView([42.2, 12.6], 6);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 12, attribution: "© OpenStreetMap" }).addTo(S.map);
-  S.mapLayer = L.layerGroup().addTo(S.map);
-  S.stLayer = L.layerGroup().addTo(S.map);
+  document.querySelectorAll(".panel-style").forEach(d => { d.open = innerWidth > 1000; });   // su schermi piccoli: Style chiuso
+  S.map = L.map("map", { worldCopyJump: true }).setView([42.2, 12.6], 6);
+  S.mstyles = {};
+  S.map.createPane("ml-base"); S.map.createPane("ml-stations");
+  const base = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 12, attribution: "© OpenStreetMap", pane: "ml-base" }).addTo(S.map);
+  S.mlayers = [
+    { id: "stations", name: "GPR error at stations", kind: "stations", visible: false, pane: "ml-stations", group: L.layerGroup().addTo(S.map) },
+    { id: "base", name: "OpenStreetMap", kind: "base", visible: true, pane: "ml-base", group: base },
+  ];
   opts($("#m-agg"), S.meta.aggs.map(a => [a, AGG_LABEL[a]]), "24h");
   const upd = async () => {
     opts($("#m-var"), varsFor($("#m-agg").value).map(v => [v, VAR_LABEL[v]]), $("#m-var").value || "t2m");
     await loadMap();
   };
   $("#m-agg").onchange = upd; $("#m-var").onchange = loadMap;
-  $("#m-layer").onchange = renderMap; $("#m-time").oninput = renderMap; $("#m-stations").onchange = renderMap;
+  $("#m-time").oninput = () => renderMap();
+  $("#m-add").onclick = () => { const o = $("#m-layer").selectedOptions[0]; if (o) { addMapLayer(o.value, o.text); renderMap(); } };
   S.map.on("click", e => mapPopup(e.latlng.wrap()));
   opts($("#m-var"), varsFor($("#m-agg").value).map(v => [v, VAR_LABEL[v]]), "t2m");
 }
 
 async function loadMap() {
-  const v = $("#m-var").value, agg = $("#m-agg").value, key = `${S.region}/${v}_${agg}`;
+  const key = mapKey();
   if (!(key in S.maps)) S.maps[key] = await fetchJSON(`maps/${key}.json`, null);
   const m = S.maps[key];
-  if (!m) { S.mapLayer.clearLayers(); $("#m-time-label").textContent = "map not available"; return; }
+  if (!m) { S.mlayers.forEach(l => l.kind === "data" && l.group.clearLayers()); $("#legend").innerHTML = ""; $("#m-time-label").textContent = "map not available"; return; }
   let items;
   if (m.verified === false) {                      // regione senza verifica: solo i modelli
     items = [["mean", "Model mean"], ["spread", "Model spread (±1σ)"]];
   } else {
     items = [["best", "★ Best provider"], ["weighted", "⚖ Weighted mean"], ["gpr", "◆ GPR – estimate"], ["gpr_unc", "◆ GPR – uncertainty (±1σ)"]];
-    if (m.layers.gpr_p) items.push(["gpr_p", `◆ GPR – probability ≥ ${S.meta.prcp_thresholds[agg][0]} mm`]);
+    if (m.layers.gpr_p) items.push(["gpr_p", `◆ GPR – probability ≥ ${S.meta.prcp_thresholds[$("#m-agg").value][0]} mm`]);
     items.push(["gpr_lo95", "◆ GPR – lower 95% bound"], ["gpr_hi95", "◆ GPR – upper 95% bound"]);
   }
   Object.keys(m.providers || {}).forEach(p => items.push(["p:" + p, pname(p)]));
-  opts($("#m-layer"), items, $("#m-layer").value || (m.verified === false ? "mean" : "gpr"));
+  opts($("#m-layer"), items, $("#m-layer").value);
+  // i layer di dati non disponibili per questa mappa vengono tolti; nomi e stili predefiniti aggiornati
+  const keys = new Set(items.map(x => x[0]));
+  S.mlayers = S.mlayers.filter(l => { if (l.kind !== "data" || keys.has(l.key)) return true; S.map.removeLayer(l.group); return false; });
+  S.mlayers.forEach(l => { if (l.kind === "data") { l.name = items.find(x => x[0] === l.key)[1]; l.style = styleFor(l.key); } });
+  if (!S.mlayers.some(l => l.kind === "data")) { const k = m.verified === false ? "mean" : "gpr"; addMapLayer(k, items.find(x => x[0] === k)[1]); }
+  S.mlayers.find(l => l.id === "stations").hidden = m.verified === false;
   const t = $("#m-time");
   t.max = m.periods.length - 1;
   if (+t.value > +t.max) t.value = 0;
@@ -296,54 +323,69 @@ async function loadMap() {
 function layerValues(m, layer, i) {
   return layer.startsWith("p:") ? m.providers[layer.slice(2)][i] : m.layers[layer]?.[i] || [];
 }
-function scaleFor(v, layer, vals) {
-  const fin = vals.filter(x => x != null);
-  if (layer === "gpr_unc" || layer === "spread") return { s: SCALES.unc, lo: 0, hi: Math.max(...fin, 0.5), u: VAR_UNIT[v] };
-  if (layer === "gpr_p") return { s: SCALES.prob, lo: 0, hi: 100, u: "%" };
-  if (v === "prcp") { const hi = { "1h": 5, "6h": 15, "24h": 40 }[$("#m-agg").value]; return { s: SCALES.prcp, lo: 0, hi, u: "mm" }; }
-  const lo = Math.floor(Math.min(...fin)), hi = Math.ceil(Math.max(...fin));
-  return { s: SCALES.temp, lo, hi: hi > lo ? hi : lo + 1, u: "°C" };
-}
 
-function renderMap() {
-  const m = S.maps[`${S.region}/${$("#m-var").value}_${$("#m-agg").value}`];
-  S.mapLayer.clearLayers(); S.stLayer.clearLayers();
-  if (!m) return;
-  const i = +$("#m-time").value, layer = $("#m-layer").value, v = $("#m-var").value;
-  const vals = layerValues(m, layer, i);
-  const sc = scaleFor(v, layer, vals);
-  const h = m.res / 2;
-  vals.forEach((x, k) => {
-    if (x == null) return;
-    const c = colorAt(sc.s.stops, (x - sc.lo) / (sc.hi - sc.lo));
+function drawDataLayer(l, m, labels) {
+  const C = MapStyle.classify(l.style, l.values()), h = m.res / 2, u = unitOf(l.key);
+  l.group.clearLayers();
+  l.values().forEach((x, k) => {
+    const c = C.color(x); if (!c) return;
+    const fill = MapStyle.css(c.slice(0, 3)), op = c[3] / 255;
     if (!m.res) {                                    // regione a punti (es. siti RadCalNet)
-      L.circleMarker([m.lat[k], m.lon[k]], { radius: 11, color: "#111", weight: 1.5, fillColor: c, fillOpacity: .95 })
-        .bindTooltip(`${m.names?.[k] || ""}: ${fmt(x, 1)} ${sc.u}`, { permanent: true, direction: k % 2 ? "left" : "right",
-          offset: [k % 2 ? -8 : 8, k % 2 ? 10 : -10], className: "site-label" })
-        .addTo(S.mapLayer);
+      const mk = L.circleMarker([m.lat[k], m.lon[k]], { pane: l.pane, radius: 11, color: "#15233b", weight: 1.5, fillColor: fill, fillOpacity: op });
+      if (labels) mk.bindTooltip(`${m.names?.[k] || ""}: ${fmt(x, 1)} ${u}`, { permanent: true, direction: k % 2 ? "left" : "right",
+        offset: [k % 2 ? -8 : 8, k % 2 ? 10 : -10], className: "site-label" });
+      mk.addTo(l.group);
       return;
     }
     L.rectangle([[m.lat[k] - h, m.lon[k] - h], [m.lat[k] + h, m.lon[k] + h]],
-      { stroke: false, fillColor: c, fillOpacity: .78, interactive: false }).addTo(S.mapLayer);
+      { renderer: l.renderer, stroke: false, fillColor: fill, fillOpacity: op, interactive: false }).addTo(l.group);
   });
+  return MapStyle.legend(l.name, u, C);
+}
+
+function drawStations(l, m, i) {
+  l.group.clearLayers();
+  const v = $("#m-var").value;
+  const errs = S.gpst.filter(r => r.var === v && r.agg === $("#m-agg").value && r.lead_day === m.lead_day[i] && inR(r));
+  const mx = Math.max(...errs.map(r => r.mae), 0.1);
+  errs.forEach(r => {
+    const st = S.stations.find(s => String(s.station) === String(r.station));
+    if (!st) return;
+    L.circleMarker([st.lat, st.lon], { pane: l.pane, radius: 4 + 10 * r.mae / mx, color: "#15233b", weight: 1, fillColor: "#fff", fillOpacity: .7 })
+      .bindTooltip(`${st.name}: MAE GPR (holdout) ${fmt(r.mae)} ${VAR_UNIT[v]}`).addTo(l.group);
+  });
+  return `<div class="lg"><b>GPR error at stations</b><div class="lg-row"><span class="dot"></span><span>Circle size = MAE (hold-out)</span><span>· max ${fmt(mx)} ${VAR_UNIT[v]}</span></div></div>`;
+}
+
+function renderMap(keepPanels = false) {
+  const m = curMap();
+  if (!m) return;
+  const i = +$("#m-time").value, list = S.mlayers.filter(l => !l.hidden);
+  const legends = [];
+  let labels = true;                               // etichette dei siti solo per il layer di dati più in alto
+  list.forEach((l, n) => {
+    S.map.getPane(l.pane).style.zIndex = 450 - 5 * n;
+    if (l.kind === "base") { l.visible ? l.group.addTo(S.map) : S.map.removeLayer(l.group); return; }
+    if (!l.visible) { l.group.clearLayers(); return; }
+    legends.push(l.kind === "stations" ? drawStations(l, m, i) : drawDataLayer(l, m, labels));
+    if (l.kind === "data") labels = false;
+  });
+  $("#legend").innerHTML = legends.join("");
   const per = m.periods[i].replace("T", " ");
-  const best = m.best_provider[i] ? ` · best: ${pname(m.best_provider[i])}` : "";
+  const showBest = list.some(l => l.key === "best" && l.visible) && m.best_provider[i];
   const tzl = m.timezone === "locale" ? " local time" : m.timezone && m.timezone !== "Europe/Rome" ? ` ${m.timezone}` : "";
-  $("#m-time-label").textContent = `${per}${tzl} (${leadLabel(m.lead_day[i])})${layer === "best" ? best : ""}`;
-  const ticks = [0, .25, .5, .75, 1].map(t => fmt(sc.lo + t * (sc.hi - sc.lo), sc.hi - sc.lo < 5 ? 1 : 0));
-  $("#legend").innerHTML = `<b>${$("#m-layer").selectedOptions[0]?.text || ""}</b> [${sc.u}]
-    <div class="bar" style="background:linear-gradient(90deg,${sc.s.stops.join(",")})"></div>
-    <div class="ticks">${ticks.map(t => `<span>${t}</span>`).join("")}</div>`;
-  if ($("#m-stations").checked) {
-    const errs = S.gpst.filter(r => r.var === v && r.agg === $("#m-agg").value && r.lead_day === m.lead_day[i] && inR(r));
-    const mx = Math.max(...errs.map(r => r.mae), 0.1);
-    errs.forEach(r => {
-      const st = S.stations.find(s => String(s.station) === String(r.station));
-      if (!st) return;
-      L.circleMarker([st.lat, st.lon], { radius: 4 + 10 * r.mae / mx, color: "#111", weight: 1, fillColor: "#fff", fillOpacity: .7 })
-        .bindTooltip(`${st.name}: MAE GPR (holdout) ${fmt(r.mae)} ${VAR_UNIT[v]}`).addTo(S.stLayer);
-    });
-  }
+  $("#m-time-label").textContent = `${per}${tzl} (${leadLabel(m.lead_day[i])})${showBest ? ` · best: ${pname(m.best_provider[i])}` : ""}`;
+  if (keepPanels !== true) mapPanels();
+}
+
+function mapPanels() {
+  const list = S.mlayers.filter(l => !l.hidden);
+  MapStyle.layersPanel($("#m-layers"), list, S.msel, {
+    toggle: () => renderMap(), order: () => { S.mlayers = [...list, ...S.mlayers.filter(l => l.hidden)]; renderMap(); },
+    select: l => { S.msel = l.id; mapPanels(); },
+    remove: l => { S.map.removeLayer(l.group); S.mlayers = S.mlayers.filter(x => x !== l); renderMap(); },
+  });
+  MapStyle.stylePanel($("#m-style"), S.mlayers.find(l => l.id === S.msel && l.kind === "data"), () => renderMap(true));
 }
 
 function mapPopup(ll) {
@@ -372,6 +414,7 @@ function initPoint() {
   S.pmap = L.map("pmap", { worldCopyJump: true }).setView([30, 10], 2);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 14, attribution: "© OpenStreetMap" }).addTo(S.pmap);
   S.pmarker = L.marker([41.9028, 12.4964]).addTo(S.pmap);
+  $("#p-more-map").addEventListener("toggle", () => S.pmap.invalidateSize());
   S.pmap.on("click", e => { const ll = e.latlng.wrap(); setPoint(ll.lat, ll.lng); runPoint(); });
   opts($("#p-agg"), S.meta.aggs.map(a => [a, AGG_LABEL[a]]), "1h");
   const upd = () => { opts($("#p-var"), varsFor($("#p-agg").value).map(v => [v, VAR_LABEL[v]]), $("#p-var").value || "t2m"); renderPoint(); };

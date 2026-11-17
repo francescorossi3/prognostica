@@ -8,10 +8,31 @@
 
 const I18N = (() => {
   const D = {
+    // nuovo layout, pannelli Layers / Style (mapstyle.js)
+    "The name comes from Cicero's": "Il nome viene dai", "Language": "Lingua",
+    "Choose the point on the map or by coordinates": "Scegli il punto sulla mappa o con le coordinate", "Table of values": "Tabella dei valori",
+    "Spectral radiative transfer (6S, 400–2500 nm)": "Trasferimento radiativo spettrale (6S, 400–2500 nm)",
+    "6S, nadir view, continental aerosol.": "6S, vista al nadir, aerosol continentale.", "About this tab": "Informazioni su questa scheda",
+    "Choose a place with the search above (or a map click, or a calibration site).": "Scegli un luogo con la ricerca in alto (o con un clic sulla mappa, o un sito di calibrazione).",
+    "Choose a place with the search above: the map is built around it.": "Scegli un luogo con la ricerca in alto: la mappa viene costruita intorno a esso.",
+    "Validation (leave-one-out) and model": "Validazione (leave-one-out) e modello", "How the 10 m map is made": "Come si costruisce la mappa a 10 m",
+    "Green = event forecast, red = missed.": "Verde = evento previsto, rosso = mancato.",
+    "How to read these tables": "Come leggere queste tabelle",
+    "Add layer": "Aggiungi layer", "+ Add": "+ Aggiungi", "Add the chosen layer to the map": "Aggiungi alla mappa il layer scelto",
+    "Layers": "Layer", "Style": "Stile", "OpenStreetMap": "OpenStreetMap", "Sample points": "Punti campione",
+    "Circle size = MAE (hold-out)": "Dimensione del cerchio = MAE (holdout)",
+    "Show / hide": "Mostra / nascondi", "Select to change the style": "Seleziona per cambiare lo stile", "Move up": "Sposta su", "Move down": "Sposta giù",
+    "Remove layer": "Rimuovi layer", "Select a data layer to change its style.": "Seleziona un layer di dati per cambiarne lo stile.",
+    "Build the map to change the style of its layers.": "Costruisci la mappa per cambiare lo stile dei suoi layer.",
+    "Colour ramp": "Scala di colori", "Invert ramp": "Inverti la scala", "Min / max": "Min / max", "Classes": "Classi",
+    "Number of classes": "Numero di classi", "Opacity": "Opacità", "Values outside min–max transparent": "Valori fuori da min–max trasparenti",
+    "Histogram of the values · bars = min and max of the scale": "Istogramma dei valori · barre = minimo e massimo della scala",
+    "Default": "Predefinito", "Min – max": "Min – max", "Percentiles 2–98 %": "Percentili 2–98 %", "Mean ± 2 std. dev.": "Media ± 2 dev. std.",
+    "Manual": "Manuale", "Continuous": "Continue", "Equal intervals": "Intervalli uguali", "Quantiles": "Quantili",
     // intestazione e schede
     "The most accurate forecast for any place: verified models combined by machine learning (GPR) with uncertainty, 10 m maps and the atmospheric parameters for satellite data correction":
       "La previsione più accurata per qualsiasi luogo: modelli verificati combinati con il machine learning (GPR) con incertezza, mappe a 10 m e parametri atmosferici per la correzione dei dati satellitari",
-    "· from Cicero's": "· dai", ", his Latin version of the weather signs in Aratus'": " di Cicerone, la sua versione latina dei segni del tempo dei",
+    ", his Latin version of the weather signs in Aratus'": " di Cicerone, la sua versione latina dei segni del tempo dei",
     "Phaenomena": "Fenomeni di Arato",
     "Region": "Regione", "Forecast": "Previsione", "Maps": "Mappe", "Model accuracy": "Accuratezza dei modelli", "Events": "Eventi",
     "GPR reliability": "Affidabilità GPR", "Data & method": "Dati e metodo",
@@ -39,7 +60,7 @@ const I18N = (() => {
     "★ Best": "★ Migliore", "⚖ Weighted mean": "⚖ Media pesata", "⚖ Weighted": "⚖ Pesata",
     // eventi
     "Event": "Evento", "Lead time": "Anticipo", "Events caught (CSI) versus lead time": "Eventi colti (CSI) in funzione dell'anticipo",
-    "Latest observed events": "Ultimi eventi osservati", "· green = event forecast, red = missed": "· verde = evento previsto, rosso = mancato",
+    "Latest observed events": "Ultimi eventi osservati",
     "heavy rain": "pioggia forte", "very heavy rain": "pioggia molto forte", "heat": "caldo", "frost": "gelo",
     // mappe
     "Layer": "Strato", "GPR error at stations": "Errore GPR alle stazioni",
@@ -52,7 +73,7 @@ const I18N = (() => {
       "Proposta: la prossima ora con il sole più alto (vicina al passaggio delle ~10:30 di Sentinel-2 / Landsat).",
     "Surface and column": "Superficie e colonna", "Vertical profile": "Profilo verticale", "Pressure levels": "Livelli di pressione",
     "VNIR–SWIR radiative transfer, Sentinel-2 bands": "Trasferimento radiativo VNIR–SWIR, bande Sentinel-2",
-    "· 6S, nadir view, continental aerosol": "· 6S, vista al nadir, aerosol continentale", "Next days": "Prossimi giorni",
+    "Next days": "Prossimi giorni",
     "Downloading atmospheric data…": "Scarico i dati atmosferici…", "Water vapour column": "Vapore acqueo in colonna",
     "Aerosol optical depth 550 nm": "Spessore ottico degli aerosol 550 nm", "Solar zenith angle": "Angolo zenitale solare",
     "Surface pressure": "Pressione al suolo", "Air temperature 2 m · dew point": "Temperatura dell'aria 2 m · punto di rugiada",
@@ -85,7 +106,7 @@ const I18N = (() => {
     "3/4 · fitting trend + variogram, leave-one-out validation…": "3/4 · stima di trend e variogramma, validazione leave-one-out…",
     "4/4 · predicting on the 10 m grid…": "4/4 · previsione sulla griglia a 10 m…",
     "Atmosphere": "Atmosfera", "10 m map": "Mappa 10 m", "Resolution": "Risoluzione", "Download spectrum (CSV)": "Scarica spettro (CSV)",
-    "Spectral radiative transfer": "Trasferimento radiativo spettrale", "· 6S, nadir view, continental aerosol, 400–2500 nm": "· 6S, vista al nadir, aerosol continentale, 400–2500 nm",
+    "Spectral radiative transfer": "Trasferimento radiativo spettrale", 
     "Sentinel-2 bands (13)": "Bande Sentinel-2 (13)", "The hyperspectral table is being computed by Torricelli: Sentinel-2 bands for now.":
       "La tabella iperspettrale è in calcolo su Torricelli: per ora bande Sentinel-2.",
     "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.": "Sole sotto i 10° a quest'ora: nessuno spettro VNIR-SWIR.",
@@ -93,9 +114,7 @@ const I18N = (() => {
     "Irradiance": "Irradianza", "E diffuse [W m⁻² µm⁻¹]": "E diffusa [W m⁻² µm⁻¹]",
     "Water vapour, aerosols, radiation, profiles, air density and radiative-transfer parameters for atmospheric correction.":
       "Vapore acqueo, aerosol, radiazione, profili, densità dell'aria e parametri di trasferimento radiativo per la correzione atmosferica.",
-    "Choose a place in the Forecast tab (search, map click or calibration site).": "Scegli un luogo nella scheda Previsione (ricerca, clic sulla mappa o sito di calibrazione).",
-    "Choose a place in the Forecast tab: the map is built around it.": "Scegli un luogo nella scheda Previsione: la mappa viene costruita intorno a esso.",
-    "(change the place in the Forecast tab)": "(cambia il luogo nella scheda Previsione)",
+    "(change the place with the search above)": "(cambia il luogo con la ricerca in alto)",
     "Wavelength": "Lunghezza d'onda", "Cell": "Cella", "Download GeoTIFF": "Scarica GeoTIFF",
     "Forecast variable shown in the Forecast tab (GPR)": "Variabile di previsione della scheda Previsione (GPR)",
     "Total transmittance (T↓·T↑·T gas)": "Trasmittanza totale (T↓·T↑·T gas)", "Downward scattering transmittance T↓": "Trasmittanza di diffusione in discesa T↓",

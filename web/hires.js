@@ -266,16 +266,29 @@ const HR = (() => {
     opts($("#h-target"), targetOptions(), "spec:t_tot");
     opts($("#h-size"), [[2, "2 × 2 km"], [5, "5 × 5 km"], [10, "10 × 10 km"], [30, "30 × 30 km"]], 30);
     opts($("#h-cell"), [[10, "10 m"], [20, "20 m"], [30, "30 m"]], 10);
-    opts($("#h-layer"), [["est", "Estimate (trend + kriged residual)"], ["sd", "Kriging standard deviation"], ["trend", "Trend only"], ["imp", "Covariate: imperviousness"], ["elev", "Covariate: elevation"]], "est");
     const tg = () => { $("#h-wl-wrap").style.display = $("#h-target").value.startsWith("spec:") ? "" : "none"; periods(); };
     $("#h-target").onchange = tg;
-    $("#h-layer").onchange = () => HR.out && draw();
     $("#h-go").onclick = run;
     $("#h-csv").onclick = csv;
     $("#h-tif").onclick = geotiff;
     S.hmap = L.map("hmap");
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(S.hmap);
+    const pane = id => { S.hmap.createPane(id); return id; };
+    const base = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap", pane: pane("hl-base") }).addTo(S.hmap);
+    // layer della mappa a 10 m: in alto = disegnato sopra (pannello Layers come in QGIS)
+    const raster = (key, name, ramp, visible) => ({ id: key, key, name, kind: "raster", visible, pane: pane("hl-" + key),
+      style: MapStyle.create(ramp, 0.67), values: () => HR.out ? rasterOf(key) : [] });
+    S.hl = [
+      { id: "samples", name: "Sample points", kind: "samples", visible: true, pane: pane("hl-samples"), group: L.layerGroup().addTo(S.hmap) },
+      raster("est", "Estimate (trend + kriged residual)", "RdYlBu", true),
+      raster("sd", "Kriging standard deviation", "OrRd", false),
+      raster("trend", "Trend only", "RdYlBu", false),
+      raster("imp", "Covariate: imperviousness", "Greys", false),
+      raster("elev", "Covariate: elevation", "RdYlBu", false),
+      { id: "base", name: "OpenStreetMap", kind: "base", visible: true, pane: "hl-base", group: base },
+    ];
+    S.hsel = "est";
     S.hmap.setView([41.9, 12.5], 10);
+    panels();
     tg(); wavelengths();
   }
   // periodi disponibili per il bersaglio scelto
@@ -346,41 +359,71 @@ const HR = (() => {
         if (r % 20 === 19) { st.textContent = `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`; await new Promise(res => setTimeout(res, 0)); }
       }
       HR.out = { N, cell: CELL, est, trd, sd, imp, elev, lat0, lon0, mlat, mlon, half, T, M, cv, samples: good.map(i => samples[i]), y, P };
-      draw(); report();
+      draw(true); report();
       st.textContent = `Done · ${N} × ${N} cells of ${CELL} m · ${good.length} sample points`;
       $("#h-csv").disabled = N * N > 1500000;
     } catch (e) { st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
 
-  async function draw() {
-    const o = HR.out, key = $("#h-layer").value, a = { est: o.est, sd: o.sd, trend: o.trd, imp: o.imp, elev: o.elev }[key];
-    let lo = Infinity, hi = -Infinity;
-    for (const v of a) if (Number.isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; }
-    if (hi - lo < 1e-9) hi = lo + 1e-9;
-    const stops = key === "sd" ? ["#fff7ec", "#fdbb84", "#d7301f", "#7f0000"] : key === "imp" ? ["#ffffff", "#bdbdbd", "#525252", "#000000"]
-      : ["#313695", "#4575b4", "#abd9e9", "#ffffbf", "#fdae61", "#d73027", "#a50026"];
+  const rasterOf = key => ({ est: HR.out.est, sd: HR.out.sd, trend: HR.out.trd, imp: HR.out.imp, elev: HR.out.elev }[key]);
+  // layer scelto nel pannello per GeoTIFF/legenda: quello selezionato, altrimenti la stima
+  const selRaster = () => S.hl.find(l => l.id === S.hsel && l.kind === "raster") || S.hl.find(l => l.key === "est");
+
+  async function rasterImage(l, bounds) {
+    const o = HR.out, C = MapStyle.classify(l.style, l.values());
     const c = document.createElement("canvas"); c.width = c.height = o.N;
-    const g = c.getContext("2d"), im = g.createImageData(o.N, o.N);
-    for (let i = 0; i < a.length; i++) { const [r, gg, b] = colorAt(stops, (a[i] - lo) / (hi - lo)); im.data.set([r, gg, b, 200], 4 * i); }
+    const g = c.getContext("2d"), im = g.createImageData(o.N, o.N), a = l.values();
+    for (let i = 0; i < a.length; i++) { const col = C.color(a[i]); if (col) im.data.set(col, 4 * i); }
     g.putImageData(im, 0, 0);
-    if (S.hlayer) S.hmap.removeLayer(S.hlayer);
+    if (l.overlay) S.hmap.removeLayer(l.overlay);
+    if (l.url) URL.revokeObjectURL(l.url);
+    l.url = URL.createObjectURL(await new Promise(res => c.toBlob(res)));
+    l.overlay = L.imageOverlay(l.url, bounds, { pane: l.pane }).addTo(S.hmap);
+    l.overlay.getElement().style.imageRendering = "pixelated";
+    const lab = ["est", "trend", "sd"].includes(l.key) ? `${l.name} · ${o.T.label}` : l.name;
+    return MapStyle.legend(lab, l.key === "imp" ? "%" : l.key === "elev" ? "m" : "", C);
+  }
+
+  async function draw(fit = false, keepPanels = false) {
+    const o = HR.out;
+    if (!o) return panels();
     const bounds = [[o.P.lat - o.half / o.mlat, o.P.lon - o.half / o.mlon], [o.P.lat + o.half / o.mlat, o.P.lon + o.half / o.mlon]];
-    if (S.hurl) URL.revokeObjectURL(S.hurl);
-    S.hurl = URL.createObjectURL(await new Promise(res => c.toBlob(res)));
-    S.hlayer = L.imageOverlay(S.hurl, bounds, { opacity: 0.85 }).addTo(S.hmap);
-    (S.hpts || []).forEach(m => S.hmap.removeLayer(m));
-    S.hpts = o.samples.map((s, i) => L.circleMarker([s.lat, s.lon], { radius: 3, color: "#111", weight: 1, fillOpacity: 1 }).bindTooltip(`sample: ${fmt(o.y[i], 3)}`).addTo(S.hmap));
-    S.hmap.fitBounds(bounds);
-    S.hlayer.getElement().style.imageRendering = "pixelated";
-    const grad = stops.map((s, i) => `${s} ${(100 * i / (stops.length - 1)).toFixed(0)}%`).join(",");
-    $("#h-legend").innerHTML = `<div>${$("#h-layer").selectedOptions[0].textContent}${key === "est" || key === "trend" || key === "sd" ? ` · ${o.T.label}` : ""}</div>
-      <div class="bar" style="background:linear-gradient(90deg,${grad})"></div><div class="ticks"><span>${fmt(lo, 3)}</span><span>${fmt((lo + hi) / 2, 3)}</span><span>${fmt(hi, 3)}</span></div>`;
+    const legends = [];
+    for (const [n, l] of S.hl.entries()) {
+      S.hmap.getPane(l.pane).style.zIndex = 450 - 5 * n;
+      if (l.kind === "base") { l.visible ? l.group.addTo(S.hmap) : S.hmap.removeLayer(l.group); continue; }
+      if (l.kind === "samples") {
+        l.group.clearLayers();
+        if (l.visible) {
+          o.samples.forEach((s, i) => L.circleMarker([s.lat, s.lon], { pane: l.pane, radius: 3, color: "#15233b", weight: 1, fillOpacity: 1 })
+            .bindTooltip(`sample: ${fmt(o.y[i], 3)}`).addTo(l.group));
+          legends.push(`<div class="lg"><div class="lg-row"><span class="dot"></span><span>Sample points</span><span>(${o.samples.length})</span></div></div>`);
+        }
+        continue;
+      }
+      if (!l.visible) { if (l.overlay) { S.hmap.removeLayer(l.overlay); l.overlay = null; } continue; }
+      legends.push(await rasterImage(l, bounds));
+    }
+    $("#h-legend").innerHTML = legends.join("");
+    if (fit) S.hmap.fitBounds(bounds);
+    if (!keepPanels) panels();
     S.hmap.off("click"); S.hmap.on("click", e => {
       const r = Math.floor((o.lat0 - e.latlng.lat) * o.mlat / o.cell), cc = Math.floor((e.latlng.lng - o.lon0) * o.mlon / o.cell);
       if (r < 0 || cc < 0 || r >= o.N || cc >= o.N) return;
       const i = r * o.N + cc;
       L.popup().setLatLng(e.latlng).setContent(`<b>${fmt(o.est[i], 3)}</b> ± ${fmt(o.sd[i], 3)} (kriging SD)<br>trend ${fmt(o.trd[i], 3)} · elev ${fmt(o.elev[i], 0)} m · imperv. ${fmt(o.imp[i], 0)} %`).openOn(S.hmap);
     });
+  }
+
+  function panels() {
+    MapStyle.layersPanel($("#h-layers"), S.hl, S.hsel, {
+      toggle: () => draw(), order: () => draw(),
+      select: l => { S.hsel = l.id; panels(); },
+      remove: () => draw(),
+    });
+    const l = S.hl.find(x => x.id === S.hsel && x.kind === "raster");
+    if (!HR.out && l) { $("#h-style").innerHTML = `<p class="hint">Build the map to change the style of its layers.</p>`; return; }
+    MapStyle.stylePanel($("#h-style"), l, () => draw(false, true));
   }
 
   function report() {
@@ -413,11 +456,11 @@ const HR = (() => {
   function geotiff() {
     const o = HR.out; if (!o) return;
     track("download-geotiff-10m");
-    const key = $("#h-layer").value, a = { est: o.est, sd: o.sd, trend: o.trd, imp: o.imp, elev: o.elev }[key];
+    const lay = selRaster(), a = rasterOf(lay.key);
     const W = o.N, H = o.N, dx = o.cell / o.mlon, dy = o.cell / o.mlat;
     const tags = [];                                     // [tag, type, count, values]
     const geokeys = [1, 1, 0, 3, 1024, 0, 1, 2, 1025, 0, 1, 1, 2048, 0, 1, 4326];
-    const desc = `${o.T.label} | ${$("#h-layer").selectedOptions[0].textContent} | regression kriging, Prognostica`;
+    const desc = `${o.T.label} | ${lay.name} | regression kriging, Prognostica`;
     const descB = new TextEncoder().encode(desc + "\0");
     tags.push([256, 4, 1, [W]], [257, 4, 1, [H]], [258, 3, 1, [32]], [259, 3, 1, [1]], [262, 3, 1, [1]], [270, 2, descB.length, descB],
       [273, 4, 1, [0]], [277, 3, 1, [1]], [278, 4, 1, [H]], [279, 4, 1, [W * H * 4]], [284, 3, 1, [1]], [339, 3, 1, [3]],
