@@ -1,5 +1,8 @@
 // Predizione GPR nel browser: stesse formule di meteoita/gp.py::predict_export
 // k(x,x') = c*exp(-0.5*sum(((x-x')/ls)^2)) + sigma0^2 + x.x'   (+ noise sulla diagonale)
+// Input:  modelli esportati da scripts/04_train_gpr.py (data/gp/<regione>/<var>_<agg>_d<lead>.json) e i valori dei provider nel punto.
+// Output: stima, deviazione standard, intervalli 68/95% e probabilita' di superamento (oggetto globale GP;
+//         in node module.exports, usato da tests/test_gp_consistency.py).
 "use strict";
 
 const GP = (() => {

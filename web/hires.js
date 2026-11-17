@@ -3,6 +3,9 @@
 //            (quota e pendenza/esposizione da DEM, impermeabilizzazione e copertura arborea HRL 2018)
 //   residui: kriging ordinario con variogramma esponenziale stimato sui residui
 //   verifica: leave-one-out sui punti campione (RK vs solo trend vs solo kriging)
+// Input:  punto e righe della previsione (S.point, HR.rows da app.js), grandezze atmosferiche (ATM), modelli GPR (GP),
+//         Open-Meteo Forecast API nei punti campione, DEM Terrarium (AWS), HRL EEA 2018 (ImageServer, TIFF non compresso).
+// Output: scheda "10 m map" (mappa, legenda, validazione), download CSV e GeoTIFF Float32 (EPSG:4326).
 "use strict";
 
 const HR = (() => {
@@ -283,7 +286,7 @@ const HR = (() => {
       opts($("#h-period"), rows.filter(r => !r.past).map(r => [r.period, r.period.replace("T", " ")]), rows.find(r => !r.past)?.period);
     } else if (ATM.cur) {
       const { d, P } = ATM.cur;
-      opts($("#h-period"), d.times.map(t => [t, (() => { const l = localParts(t, P.tz); return `${l.date} ${String(l.hour).padStart(2, "0")}:00`; })()]),
+      opts($("#h-period"), d.times.map(t => { const l = localParts(t, P.tz); return [t, `${l.date} ${String(l.hour).padStart(2, "0")}:00`]; }),
         +$("#a-hour").value >= 0 ? d.times[+$("#a-hour").value] : d.times[0]);
     }
   }
@@ -302,7 +305,7 @@ const HR = (() => {
       const npx = Math.min(4000, Math.ceil((size + 2 * pad) / CELL));
       const [Z, IMP, TCD] = await Promise.all([dem(bb, size <= 10000 ? 14 : 13), hrl("HRL_ImperviousnessDensity_2018", bb, npx, npx).catch(() => null),
         hrl("HRL_TreeCoverDensity_2018", bb, npx, npx).catch(() => null)]);
-      // punti campione: griglia regolare 7 x 7 sul riquadro (bordi compresi)
+      // punti campione: griglia regolare NS x NS sul riquadro
       const samples = [];
       for (let i = 0; i < NS; i++) for (let j = 0; j < NS; j++)
         samples.push({ lat: bb.s + (bb.n - bb.s) * (i + 0.5) / NS, lon: bb.w + (bb.e - bb.w) * (j + 0.5) / NS });
