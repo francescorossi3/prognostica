@@ -151,33 +151,44 @@
       <div class="downloads"><button id="h-tif" class="ghost">Download GeoTIFF</button><button id="h-csv" class="ghost">Download CSV</button></div>
     </aside>
   </div>
+  <h2 class="section">Validation against measurements (AERONET)</h2>
+  <p class="hint">Water vapour (ECMWF IFS, about 25 km) and aerosol optical depth (CAMS, about 45 km) corrected with covariates at the time of
+    each Sentinel-2 image (Sentinel-2 water vapour and AOT, reflectances and indices at 60, 500 and 2000 m, terrain) by random forest or gradient
+    boosting, with kriging of the residuals. Each site is tested while left out of the training: the errors are against real sun-photometer measurements.</p>
+  <p class="hint" id="hv-info"></p>
+  <div class="controls">
+    <label>Variable <select id="hv-var"></select></label>
+    <label>Method on the map <select id="hv-method"></select></label>
+  </div>
+  <div class="map-layout wide-side">
+    <div class="map-card"><div id="vmap" class="map medium"></div><div id="hv-legend" class="legend"></div></div>
+    <div class="card"><h3>Errors at the sites</h3><div class="table-wrap"><table id="hv-table" class="plain"></table></div></div>
+  </div>
   <details class="more">
-    <summary>Validation (leave-one-out) and model</summary>
-    <div class="grid2">
-      <div><h3>Validation (leave-one-out)</h3><div class="table-wrap"><table id="h-metrics" class="plain"></table></div></div>
-      <div><h3>Model</h3><div id="h-model"></div></div>
-    </div>
+    <summary>Which covariates matter</summary>
+    <div class="table-wrap"><table id="hv-imp" class="plain"></table></div>
+  </details>
+  <details class="more">
+    <summary>Model of the map above</summary>
+    <div id="h-model"></div>
   </details>
   <details class="more prose">
-    <summary>How the map is made and validated</summary>
+    <summary>How the map is made</summary>
     <ol>
       <li><b>Sample points.</b> A regular grid of 49–121 points covers the area (7 × 7 up to 5 km, 9 × 9 up to 10 km, 11 × 11 above).
         At each point the value is computed from the Open-Meteo atmosphere (ECMWF IFS, CAMS aerosols) with the 6S tables
-        (or, for the forecast, with the GPR). These are the “known” values: click a validation point to see it.</li>
+        (or, for the forecast, with the GPR).</li>
       <li><b>Trend.</b> A linear regression of these values on the ground elevation at 10 m (Copernicus DEM / EU-DEM).
         Elevation is the only 10 m quantity that changes the atmosphere above the ground (less air and water vapour above high ground);
         land-cover layers are not used because they are not contemporaneous with the atmosphere.</li>
       <li><b>Kriging of the residuals.</b> What the trend does not explain is interpolated with ordinary kriging
         (exponential variogram fitted on the residuals). Map = trend + kriged residual; the kriging standard deviation is its uncertainty.</li>
-      <li><b>Validation (leave-one-out).</b> Each sample point is removed in turn, the whole model is fitted again on the others and
-        the value at the removed point is predicted. The error table compares RK with the trend alone and with kriging alone.
-        On the map, the size of each validation point is its error. This checks the interpolation between the points,
-        not the accuracy of the atmospheric data themselves.</li>
     </ol>
     <p><b>Input data.</b> Water vapour column, pressure and temperature come from ECMWF IFS at 0.25° (about 25 km); the aerosol optical depth
       at 550 nm from CAMS global at 0.4° (about 45 km). Open-Meteo returns the value of the grid cell of each point, so nearby sample points
       often share the same values. At each point the 6S look-up table is interpolated in water vapour, AOD, solar zenith angle and the
       elevation of the point.</p>
+    <p>This map interpolates model values and is not checked against measurements; the validated correction with Sentinel-2 is shown above.</p>
   </details>
 </section>
 

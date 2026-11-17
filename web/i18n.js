@@ -8,14 +8,28 @@
 
 const I18N = (() => {
   const D = {
+    "A regular grid of 49–121 points covers the area (7 × 7 up to 5 km, 9 × 9 up to 10 km, 11 × 11 above). At each point the value is computed from the Open-Meteo atmosphere (ECMWF IFS, CAMS aerosols) with the 6S tables (or, for the forecast, with the GPR).": "Una griglia regolare di 49–121 punti copre l'area (7 × 7 fino a 5 km, 9 × 9 fino a 10 km, 11 × 11 oltre). In ogni punto il valore si calcola dall'atmosfera di Open-Meteo (ECMWF IFS, aerosol CAMS) con le tabelle 6S (o, per la previsione, con il GPR).",
+    // validazione AERONET in Atmosphere RK
+    "Validation against measurements (AERONET)": "Validazione con le misure (AERONET)",
+    "Water vapour (ECMWF IFS, about 25 km) and aerosol optical depth (CAMS, about 45 km) corrected with covariates at the time of each Sentinel-2 image (Sentinel-2 water vapour and AOT, reflectances and indices at 60, 500 and 2000 m, terrain) by random forest or gradient boosting, with kriging of the residuals. Each site is tested while left out of the training: the errors are against real sun-photometer measurements.":
+      "Vapore acqueo (ECMWF IFS, circa 25 km) e spessore ottico degli aerosol (CAMS, circa 45 km) corretti con covariate del momento di ogni immagine Sentinel-2 (vapore e AOT di Sentinel-2, riflettanze e indici a 60, 500 e 2000 m, terreno) con random forest o gradient boosting e kriging dei residui. Ogni sito viene verificato mentre è escluso dall'addestramento: gli errori sono rispetto a misure vere dei fotometri solari.",
+    "Method on the map": "Metodo sulla mappa", "Errors at the sites": "Errori ai siti", "Which covariates matter": "Quali covariate contano",
+    "Model of the map above": "Modello della mappa qui sopra", "How the map is made": "Come si costruisce la mappa",
+    "Covariate": "Covariata", "Importance (random forest)": "Importanza (random forest)", "Method": "Metodo",
+    "Model (ECMWF / CAMS)": "Modello (ECMWF / CAMS)", "Random forest": "Random forest", "Random forest + kriging": "Random forest + kriging",
+    "Gradient boosting": "Gradient boosting", "Gradient boosting + kriging": "Gradient boosting + kriging",
+    "Size = RMSE at the site": "Dimensione = RMSE al sito", "Better than the model": "Meglio del modello", "Worse than the model": "Peggio del modello",
+    "Validation not available yet.": "Validazione non ancora disponibile.", "Water vapour column": "Colonna di vapore acqueo",
+    "Aerosol optical depth 550 nm": "Spessore ottico degli aerosol a 550 nm", "Value:": "Valore:",
+    "This map interpolates model values and is not checked against measurements; the validated correction with Sentinel-2 is shown above.":
+      "Questa mappa interpola valori del modello e non è verificata con misure; la correzione validata con Sentinel-2 è mostrata sopra.",
+    "3/4 · fitting trend + variogram…": "3/4 · stimo trend e variogramma…",
     "Area side": "Lato dell'area", "Side of the square map centred on the place": "Lato della mappa quadrata centrata sul luogo",
     "Size of a map cell": "Dimensione di una cella della mappa", "Selected place": "Luogo scelto",
     // download, Atmosphere (modelli RT, equazioni, glossario), Atmosphere RK con sola quota
     "CSV": "CSV", "Download the data of this chart (CSV)": "Scarica i dati di questo grafico (CSV)", "Download this table (CSV)": "Scarica questa tabella (CSV)",
     "Selected layer at the period shown": "Layer selezionato al periodo mostrato",
     "Radiative transfer model, VNIR–SWIR": "Modello di trasferimento radiativo, VNIR–SWIR", "LWIR": "LWIR",
-    
-    
     "Water-vapour functions, Jiménez-Muñoz et al. 2014 (Landsat B10)": "Funzioni del vapore acqueo, Jiménez-Muñoz et al. 2014 (Landsat B10)",
     "Spectral radiative transfer, VNIR–SWIR": "Trasferimento radiativo spettrale, VNIR–SWIR",
     "6S, nadir view, continental aerosol. Hover over a legend entry to see what it is.": "6S, vista al nadir, aerosol continentale. Passa il mouse su una voce della legenda per sapere cos'è.",
@@ -55,20 +69,11 @@ const I18N = (() => {
     "Accuracy": "Accuratezza", "Atmosphere RK": "Atmosfera RK", "How to read the GPR tables": "Come leggere le tabelle GPR",
     "Scroll the chart sideways with the bar, the mouse wheel (Shift + wheel) or a swipe.": "Scorri il grafico di lato con la barra, la rotella del mouse (Maiusc + rotella) o con un dito.",
     "Atmospheric parameters (or the forecast) at high resolution (10 m by default) by regression kriging (RK) around the place.": "Parametri atmosferici (o la previsione) ad alta risoluzione (10 m di base) con regression kriging (RK) intorno al luogo.",
-    "How the map is made and validated": "Come si costruisce e si valida la mappa",
     "Sample points.": "Punti campione.",
-    "A regular grid of 49–121 points covers the area (7 × 7 up to 5 km, 9 × 9 up to 10 km, 11 × 11 above). At each point the value is computed from the Open-Meteo atmosphere (ECMWF IFS, CAMS aerosols) with the 6S tables (or, for the forecast, with the GPR). These are the “known” values: click a validation point to see it.":
-      "Una griglia regolare di 49–121 punti copre l'area (7 × 7 fino a 5 km, 9 × 9 fino a 10 km, 11 × 11 oltre). In ogni punto il valore si calcola dall'atmosfera di Open-Meteo (ECMWF IFS, aerosol CAMS) con le tabelle 6S (o, per la previsione, con il GPR). Questi sono i valori “noti”: clicca un punto di validazione per vederlo.",
     "Trend.": "Trend.",
     "Kriging of the residuals.": "Kriging dei residui.",
     "What the trend does not explain is interpolated with ordinary kriging (exponential variogram fitted on the residuals). Map = trend + kriged residual; the kriging standard deviation is its uncertainty.":
       "Ciò che il trend non spiega viene interpolato con il kriging ordinario (variogramma esponenziale stimato sui residui). Mappa = trend + residuo interpolato; la deviazione standard del kriging è la sua incertezza.",
-    "Validation (leave-one-out).": "Validazione (leave-one-out).",
-    "Each sample point is removed in turn, the whole model is fitted again on the others and the value at the removed point is predicted. The error table compares RK with the trend alone and with kriging alone. On the map, the size of each validation point is its error. This checks the interpolation between the points, not the accuracy of the atmospheric data themselves.":
-      "Ogni punto campione viene tolto a turno, l'intero modello viene stimato di nuovo sugli altri e si predice il valore nel punto tolto. La tabella degli errori confronta l'RK con il solo trend e con il solo kriging. Sulla mappa, la dimensione di ogni punto di validazione è il suo errore. Così si verifica l'interpolazione tra i punti, non l'accuratezza dei dati atmosferici stessi.",
-    "Validation points": "Punti di validazione", "Size = leave-one-out error of RK": "Dimensione = errore leave-one-out dell'RK",
-    "RK too high": "RK troppo alto", "RK too low": "RK troppo basso", "Value at the point:": "Valore nel punto:",
-    "Leave-one-out prediction (point left out):": "Predizione leave-one-out (punto escluso):",
     "GPR forecast from the Open-Meteo models at this point": "Previsione GPR dai modelli Open-Meteo in questo punto",
     "Mean of the Open-Meteo models at this point": "Media dei modelli Open-Meteo in questo punto",
     "Open-Meteo atmosphere at this point (ECMWF IFS, CAMS aerosols) with the 6S tables for radiative transfer": "Atmosfera Open-Meteo in questo punto (ECMWF IFS, aerosol CAMS) con le tabelle 6S per il trasferimento radiativo",
@@ -78,7 +83,6 @@ const I18N = (() => {
     "6S, nadir view, continental aerosol.": "6S, vista al nadir, aerosol continentale.", 
     "Choose a place with the search above (or a map click, or a calibration site).": "Scegli un luogo con la ricerca in alto (o con un clic sulla mappa, o un sito di calibrazione).",
     "Choose a place with the search above: the map is built around it.": "Scegli un luogo con la ricerca in alto: la mappa viene costruita intorno a esso.",
-    "Validation (leave-one-out) and model": "Validazione (leave-one-out) e modello", 
     "Green = event forecast, red = missed.": "Verde = evento previsto, rosso = mancato.",
     "Add layer": "Aggiungi layer", "+ Add": "+ Aggiungi", "Add the chosen layer to the map": "Aggiungi alla mappa il layer scelto",
     "Layers": "Layer", "Style": "Stile", "OpenStreetMap": "OpenStreetMap", "Sample points": "Punti campione",
@@ -134,8 +138,8 @@ const I18N = (() => {
       "Proposta: la prossima ora con il sole più alto (vicina al passaggio delle ~10:30 di Sentinel-2 / Landsat).",
     "Surface and column": "Superficie e colonna", "Vertical profile": "Profilo verticale", 
     "Next days": "Prossimi giorni",
-    "Downloading atmospheric data…": "Scarico i dati atmosferici…", "Water vapour column": "Vapore acqueo in colonna",
-    "Aerosol optical depth 550 nm": "Spessore ottico degli aerosol 550 nm", "Solar zenith angle": "Angolo zenitale solare",
+    "Downloading atmospheric data…": "Scarico i dati atmosferici…", 
+    "Solar zenith angle": "Angolo zenitale solare",
     "Surface pressure": "Pressione al suolo", "Air temperature 2 m · dew point": "Temperatura dell'aria 2 m · punto di rugiada",
     "Air density at the surface": "Densità dell'aria al suolo", "Cloud cover": "Copertura nuvolosa", "Irradiance (hour mean)": "Irradianza (media oraria)",
     "TIR Landsat 8/9 B10 (10.9 µm)": "TIR Landsat 8/9 B10 (10,9 µm)", 
@@ -148,18 +152,15 @@ const I18N = (() => {
     // mappa 10 m
     "10 m map around the point": "Mappa a 10 m intorno al punto", "· regression kriging on Copernicus covariates": "· regression kriging su covariate Copernicus",
     "Period / hour": "Periodo / ora", "Build RK map": "Crea mappa RK", "Download CSV": "Scarica CSV",
-    "Validation (leave-one-out)": "Validazione (leave-one-out)", "Model": "Modello",
+    "Model": "Modello",
     "Water vapour column [kg m⁻²]": "Vapore acqueo in colonna [kg m⁻²]",
     "Air temperature 2 m [°C]": "Temperatura dell'aria 2 m [°C]", "Air density [kg m⁻³]": "Densità dell'aria [kg m⁻³]",
     "Global irradiance [W m⁻²]": "Irradianza globale [W m⁻²]", "TIR L8/9 B10 transmittance": "TIR L8/9 B10 trasmittanza",
     "TIR L8/9 B10 upwelling radiance": "TIR L8/9 B10 radianza in salita", "TIR L8/9 B10 downwelling radiance": "TIR L8/9 B10 radianza in discesa",
     "Estimate (trend + kriged residual)": "Stima (trend + residuo krigato)", "Kriging standard deviation": "Deviazione standard del kriging",
     "Trend only": "Solo trend", 
-    "◆ Regression kriging": "◆ Regression kriging", "Trend only (regression on Copernicus covariates)": "Solo trend (regressione su covariate Copernicus)",
-    "Ordinary kriging only (no covariates)": "Solo kriging ordinario (senza covariate)", "RK 95% interval coverage": "Copertura dell'intervallo RK al 95%",
     "Target": "Variabile", "Residual variogram": "Variogramma dei residui", "Trend coefficients": "Coefficienti del trend",
     "(per 1 SD of the covariate)": "(per 1 DS della covariata)",
-    "3/4 · fitting trend + variogram, leave-one-out validation…": "3/4 · stima di trend e variogramma, validazione leave-one-out…",
     "4/4 · predicting on the 10 m grid…": "4/4 · previsione sulla griglia a 10 m…",
     "Atmosphere": "Atmosfera", "10 m map": "Mappa 10 m", "Resolution": "Risoluzione", 
     "Spectral radiative transfer": "Trasferimento radiativo spettrale", 

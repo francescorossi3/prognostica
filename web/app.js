@@ -126,7 +126,7 @@ function showTab(t) {
   history.replaceState(null, "", "#" + t + (q && ["point", "atm", "hr"].includes(t) ? "?" + q : ""));
   if (t === "maps" && S.map) setTimeout(() => S.map.invalidateSize(), 50);
   if (t === "point") Object.values(charts).forEach(c => c.resize());
-  if (t === "hr" && S.hmap) setTimeout(() => S.hmap.invalidateSize(), 50);
+  if (t === "hr" && S.hmap) setTimeout(() => { S.hmap.invalidateSize(); S.vmap?.invalidateSize(); }, 50);
   if (t === "atm" || t === "hr") Object.values(charts).forEach(c => c.resize());
 }
 

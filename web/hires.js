@@ -2,7 +2,7 @@
 //   trend:   regressione lineare (OLS) del valore su covariate Copernicus a 10 m
 //            (quota del DEM Copernicus: l'unica grandezza a 10 m che cambia l'atmosfera sopra il suolo)
 //   residui: kriging ordinario con variogramma esponenziale stimato sui residui
-//   verifica: leave-one-out sui punti campione (RK vs solo trend vs solo kriging)
+//   validazione: sulle misure AERONET, calcolata da Torricelli (07_rk_validate.py) e mostrata qui su mappa e tabella
 // Input:  punto e righe della previsione (S.point, HR.rows da app.js), grandezze atmosferiche (ATM), modelli GPR (GP),
 //         Open-Meteo Forecast API nei punti campione, DEM Terrarium (AWS).
 // Output: scheda "Atmosphere RK" (mappa, legenda, punti di validazione), download CSV e GeoTIFF Float32 (EPSG:4326, con export.js).
@@ -103,14 +103,6 @@ const HR = (() => {
     A[n][n] = 0;
     return A;
   }
-  function okPredict(xy, r, vg, pts) {
-    const A = okSystem(xy, vg), n = xy.length;
-    return pts.map(p => {
-      const k = xy.map(q => cov(vg, Math.hypot(q[0] - p[0], q[1] - p[1])));
-      const w = solve(A, [...k, 1]);
-      return { est: dot(w.slice(0, n), r), var: Math.max(0, vg.nug + vg.sill - dot(w.slice(0, n), k) - w[n]) };
-    });
-  }
 
   // ---------------------------------------------------------------- covariate
   const NAMES = ["elevation [m]"];
@@ -130,26 +122,6 @@ const HR = (() => {
     for (let j = 0; j < p; j++) if (use[j]) { cj[j] = beta[kk] / sd[j]; c0 -= cj[j] * mu[j]; kk++; }
     const trend = f => { let t = c0; for (let j = 0; j < p; j++) t += cj[j] * f[j]; return t; };
     return { mu, sd, use, beta, row, res, vg, trend };
-  }
-
-  function metrics(obs, pred) {
-    const n = obs.length, m = obs.reduce((a, b) => a + b, 0) / n;
-    const e = pred.map((p, i) => p - obs[i]), sse = e.reduce((s, v) => s + v * v, 0), sst = obs.reduce((s, v) => s + (v - m) ** 2, 0);
-    return { rmse: Math.sqrt(sse / n), mae: e.reduce((s, v) => s + Math.abs(v), 0) / n, bias: e.reduce((a, b) => a + b, 0) / n, r2: sst > 0 ? 1 - sse / sst : null, n };
-  }
-
-  function loocv(F, y, xy) {
-    const rk = [], tr = [], ok = [], cover = [];
-    for (let i = 0; i < y.length; i++) {
-      const keep = y.map((_, j) => j !== i), Fi = F.filter((_, j) => keep[j]), yi = y.filter((_, j) => keep[j]), xyi = xy.filter((_, j) => keep[j]);
-      const m = fit(Fi, yi, xyi), t = m.trend(F[i]), k = okPredict(xyi, m.res, m.vg, [xy[i]])[0];
-      tr.push(t); rk.push(t + k.est);
-      cover.push(Math.abs(y[i] - t - k.est) <= 1.96 * Math.sqrt(k.var + 1e-12));
-      const mean = yi.reduce((a, b) => a + b, 0) / yi.length, vg0 = variogram(xyi, yi.map(v => v - mean));
-      ok.push(mean + okPredict(xyi, yi.map(v => v - mean), vg0, [xy[i]])[0].est);
-    }
-    return { rk: metrics(y, rk), trend: metrics(y, tr), ok: metrics(y, ok), cover95: 100 * cover.filter(Boolean).length / cover.length,
-      pred: { rk, trend: tr, ok } };
   }
 
   // ---------------------------------------------------------------- valori bersaglio nei punti campione
@@ -236,13 +208,14 @@ const HR = (() => {
     const raster = (key, name, ramp, visible) => ({ id: key, key, name, kind: "raster", visible, pane: pane("hl-" + key),
       style: MapStyle.create(ramp, 0.67), values: () => HR.out ? rasterOf(key) : [] });
     S.hl = [
-      { id: "samples", name: "Validation points", kind: "samples", visible: true, pane: pane("hl-samples"), group: L.layerGroup().addTo(S.hmap) },
+      { id: "samples", name: "Sample points", kind: "samples", visible: true, pane: pane("hl-samples"), group: L.layerGroup().addTo(S.hmap) },
       raster("est", "Estimate (trend + kriged residual)", "RdYlBu", true),
       raster("sd", "Kriging standard deviation", "OrRd", false),
       raster("trend", "Trend only (elevation)", "RdYlBu", false),
       { id: "base", name: "OpenStreetMap", kind: "base", visible: true, pane: "hl-base", group: base },
     ];
     S.hsel = "est";
+    validation();
     S.hmap.setView([41.9, 12.5], 10);
     panels();
     tg(); wavelengths();
@@ -291,9 +264,9 @@ const HR = (() => {
       const xyOf = (lat, lon) => [(lon - P.lon) * mlon, (lat - P.lat) * mlat];
       const F = good.map(i => covariates(Z, samples[i].lat, samples[i].lon));
       const y = good.map(i => T.values[i]), xy = good.map(i => xyOf(samples[i].lat, samples[i].lon));
-      step(35, "3/4 · fitting trend + variogram, leave-one-out validation…");
+      step(35, "3/4 · fitting trend + variogram…");
       await new Promise(r => setTimeout(r, 20));
-      const M = fit(F, y, xy), cv = loocv(F, y, xy);
+      const M = fit(F, y, xy);
       step(45, `4/4 · predicting on the ${CELL} m grid…`);
       await new Promise(r => setTimeout(r, 20));
       const N = Math.round(size / CELL), est = new Float32Array(N * N), trd = new Float32Array(N * N), sd = new Float32Array(N * N),
@@ -319,7 +292,7 @@ const HR = (() => {
         }
         if (r % 20 === 19) { step(45 + 55 * (r + 1) / N, `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`); await new Promise(res => setTimeout(res, 0)); }
       }
-      HR.out = { N, cell: CELL, est, trd, sd, elev, lat0, lon0, mlat, mlon, half, T, M, cv, samples: good.map(i => samples[i]), y, P };
+      HR.out = { N, cell: CELL, est, trd, sd, elev, lat0, lon0, mlat, mlon, half, T, M, samples: good.map(i => samples[i]), y, P };
       draw(true); report();
       bar.hidden = true;
       st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${N} × ${N} cells of ${CELL} m · ${good.length} sample points`;
@@ -357,17 +330,10 @@ const HR = (() => {
       if (l.kind === "samples") {
         l.group.clearLayers();
         if (l.visible) {
-          const p = o.cv.pred, err = o.y.map((v, i) => p.rk[i] - v), mx = Math.max(...err.map(Math.abs), 1e-12);
-          o.samples.forEach((s, i) => L.circleMarker([s.lat, s.lon], { pane: l.pane, radius: 3 + 9 * Math.abs(err[i]) / mx,
-            color: "#15233b", weight: 1, fillColor: err[i] > 0 ? "#d49a3a" : "#23707e", fillOpacity: .85 })
-            .bindPopup(`<b>Sample point ${i + 1}</b> · ${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}<br>
-              Value at the point: <b>${fmt(o.y[i], 4)}</b><br><span class="hint">${o.T.source}</span><br>
-              Leave-one-out prediction (point left out):<br>RK ${fmt(p.rk[i], 4)} (error ${fmt(err[i], 4)}) · trend only ${fmt(p.trend[i], 4)} · kriging only ${fmt(p.ok[i], 4)}`)
+          o.samples.forEach((s, i) => L.circleMarker([s.lat, s.lon], { pane: l.pane, radius: 4, color: "#15233b", weight: 1, fillColor: "#fff", fillOpacity: 1 })
+            .bindPopup(`<b>Sample point ${i + 1}</b> · ${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}<br>Value: <b>${fmt(o.y[i], 4)}</b><br><span class="hint">${o.T.source}</span>`)
             .addTo(l.group));
-          legends.push(`<div class="lg"><b>Validation points</b> <span>(${o.samples.length})</span>
-            <div class="lg-row"><span class="dot"></span><span>Size = leave-one-out error of RK</span><span>(max ${fmt(mx, 4)})</span></div>
-            <div class="lg-row"><span class="sw" style="background:#d49a3a"></span><span>RK too high</span></div>
-            <div class="lg-row"><span class="sw" style="background:#23707e"></span><span>RK too low</span></div></div>`);
+          legends.push(`<div class="lg"><div class="lg-row"><span class="dot"></span><span>Sample points</span><span>(${o.samples.length})</span></div></div>`);
         }
         continue;
       }
@@ -397,12 +363,8 @@ const HR = (() => {
   }
 
   function report() {
-    const o = HR.out, M = o.M, cv = o.cv;
+    const o = HR.out, M = o.M;
     const names = NAMES.filter((_, j) => M.use[j]);
-    const row = (lab, m, cls = "") => `<tr class="${cls}"><td>${lab}</td><td>${fmt(m.rmse, 4)}</td><td>${fmt(m.mae, 4)}</td><td>${fmt(m.bias, 4)}</td><td>${fmt(m.r2, 3)}</td></tr>`;
-    $("#h-metrics").innerHTML = `<thead><tr><th>Method (leave-one-out, n = ${cv.rk.n})</th><th>RMSE</th><th>MAE</th><th>Bias</th><th>R²</th></tr></thead><tbody>
-      ${row("◆ Regression kriging", cv.rk, "combo")}${row("Trend only (regression on Copernicus covariates)", cv.trend)}${row("Ordinary kriging only (no covariates)", cv.ok)}
-      <tr><td>RK 95% interval coverage</td><td colspan="4" style="text-align:left">${fmt(cv.cover95, 0)} % of the left-out samples (ideal ≈ 95 %)</td></tr></tbody>`;
     $("#h-model").innerHTML = `<dl class="kv"><dt>Target</dt><dd>${o.T.label}</dd>
       <dt>Trend coefficients<br><span class="hint">(per 1 SD of the covariate)</span></dt><dd>intercept ${fmt(M.beta[0], 4)}<br>${names.map((nm, j) => `${nm}: ${fmt(M.beta[j + 1], 4)} <span class="hint">(SD ${fmt(M.sd[NAMES.indexOf(nm)], 2)})</span>`).join("<br>")}</dd>
       <dt>Residual variogram</dt><dd>exponential · nugget ${fmt(M.vg.nug, 5)} · partial sill ${fmt(M.vg.sill, 5)} · range ${fmt(M.vg.a * 3 / 1000, 2)} km (practical)</dd></dl>`;
@@ -435,5 +397,45 @@ const HR = (() => {
     if (!HR.out || HR.out.P !== P) S.hmap.setView([P.lat, P.lon], 11);
   }
 
-  return { init, periods, run, point, geotiff, variogram, fit, loocv, okPredict, metrics };
+  // ---------------------------------------------------------------- validazione sulle misure AERONET (da Torricelli)
+  // ogni sito: pallino grande quanto l'RMSE del metodo scelto; verde-acqua = meglio del modello grezzo, ocra = peggio
+  const VM = { model: "Model (ECMWF / CAMS)", rf: "Random forest", rf_rk: "Random forest + kriging", hgb: "Gradient boosting", hgb_rk: "Gradient boosting + kriging" };
+  async function validation() {
+    const url = (S.meta.atmos_url || "").replace(/\/?$/, "/") + "data/validation/rk_validation.json";
+    const V = await fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
+    if (!V) { $("#hv-info").textContent = "Validation not available yet."; return; }
+    const vars = Object.entries(V.variables).filter(([, x]) => x.overall);
+    opts($("#hv-var"), vars.map(([k, x]) => [k, x.label]), "tcwv");
+    opts($("#hv-method"), V.methods.filter(m => m !== "model").map(m => [m, VM[m]]), "hgb");
+    S.vmap = L.map("vmap", { worldCopyJump: true }).setView([46, 10], 4);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 12, attribution: "© OpenStreetMap" }).addTo(S.vmap);
+    const lay = L.layerGroup().addTo(S.vmap);
+    const show = () => {
+      const x = V.variables[$("#hv-var").value], m = $("#hv-method").value, u = x.unit ? ` [${x.unit}]` : "", d = x.unit ? 3 : 4;
+      $("#hv-info").textContent = `${x.n_sites} AERONET sites · ${x.n_rows} Sentinel-2 overpasses with a measurement · ${x.period.map(t => t.slice(0, 10)).join(" – ")} · each site left out of training when it is tested`;
+      $("#hv-table").innerHTML = `<thead><tr><th>Method</th><th>RMSE${u}</th><th>MAE${u}</th><th>Bias${u}</th><th>R²</th><th>n</th></tr></thead><tbody>`
+        + V.methods.map(k => { const r = x.overall[k];
+          return `<tr class="${k === m ? "combo" : ""}"><td>${VM[k]}</td><td>${fmt(r.rmse, d)}</td><td>${fmt(r.mae, d)}</td><td>${fmt(r.bias, d)}</td><td>${fmt(r.r2, 3)}</td><td>${r.n}</td></tr>`; }).join("") + "</tbody>";
+      lay.clearLayers();
+      const mx = Math.max(...x.sites.map(s => s[m].rmse || 0), 1e-9);
+      x.sites.forEach(s => {
+        const a = s[m], b = s.model;
+        if (a.rmse == null) return;
+        L.circleMarker([s.lat, s.lon], { radius: 3 + 14 * a.rmse / mx, color: "#15233b", weight: 1, fillOpacity: .8,
+          fillColor: a.rmse < b.rmse ? "#23707e" : "#d49a3a" })
+          .bindPopup(`<b>${s.site.replace(/_/g, " ")}</b> · ${s.elev == null ? "" : fmt(s.elev, 0) + " m"}<br>n = ${a.n}<br>
+            RMSE ${VM[m]}: <b>${fmt(a.rmse, d)}</b><br>RMSE model: ${fmt(b.rmse, d)}<br>Bias ${VM[m]}: ${fmt(a.bias, d)}`).addTo(lay);
+      });
+      $("#hv-legend").innerHTML = `<div class="lg"><b>${VM[m]}</b> · ${x.label}
+        <div class="lg-row"><span class="dot"></span><span>Size = RMSE at the site</span><span>(max ${fmt(mx, d)}${u})</span></div>
+        <div class="lg-row"><span class="sw" style="background:#23707e"></span><span>Better than the model</span></div>
+        <div class="lg-row"><span class="sw" style="background:#d49a3a"></span><span>Worse than the model</span></div></div>`;
+      $("#hv-imp").innerHTML = `<thead><tr><th>Covariate</th><th>Importance (random forest)</th></tr></thead><tbody>`
+        + x.importance.map(i => `<tr><td>${i.feature}</td><td>${fmt(i.importance, 3)}</td></tr>`).join("") + "</tbody>";
+    };
+    $("#hv-var").onchange = show; $("#hv-method").onchange = show;
+    show();
+  }
+
+  return { init, periods, run, point, geotiff, validation };
 })();
