@@ -21,3 +21,8 @@ Contesto completo e storia: **CONTESTO.md** (leggerlo solo se serve).
 - Commit piccoli e descrittivi in italiano; dopo modifiche al sito lanciare il workflow di pubblicazione.
 - Non aprire file sul PC di Francesco senza permesso; niente controllo di mouse/schermo.
 - Risparmio token: leggere solo i file necessari (usare grep), non rileggere file appena modificati, risposte brevi.
+
+## Qualità del codice e documentazione
+- Niente codice superfluo (morto, duplicato, commentato).
+- Intestazione in ogni file: cosa fa, input, output.
+- Aggiornare `docs/` (HOW_IT_WORKS.md, COME_FUNZIONA.md) quando cambia il funzionamento.
