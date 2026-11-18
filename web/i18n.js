@@ -8,6 +8,11 @@
 
 const I18N = (() => {
   const D = {
+    "Sentinel-2 + gradient boosting (validated on AERONET / GNSS, past dates)": "Sentinel-2 + gradient boosting (validato su AERONET / GNSS, date passate)",
+    "Elevation trend + kriging of model values": "Trend sulla quota + kriging dei valori del modello", "Date": "Data", "Find Sentinel-2 images": "Cerca immagini Sentinel-2",
+    "Image": "Immagine", "Build map": "Crea mappa", "Searching Sentinel-2 images…": "Cerco immagini Sentinel-2…", "No Sentinel-2 image within ±5 days": "Nessuna immagine Sentinel-2 entro ±5 giorni",
+    "Corrected (Sentinel-2 + gradient boosting)": "Corretto (Sentinel-2 + gradient boosting)", "Model only (ECMWF / CAMS)": "Solo modello (ECMWF / CAMS)",
+    "Correction (corrected − model)": "Correzione (corretto − modello)", "find and choose a Sentinel-2 image first": "prima cerca e scegli un'immagine Sentinel-2",
     "Download": "Scarica", "Selected layer, same pixels and coordinate system as the grid": "Layer selezionato, stessi pixel e sistema di riferimento della griglia",
     "GeoTIFF (Float32, values)": "GeoTIFF (Float32, valori)", "PNG as shown + world file": "PNG come mostrato + world file", "JPEG as shown + world file": "JPEG come mostrato + world file",
     "ESRI ASCII grid (.asc)": "Griglia ASCII ESRI (.asc)", "ENVI (.img + .hdr)": "ENVI (.img + .hdr)", "CSV (lon, lat, value)": "CSV (lon, lat, valore)",
@@ -165,7 +170,7 @@ const I18N = (() => {
     "Global irradiance [W m⁻²] /100": "Irradianza globale [W m⁻²] /100",
     // mappa 10 m
     "10 m map around the point": "Mappa a 10 m intorno al punto", "· regression kriging on Copernicus covariates": "· regression kriging su covariate Copernicus",
-    "Period / hour": "Periodo / ora", "Build RK map": "Crea mappa RK", 
+    "Period / hour": "Periodo / ora", 
     "Model": "Modello",
     "Water vapour column [kg m⁻²]": "Vapore acqueo in colonna [kg m⁻²]",
     "Air temperature 2 m [°C]": "Temperatura dell'aria 2 m [°C]", "Air density [kg m⁻³]": "Densità dell'aria [kg m⁻³]",

@@ -42,10 +42,26 @@ const ATM = (() => {
     if (!lutP[key]) {
       const f = lutFile(set);
       const urls = [S.meta.atmos_url ? S.meta.atmos_url.replace(/\/?$/, "/") + f : null, DATA + f.replace("data/", "")].filter(Boolean);
-      lutP[key] = (async () => { for (const u of urls) { try { const r = await fetch(u); if (r.ok) return await r.json(); } catch { /* prossimo */ } } return null; })();
+      lutP[key] = (async () => { for (const u of urls) { try { const r = await fetch(u); if (r.ok) return await r.json(); } catch { /* prossimo */ } } return null; })()
+        .then(j => { if (set === "tir") TL = j; return j; });
     }
     return lutP[key];
   }
+  // LWIR (solo modelli che lo coprono, es. libRadtran): tau, L su, L giu' per una banda; atmosfera standard secondo latitudine e stagione
+  let TL = null;
+  function tirBand(T, band, w, altKm, lat, ms) {
+    const m = new Date(ms).getUTCMonth(), summer = lat >= 0 ? m >= 3 && m <= 8 : m <= 2 || m >= 9;
+    const atm = Math.abs(lat) < 23 ? "afglt" : Math.abs(lat) > 60 ? (summer ? "afglss" : "afglsw") : summer ? "afglms" : "afglmw";
+    const A = T.axes, V = T.bands[band].values, ia = A.atm.indexOf(atm);
+    const bw = bracket(A.w_gcm2, w), bz = bracket(A.alt_km, altKm), out = [0, 0, 0];
+    for (let c = 0; c < 4; c++) {
+      const uw = c & 1, uz = (c >> 1) & 1, wt = (uw ? bw[1] : 1 - bw[1]) * (uz ? bz[1] : 1 - bz[1]);
+      if (!wt) continue;
+      V[bw[0] + uw][bz[0] + uz][ia].forEach((v, j) => { out[j] += wt * v; });
+    }
+    return { tau: out[0], lu: out[1], ld: out[2] };
+  }
+
   // il modello ha le sue tabelle pubblicate? (per abilitarlo nel selettore)
   async function available(m) {
     const u = (S.meta.atmos_url || "").replace(/\/?$/, "/") + lutFile("s2", m);
@@ -105,6 +121,7 @@ const ATM = (() => {
       ws: g(`wind_speed_${p}hPa`) })).filter(r => r.z != null && (o.ps == null || r.p <= o.ps));
     o.prof.forEach(r => { r.rho = rho(r.p, r.t, r.rh); });
     o.rt = null;
+    o.tir = S.rtm !== "6s" && TL && Number.isFinite(w) ? tirBand(TL, "L8_B10", w, Math.max(0, (elevM || 0) / 1000), lat, d.times[k]) : null;
     if (L && Number.isFinite(w) && z < 80) {
       const a = Number.isFinite(aod) ? aod : 0.1, alt = Math.max(0, (elevM || 0) / 1000);
       o.rt = Object.fromEntries((only || Object.keys(L.bands)).map(b => [b, rtBand(L, b, w, a, z, alt)]));
@@ -130,7 +147,7 @@ const ATM = (() => {
       <span class="hint">(change the place with the search above)</span>`;
     box.innerHTML = '<p class="hint">Downloading atmospheric data…</p>';
     let d, L, H;
-    try { [[d], L, H] = await Promise.all([fetchMulti([{ lat: P.lat, lon: P.lon }], 1, 3, true), lut("s2"), lut("hyper")]); }
+    try { [[d], L, H] = await Promise.all([fetchMulti([{ lat: P.lat, lon: P.lon }], 1, 3, true), lut("s2"), lut("hyper"), S.rtm === "6s" ? null : lut("tir")]); }
     catch (e) { box.innerHTML = `<p class="error">Atmosphere download error: ${e.message}</p>`; return; }
     box.innerHTML = "";
     ATM.cur = { d, L, H, P };

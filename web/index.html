@@ -140,6 +140,14 @@
     <span class="hint" id="h-img-info">The map will have exactly the extent, pixels and coordinate system of the image, so the values can be used pixel by pixel.</span>
   </div>
   <div class="controls">
+    <label>Method <select id="h-method">
+      <option value="s2">Sentinel-2 + gradient boosting (validated on AERONET / GNSS, past dates)</option>
+      <option value="rk">Elevation trend + kriging of model values</option></select></label>
+    <label class="h-s2">Date <input type="date" id="h-date"></label>
+    <button id="h-find" class="ghost h-s2">Find Sentinel-2 images</button>
+    <label class="h-s2">Image <select id="h-item"></select></label>
+  </div>
+  <div class="controls">
     <label>Variable <select id="h-target"></select></label>
     <label id="h-wl-wrap">Wavelength <select id="h-wl"></select></label>
     <label>Period / hour <select id="h-period"></select></label>
@@ -147,7 +155,7 @@
       <select id="h-size-u"><option value="1000" selected>km</option><option value="1">m</option></select></label>
     <label title="Size of a map cell">Cell <input type="number" id="h-cell" min="1" step="any" value="10" class="short">
       <select id="h-cell-u"><option value="1" selected>m</option><option value="1000">km</option></select></label>
-    <button id="h-go" class="primary">Build RK map</button>
+    <button id="h-go" class="primary">Build map</button>
   </div>
   <div class="progress-row"><progress id="h-progress" max="100" value="0" hidden></progress><p class="status" id="h-status"></p></div>
   <div class="map-layout">
@@ -297,6 +305,7 @@
 <script src="export.js"></script>
 <script src="atmos.js"></script>
 <script src="hires.js"></script>
+<script src="s2rk.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

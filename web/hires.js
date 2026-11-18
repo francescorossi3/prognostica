@@ -221,6 +221,7 @@ const HR = (() => {
     // grandezze atmosferiche all'ora scelta
     const [name, qty] = kind.split(":"), band = opt.band;
     const L = await ATM.lut(band && band.startsWith("WL_") ? "hyper" : "s2");
+    if (S.rtm !== "6s") await ATM.lut("tir");                         // carica la tabella LWIR (usata da ATM.derive)
     const d = await ATM.fetchMulti(samples, 1, 3, false), t = opt.time;
     const vals = d.map((x, i) => {
       const k = x.times.indexOf(t);
@@ -265,6 +266,18 @@ const HR = (() => {
     opts($("#h-fmt"), EXPORT.FORMATS, "tif");
     $("#h-dl").onclick = download;
     $("#h-img").onchange = e => importImage(e.target.files);
+    $("#h-date").value = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+    $("#h-method").onchange = method; method();
+    $("#h-find").onclick = async () => {
+      const G = S.himg || (S.point && centredGrid(S.point, +$("#h-size").value * +$("#h-size-u").value, +$("#h-cell").value * +$("#h-cell-u").value));
+      if (!G) return;
+      $("#h-status").textContent = "Searching Sentinel-2 images…";
+      try {
+        S.hitems = await S2RK.search(G, $("#h-date").value);
+        opts($("#h-item"), S.hitems.map((it, i) => [i, `${it.properties.datetime.slice(0, 16).replace("T", " ")} · tile ${it.id.split("_")[1]} · clouds ${fmt(it.properties["eo:cloud_cover"], 0)} %`]), 0);
+        $("#h-status").textContent = S.hitems.length ? `${S.hitems.length} images within ±5 days, least cloudy first` : "No Sentinel-2 image within ±5 days";
+      } catch (e) { $("#h-status").innerHTML = `<span class="error">${e.message}</span>`; }
+    };
     $("#h-img-clear").onclick = clearImage;
     S.hmap = L.map("hmap");
     const pane = id => { S.hmap.createPane(id); return id; };
@@ -316,6 +329,21 @@ const HR = (() => {
     const bar = $("#h-progress"), t0 = performance.now();
     const step = (pct, text) => { bar.hidden = false; bar.value = pct; st.textContent = `${text} · ${((performance.now() - t0) / 1000).toFixed(0)} s`; };
     try {
+      if ($("#h-method").value === "s2") {                                 // modello validato con Sentinel-2 (s2rk.js)
+        const item = S.hitems?.[+$("#h-item").value];
+        if (!item) throw new Error("find and choose a Sentinel-2 image first");
+        step(2, "0/5 · elevation…");
+        const pad2 = 2300, Z = await dem({ s: bb.s - pad2 / mlat, n: bb.n + pad2 / mlat, w: bb.w - pad2 / mlon, e: bb.e + pad2 / mlon }, ext <= 10000 ? 14 : 13);
+        const R = await S2RK.run(G, item, kind, $("#h-wl").value, step, Z);
+        const lab = $("#h-target").selectedOptions[0].textContent + (kind.startsWith("spec:") ? ` at ${$("#h-wl").selectedOptions[0].textContent}` : "");
+        HR.out = { G, ...R, T: { label: `${lab} · Sentinel-2 ${R.time.slice(0, 16).replace("T", " ")} UTC`, source: "" }, s2: R,
+          names: { est: "Corrected (Sentinel-2 + gradient boosting)", trend: "Model only (ECMWF / CAMS)", sd: "Correction (corrected − model)" },
+          samples: [], y: [], P: P || { lat: C[1], lon: C[0] } };
+        draw(true); report();
+        bar.hidden = true;
+        st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${W0(G)} · model applied every ${R.step} m · image ${R.item}`;
+        return;
+      }
       step(2, "1/4 · downloading the elevation (Copernicus DEM)…");
       const Z = await dem(bb, ext <= 10000 ? 14 : 13);
       // punti campione: griglia regolare NS x NS sul riquadro
@@ -362,13 +390,15 @@ const HR = (() => {
         }
         if (r % 20 === 19) { step(45 + 55 * (r + 1) / H, `4/4 · predicting on the ${label} grid… ${Math.round(100 * (r + 1) / H)} %`); await new Promise(res => setTimeout(res, 0)); }
       }
-      HR.out = { G, est, trd, sd, elev, T, M, samples: good.map(i => samples[i]), y, P: P || { lat: C[1], lon: C[0] } };
+      HR.out = { G, est, trd, sd, elev, T, M, samples: good.map(i => samples[i]), y, P: P || { lat: C[1], lon: C[0] },
+        names: { est: "Estimate (trend + kriged residual)", trend: "Trend only (elevation)", sd: "Kriging standard deviation" } };
       draw(true); report();
       bar.hidden = true;
-      st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${W} × ${H} cells of ${label} (EPSG:${G.epsg || "WKT"}) · ${good.length} sample points`;
+      st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${W0(G)} · ${good.length} sample points`;
     } catch (e) { bar.hidden = true; st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
 
+  const W0 = G => `${G.W} × ${G.H} cells of ${fmt(G.dx, G.geographic ? 6 : 2)}${G.geographic ? "°" : " m"} (EPSG:${G.epsg || "WKT"})`;
   const rasterOf = key => ({ est: HR.out.est, sd: HR.out.sd, trend: HR.out.trd }[key]);
   // layer scelto nel pannello per GeoTIFF/legenda: quello selezionato, altrimenti la stima
   const selRaster = () => S.hl.find(l => l.id === S.hsel && l.kind === "raster") || S.hl.find(l => l.key === "est");
@@ -393,6 +423,7 @@ const HR = (() => {
     if (!o) return panels();
     const bounds = [[o.G.bb.s, o.G.bb.w], [o.G.bb.n, o.G.bb.e]];       // sovrapposizione approssimata della griglia proiettata
     const legends = [];
+    for (const l of S.hl) if (l.kind === "raster" && o.names?.[l.key]) l.name = o.names[l.key];
     for (const [n, l] of S.hl.entries()) {
       S.hmap.getPane(l.pane).style.zIndex = 450 - 5 * n;
       if (l.kind === "base") { l.visible ? l.group.addTo(S.hmap) : S.hmap.removeLayer(l.group); continue; }
@@ -433,6 +464,11 @@ const HR = (() => {
 
   function report() {
     const o = HR.out, M = o.M;
+    if (o.s2) {
+      $("#h-model").innerHTML = `<dl class="kv"><dt>Target</dt><dd>${o.T.label}</dd><dt>Method</dt><dd>gradient boosting validated on AERONET / GNSS
+        (Torricelli), covariates from Sentinel-2 image ${o.s2.item}, terrain and ECMWF / CAMS; applied every ${o.s2.step} m</dd></dl>`;
+      return;
+    }
     const names = NAMES.filter((_, j) => M.use[j]);
     $("#h-model").innerHTML = `<dl class="kv"><dt>Target</dt><dd>${o.T.label}</dd>
       <dt>Trend coefficients<br><span class="hint">(per 1 SD of the covariate)</span></dt><dd>intercept ${fmt(M.beta[0], 4)}<br>${names.map((nm, j) => `${nm}: ${fmt(M.beta[j + 1], 4)} <span class="hint">(SD ${fmt(M.sd[NAMES.indexOf(nm)], 2)})</span>`).join("<br>")}</dd>
@@ -507,6 +543,15 @@ const HR = (() => {
     show();
   }
 
+  // metodo: con Sentinel-2 contano la data e l'immagine (non il periodo di previsione) e solo vapore, AOD e trasferimento radiativo
+  function method() {
+    const s2 = $("#h-method").value === "s2";
+    document.querySelectorAll(".h-s2").forEach(e => { e.hidden = !s2; });
+    $("#h-period").closest("label").hidden = s2;
+    [...$("#h-target").options].forEach(o => { o.disabled = (s2 && !/^(tcwv|aod|spec:)/.test(o.value)) || (S.rtm === "6s" && o.value.startsWith("tir")); });
+    if ($("#h-target").selectedOptions[0].disabled) { $("#h-target").value = "tcwv"; $("#h-target").onchange(); }
+  }
+
   // grandezze termiche disponibili solo con un modello che copre il LWIR (non 6S)
   function rtm() {
     const off = S.rtm === "6s";
@@ -514,5 +559,5 @@ const HR = (() => {
     if (off && $("#h-target").value.startsWith("tir")) { $("#h-target").value = "spec:t_tot"; $("#h-target").onchange(); }
   }
 
-  return { init, periods, run, point, rtm, validation };
+  return { init, periods, run, point, rtm, validation, projDef };
 })();
