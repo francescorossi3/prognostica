@@ -36,6 +36,12 @@ function drawChart(id, cfg) {
     Object.values(cfg.options?.scales || {}).forEach(a => { if (a.title?.text) a.title.text = I18N.t(a.title.text); });
   }
   const cv = document.getElementById(id), host = cv.closest(".chart-box, .card");
+  // su telefono e tablet stretto i grafici con proporzioni fisse diventano più alti, per restare leggibili
+  const ratio = w => (w < 560 ? 1.05 : w < 900 ? 1.5 : 2);
+  if (cfg.options?.maintainAspectRatio !== false) {
+    cfg.options = { ...cfg.options, aspectRatio: ratio(cv.parentElement.clientWidth || innerWidth),
+      onResize: (c, size) => { if (c.options.aspectRatio !== ratio(size.width)) { c.options.aspectRatio = ratio(size.width); c.resize(); } } };
+  }
   charts[id] = new Chart(cv, cfg);
   // pulsante CSV del grafico (uno per grafico, usa sempre i dati attuali)
   if (host && !host.querySelector(`button.dl[data-for="${id}"]`)) {

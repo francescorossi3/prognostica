@@ -215,7 +215,9 @@ footer a { color: inherit; }
   .sub { display: none; }
   .search-bar .site { width: 100%; }
   .search-bar .site select { flex: 1; max-width: none; }
-  nav#tabs { padding: 0 .5rem; gap: .4rem; }
+  nav#tabs { padding: 0 .5rem; gap: 0 .4rem; flex-wrap: wrap; overflow: visible; }
+  .tab-group { flex-wrap: wrap; }
+  nav button { padding: .55rem .5rem; }
   .tab-group.sep { padding-left: .4rem; }
   .updated { display: none; }
   main { padding: .8rem .8rem 1.5rem; }
@@ -227,5 +229,7 @@ footer a { color: inherit; }
   .chart-inner { height: 320px; }
   dl.glossary { grid-template-columns: 1fr; gap: .1rem; } dl.glossary dd { margin-bottom: .5rem; }
   progress { width: 120px; }
+  .custom-srf textarea { flex-basis: 100%; }
+  .downloads label { flex: 1 1 45%; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

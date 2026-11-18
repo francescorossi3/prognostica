@@ -146,7 +146,7 @@ const HR = (() => {
     else if (src === "custom") list = SRF.fromText($("#h-custom").value);
     else list = Object.entries(((await SRF.library())[src] || {}).bands || {}).map(([n, b]) => ({ ...b, name: n }));
     S.hbands = list.filter(b => (tir ? b.c > 3000 : b.c >= 350 && b.c <= 2550));
-    opts($("#h-band"), S.hbands.map((b, i) => [i, `${b.name} · ${b.c >= 3000 ? fmt(b.c / 1000, 2) + " µm" : fmt(b.c, 0) + " nm"}`]),
+    opts($("#h-band"), S.hbands.map((b, i) => [i, src === "wl" ? b.name : `${b.name} · ${b.c >= 3000 ? fmt(b.c / 1000, 2) + " µm" : fmt(b.c, 0) + " nm"}`]),
       src === "wl" ? S.hbands.findIndex(b => b.c === (tir ? 10900 : 550)) : 0);
     $("#h-band-info").textContent = S.hbands.length ? "" : src === "image" ? "The imported image has no wavelengths in its metadata for this range." : "No band in this range.";
   }
