@@ -4,7 +4,7 @@
 //            - modello (Open-Meteo: ECMWF IFS 0.25°, dal 3/2/2024; prima la rianalisi ERA5 0.25°; CAMS globale) nell'ora scelta,
 //              interpolato in modo bilineare tra i centri delle celle (niente gradini ai bordi delle celle):
 //              vapore, AOD, polveri, temperatura e umidità a 2 m, pressione al suolo;
-//            - terreno (tasselli Terrarium): quota, pendenza, TPI e rilievo entro 500 e 2000 m (quadrato di area uguale al cerchio);
+//            - terreno (tasselli Terrarium): quota media entro 100 m, TPI e rilievo entro 500 e 2000 m (quadrati di area uguale ai cerchi);
 //            - ora e giorno dell'anno (non latitudine e longitudine: gli alberi darebbero gradini dritti).
 //          Il modello si applica ogni 30 m (aree piccole) o 90 m e si riporta sui pixel della griglia della mappa.
 //          Le grandezze RT usano vapore e AOD corretti nella LUT (6S o libRadtran) pixel per pixel, nella banda scelta (srf.js).
@@ -43,7 +43,7 @@ const RKMAP = (() => {
     return [I.S1[r1 * w + c1] - I.S1[r0 * w + c1] - I.S1[r1 * w + c0] + I.S1[r0 * w + c0],
       I.N1[r1 * w + c1] - I.N1[r0 * w + c1] - I.N1[r1 * w + c0] + I.N1[r0 * w + c0]];
   }
-  const HALF = { 500: Math.round(500 * Math.sqrt(Math.PI) / 2 / RES), 2000: Math.round(2000 * Math.sqrt(Math.PI) / 2 / RES) };
+  const HALF = { 100: Math.round(100 * Math.sqrt(Math.PI) / 2 / RES), 500: Math.round(500 * Math.sqrt(Math.PI) / 2 / RES), 2000: Math.round(2000 * Math.sqrt(Math.PI) / 2 / RES) };
 
   // gradient boosting esportato (stessa regola di scikit-learn: NaN -> ramo "missing")
   function predict(M, x) {
@@ -138,15 +138,14 @@ const RKMAP = (() => {
     await new Promise(r => setTimeout(r, 0));
     const Iz = integral(z, W, H), Iz2 = integral(Float32Array.from(z, v => v * v), W, H);
     for (let p = 0; p < NP; p++) {
-      const r = PR[p], c = PC[p], i = r * W + c, zc = z[i];
-      const gx = (z[i + 1] - z[i - 1]) / (2 * RES), gy = (z[i + W] - z[i - W]) / (2 * RES);
+      const r = PR[p], c = PC[p], i = r * W + c;
       const put = (f, v) => { if (feats[f]) feats[f][p] = v ?? NaN; };
-      put("dem_elev", zc); put("slope_deg", Math.atan(Math.hypot(gx, gy)) * 180 / Math.PI);
+      const [sc, nc0] = boxStat(Iz, W, H, r, c, HALF[100]), zc = sc / nc0;     // quota media entro 100 m, come nell'addestramento
+      put("dem_elev", zc);
       for (const rad of [500, 2000]) {
         const [s, n] = boxStat(Iz, W, H, r, c, HALF[rad]), [s2] = boxStat(Iz2, W, H, r, c, HALF[rad]), mu = s / n;
         put(`tpi_${rad}`, zc - mu); put(`relief_${rad}`, Math.sqrt(Math.max(0, s2 / n - mu * mu)));
       }
-      put("lat", lat[i]); put("lon", lon[i]);
       for (const [f, v] of Object.entries(mf(lat[i], lon[i]))) put(f, v);
       for (const [f, v] of Object.entries(fixed)) put(f, v);
     }

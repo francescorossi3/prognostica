@@ -185,7 +185,7 @@
   </div>
   <h2 class="section">Validation against measurements (AERONET, GNSS)</h2>
   <p class="hint">Water vapour (ECMWF IFS, about 25 km) and aerosol optical depth (CAMS, about 45 km) are corrected by gradient boosting with covariates
-    that exist for every pixel and hour: the model values themselves, terrain (elevation, slope, position in the relief within 500 m and 2 km),
+    that exist for every pixel and hour: the model values themselves, terrain (mean elevation within 100 m, position in the relief within 500 m and 2 km),
     hour and season (not latitude and longitude, which would give straight steps in the maps). Each site is tested while left out of the training, together with every site in its 0.5° cell:
     the errors are against real sun-photometer (AERONET) and GNSS measurements.</p>
   <p class="hint" id="hv-info"></p>
@@ -210,8 +210,8 @@
     <ol>
       <li><b>Model values.</b> Water vapour, temperature, humidity and pressure from ECMWF IFS (0.25°) and AOD and dust from CAMS (0.4°)
         at the chosen hour, from the Open-Meteo archive.</li>
-      <li><b>Covariates.</b> On a 30 m lattice: terrain from the elevation tiles (elevation, slope, difference from the mean elevation and its
-        spread within 500 m and 2 km), hour and day of the year.</li>
+      <li><b>Covariates.</b> On a 30 m lattice: terrain from the elevation tiles (mean elevation within 100 m, its difference from the mean
+        elevation and the spread within 500 m and 2 km), hour and day of the year.</li>
       <li><b>Correction.</b> The gradient boosting trained on AERONET and GNSS measurements (validation above) gives the correction of the model
         every 30 m (90 m for large areas); the map pixels take the bilinear value.</li>
       <li><b>Radiative transfer.</b> For transmittances, path radiance, irradiances and spherical albedo the corrected water vapour and AOD
