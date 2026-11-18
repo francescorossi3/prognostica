@@ -148,6 +148,7 @@ tr.pastrow td { background: #f6f8fa; color: #4a5a6e; }
 .lg .ticks { display: flex; justify-content: space-between; gap: .4rem; color: var(--muted); }
 .lg-row { display: flex; align-items: center; gap: .45rem; margin-top: .2rem; }
 .lg .sw { width: 1.1rem; height: .75rem; border-radius: 2px; border: 1px solid rgba(0, 0, 0, .15); flex: none; }
+.lg .dot.dashed { border-style: dashed; border-width: 2px; }
 .lg .dot { width: .8rem; height: .8rem; border-radius: 50%; border: 1px solid var(--ink); background: #fff; display: inline-block; vertical-align: middle; margin-right: .3rem; }
 .site-label { font-size: .78rem; font-weight: 600; }
 .leaflet-popup-content { font-size: .9rem; }
@@ -195,6 +196,11 @@ h2.section .hint { font-weight: 400; }
 footer { color: var(--muted); font-size: .8rem; padding: 1rem 1.5rem 2rem; text-align: center; max-width: 1100px; margin: 0 auto; }
 footer a { color: inherit; }
 .name-note { font-style: normal; margin: 0 0 .4rem; }
+
+/* SRF personalizzata */
+.custom-srf { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: flex-start; flex: 1 1 100%; }
+.custom-srf textarea { font: .85rem/1.4 ui-monospace, Menlo, Consolas, monospace; flex: 1 1 420px; min-height: 5.5rem; padding: .4rem .5rem;
+  border: 1px solid var(--line); border-radius: 6px; }
 
 /* ---------- schermi piccoli ---------- */
 @media (max-width: 1000px) {

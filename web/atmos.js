@@ -242,5 +242,5 @@ const ATM = (() => {
   }
   const S2WL = { "01": 443, "02": 490, "03": 560, "04": 665, "05": 705, "06": 740, "07": 783, "08": 842, "8A": 865, "09": 945, "10": 1375, "11": 1610, "12": 2190 };
 
-  return { LEVELS, S2NAME, S2WL, fetchMulti, derive, render, lut, available, sza, rho, rtBand };
+  return { LEVELS, S2NAME, S2WL, fetchMulti, derive, render, lut, available, sza, rho, rtBand, tirBand };
 })();

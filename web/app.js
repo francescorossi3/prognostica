@@ -254,7 +254,7 @@ function renderEvents() {
     data: { labels: S.meta.leads.map(leadShort), datasets: provs.map((p, i) => ({ label: pname(p),
       data: S.meta.leads.map(l => S.evScores.find(r => r.event === ev.id && r.provider === p && r.lead_day === l && inR(r))?.csi ?? null),
       borderColor: PALETTE[i % PALETTE.length], borderWidth: 1.5, pointRadius: 2, spanGaps: true })) },
-    options: { maintainAspectRatio: false, plugins: { legend: { position: "right", labels: { boxWidth: 10, font: { size: 11 } } } },
+    options: { maintainAspectRatio: false, plugins: { legend: { position: innerWidth < 700 ? "bottom" : "right", labels: { boxWidth: 10, font: { size: 11 } } } },
       scales: { y: { min: 0, max: 1, title: { display: true, text: "CSI" } } } } });
   const list = S.evList.filter(r => r.event === ev.id && r.lead_day === lead && inR(r)).slice(0, 200);
   const hit = x => (x == null ? "" : (ev.op === ">=" ? x >= ev.thr : x <= ev.thr) ? "ok" : "bad");
@@ -643,7 +643,6 @@ async function runPoint() {
   await renderPoint();
   HR.point(S.point);
   await ATM.render(S.point);
-  HR.periods();
 }
 
 // osservazioni recenti della stazione piu' vicina (entro 25 km), da data/obs_recent.json
@@ -709,8 +708,6 @@ async function renderPoint() {
   if (!S.point) return;
   const agg = $("#p-agg").value, v = $("#p-var").value, u = VAR_UNIT[v];
   const rows = await computePoint(agg, v);
-  HR.rows = rows;
-  if ($("#h-target").value === "forecast") HR.periods();
   const P = S.point;
   const pver = !!P.region && regionOf(P.region).verify !== false;
   const wLabel = pver ? COMBO.WEIGHTED : "Model mean";
@@ -884,20 +881,18 @@ function initData() {
   aerosol optical depth at 550 nm and dust (CAMS), and the profile on pressure levels 1000–200 hPa (temperature, humidity, geopotential height, wind).
   Air density is ρ = p / (R<sub>d</sub> T<sub>v</sub>) with the virtual temperature T<sub>v</sub>. The radiative-transfer parameters of the
   Sentinel-2 bands (downward/upward scattering transmittance, gaseous transmittance, path radiance, direct and diffuse irradiance, spherical albedo)
-  are interpolated from a look-up table computed with the 6S code (water vapour × AOD × solar zenith × altitude; nadir view, continental aerosol,
-  ozone 0.30 cm-atm). For the thermal infrared, transmittance and up/down-welling radiance of Landsat 8/9 band 10 come from the water-vapour functions
-  of Jiménez-Muñoz et al. (2014). The hourly archive at the stations and calibration sites is kept by the atmospheric back-end repository.</p>
-  <h3>Atmosphere RK: 10 m maps (regression kriging)</h3>
-  <p>The value is computed at 49–121 sample points around the place (7×7 to 11×11 depending on the area, 2–30 km; GPR forecast where available, otherwise the model mean; atmospheric quantities
-  from the same sources as above, with the 6S table at the 10 m elevation). It is then mapped on a 10 m grid as
-  <i>trend + kriged residual</i>: the trend is a linear regression on the ground elevation (Copernicus DEM / EU-DEM), the only 10 m quantity that
-  changes the atmosphere above the ground; land-cover layers are not used because they are not contemporaneous with the atmosphere. The residuals are interpolated by
-  ordinary kriging with an exponential variogram fitted to them. The map of the kriging standard deviation shows where the interpolation is
-  less certain. Validation is leave-one-out at the sample points: RMSE, MAE, bias, R² and the coverage of the 95% interval, compared with the
-  trend alone and with plain ordinary kriging. Note that the 10 m detail comes from the elevation: the inputs have a resolution of
-  about 25 km (ECMWF IFS 0.25°) and 45 km (CAMS global AOD).</p>
+  are interpolated from look-up tables (water vapour × AOD × solar zenith × altitude; nadir view, continental aerosol, ozone 0.30 cm-atm) computed with
+  6S (solar spectrum only) or libRadtran (solar and thermal spectrum), chosen in the Atmosphere tab. In the thermal infrared libRadtran gives transmittance
+  and upwelling and downwelling radiance with standard atmospheres chosen by latitude and season.</p>
+  <h3>Atmosphere RK: high-resolution maps validated on measurements</h3>
+  <p>For a past date and hour, water vapour (ECMWF IFS, about 25 km) and AOD (CAMS, about 45 km) are corrected with a gradient boosting model trained on
+  hourly AERONET and GNSS measurements, using covariates that exist for every pixel: the model values, terrain within 500 m and 2 km, position and time.
+  It is applied every 30 m (90 m for large areas). The validation leaves out each site and every site in its 0.5° cell: errors are against measurements, not
+  against the model. The grid can be the square around the place or the grid of an imported GeoTIFF/ENVI image. Radiative transfer quantities are
+  converted to the band of a sensor with its spectral response (library, image metadata or custom) and exported in the units of the product.</p>
   <p><b>Limitations.</b> Best, Weighted mean and GPR only use models available everywhere (Open-Meteo), so they can be computed
-  at any point. Stations are mostly in lowlands or on the coast: in the mountains estimates and uncertainties are less verified.</p>
+  at any point. Stations are mostly in lowlands or on the coast: in the mountains estimates and uncertainties are less verified.
+  The AOD correction is small: aerosol varies too quickly for the covariates to explain much more than CAMS.</p>
   <h3>Licence</h3><p>© 2026 Francesco Rossi. Code: all rights reserved. Data: CC BY-NC 4.0 (attribution, non-commercial use).
   Third-party data remain under their own licences.</p>`;
 }
@@ -950,18 +945,18 @@ function dataTextIT(link, d) {
   aerosol a 550 nm e polveri (CAMS), e il profilo sui livelli di pressione 1000–200 hPa (temperatura, umidità, altezza geopotenziale, vento).
   La densità dell'aria è ρ = p / (R<sub>d</sub> T<sub>v</sub>) con la temperatura virtuale T<sub>v</sub>. I parametri di trasferimento radiativo delle bande
   Sentinel-2 (trasmittanza di diffusione in discesa e in salita, trasmittanza gassosa, radianza di percorso, irradianza diretta e diffusa, albedo sferico)
-  sono interpolati da una tabella calcolata con il codice 6S (vapore × AOD × zenit solare × quota; vista al nadir, aerosol continentale, ozono 0,30 cm-atm).
-  Per l'infrarosso termico, trasmittanza e radianze in salita/discesa della banda 10 di Landsat 8/9 vengono dalle funzioni del vapore acqueo di
-  Jiménez-Muñoz et al. (2014). L'archivio orario alle stazioni e ai siti di calibrazione è tenuto dal repository di back end <b>Torricelli</b>.</p>
-  <h3>Atmosphere RK: mappe a 10 m (regression kriging)</h3>
-  <p>Il valore è calcolato in 49–121 punti campione intorno al luogo (da 7×7 a 11×11 secondo l'area, 2–30 km; previsione GPR dove disponibile, altrimenti media dei modelli; grandezze atmosferiche
-  dalle stesse fonti, con la tabella 6S alla quota a 10 m) e poi mappato su una griglia a 10 m come <i>trend + residuo krigato</i>: il trend è una regressione
-  lineare sulla quota del terreno (Copernicus DEM / EU-DEM), l'unica grandezza a 10 m che cambia l'atmosfera sopra il suolo; gli strati di copertura del suolo
-  non si usano perché non sono contemporanei all'atmosfera. I residui sono interpolati con kriging ordinario e variogramma esponenziale. La mappa della deviazione standard del
-  kriging mostra dove l'interpolazione è meno sicura. La validazione è leave-one-out sui punti campione: RMSE, MAE, bias, R² e copertura dell'intervallo al 95%,
-  confrontati con il solo trend e con il kriging ordinario semplice. Il dettaglio a 10 m viene dalla quota: i dati di partenza hanno una risoluzione di circa 25 km (ECMWF IFS 0,25°) e 45 km (AOD CAMS globale).</p>
+  sono interpolati da tabelle (vapore × AOD × zenit solare × quota; vista al nadir, aerosol continentale, ozono 0,30 cm-atm) calcolate con 6S (solo spettro
+  solare) o libRadtran (spettro solare e termico), da scegliere nella scheda Atmosfera. Nell'infrarosso termico libRadtran dà trasmittanza e radianze in salita
+  e in discesa con atmosfere standard scelte secondo latitudine e stagione.</p>
+  <h3>Atmosphere RK: mappe ad alta risoluzione validate sulle misure</h3>
+  <p>Per una data e un'ora passate, vapore acqueo (ECMWF IFS, circa 25 km) e AOD (CAMS, circa 45 km) sono corretti con un modello gradient boosting addestrato sulle
+  misure orarie AERONET e GNSS, con covariate che esistono per ogni pixel: i valori del modello, il terreno entro 500 m e 2 km, posizione e ora.
+  Si applica ogni 30 m (90 m per aree grandi). La validazione esclude ogni sito e tutti i siti della sua cella di 0,5°: gli errori sono rispetto alle misure, non al modello.
+  La griglia può essere il quadrato intorno al luogo o quella di un'immagine GeoTIFF/ENVI importata. Le grandezze di trasferimento radiativo sono convertite alla banda
+  di un sensore con la sua risposta spettrale (libreria, metadati dell'immagine o personalizzata) ed esportate nelle unità del prodotto.</p>
   <p><b>Limiti.</b> Migliore, Media pesata e GPR usano solo modelli disponibili ovunque (Open-Meteo), così si possono calcolare in qualsiasi punto.
-  Le stazioni sono soprattutto in pianura o sulla costa: in montagna stime e incertezze sono meno verificate.</p>
+  Le stazioni sono soprattutto in pianura o sulla costa: in montagna stime e incertezze sono meno verificate.
+  La correzione dell'AOD è piccola: l'aerosol cambia troppo in fretta perché le covariate spieghino molto più di CAMS.</p>
   <h3>Licenza</h3><p>© 2026 Francesco Rossi. Codice: tutti i diritti riservati. Dati: CC BY-NC 4.0 (attribuzione, uso non commerciale).
   I dati di terzi restano soggetti alle loro licenze.</p>`;
 }

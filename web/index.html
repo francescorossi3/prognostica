@@ -2,7 +2,7 @@
 <!-- index.html – struttura del sito Prognostica.
      Cosa fa: intestazione con ricerca del luogo (vale per tutte le schede), schede, contenuti principali in vista
               e dettagli a scomparsa (<details>); i testi sono in inglese, i18n.js li traduce in italiano.
-     Input:   script in web/ (app.js, gp.js, atmos.js, hires.js, mapstyle.js, i18n.js) e dati in web/data.
+     Input:   script in web/ (app.js, gp.js, atmos.js, hires.js, rkmap.js, srf.js, mapstyle.js, export.js, i18n.js) e dati in web/data.
      Output:  la pagina mostrata nel browser. -->
 <html lang="en">
 <head>
@@ -16,7 +16,7 @@
 <header class="top">
   <div class="brand">
     <h1>Prognostica</h1>
-    <p class="sub">The most accurate forecast for any place: verified models combined by machine learning (GPR) with uncertainty, 10 m maps and the atmospheric parameters for satellite data correction</p>
+    <p class="sub">Forecasts for any place from weather models checked against stations and combined by machine learning (GPR), with their uncertainty; water vapour, aerosols and radiative transfer for the atmospheric correction of satellite images</p>
   </div>
   <div class="head-right">
     <label class="region">Region <select id="region"></select></label>
@@ -133,29 +133,32 @@
 <!-- ============================ 10 M MAP ============================ -->
 <section id="tab-hr" class="tab">
   <p class="place" id="h-point">Choose a place with the search above: the map is built around it.</p>
-  <p class="hint">Atmospheric parameters at high resolution around the place: with Sentinel-2 and the model validated on measurements (past dates), or by kriging of model values.</p>
+  <p class="hint">Water vapour, aerosol optical depth and radiative transfer quantities at high resolution, for a past date and hour:
+    ECMWF IFS and CAMS corrected pixel by pixel with the model validated on AERONET and GNSS measurements (below).</p>
   <div class="controls import">
     <label title="GeoTIFF / COG, or ENVI .hdr together with its .img">Use the grid of an image <input type="file" id="h-img" accept=".tif,.tiff,.hdr,.img" multiple></label>
     <button id="h-img-clear" class="ghost" hidden>Back to the square grid</button>
-    <span class="hint" id="h-img-info">The map will have exactly the extent, pixels and coordinate system of the image, so the values can be used pixel by pixel.</span>
+    <span class="hint" id="h-img-info">The map will have exactly the extent, pixels and coordinate system of the image, so the values can be used pixel by pixel.
+      Band wavelengths and acquisition time are read from the metadata when present.</span>
   </div>
   <div class="controls">
-    <label>Method <select id="h-method">
-      <option value="s2">Sentinel-2 + gradient boosting (validated on AERONET / GNSS, past dates)</option>
-      <option value="rk">Elevation trend + kriging of model values</option></select></label>
-    <label class="h-s2">Date <input type="date" id="h-date"></label>
-    <button id="h-find" class="ghost h-s2">Find Sentinel-2 images</button>
-    <label class="h-s2">Image <select id="h-item"></select></label>
-  </div>
-  <div class="controls">
+    <label>Date <input type="date" id="h-date"></label>
+    <label title="Hour of the satellite overpass, UTC">Hour (UTC) <select id="h-hour"></select></label>
     <label>Variable <select id="h-target"></select></label>
-    <label id="h-wl-wrap">Wavelength <select id="h-wl"></select></label>
-    <label>Period / hour <select id="h-period"></select></label>
     <label title="Side of the square map centred on the place">Area side <input type="number" id="h-size" min="0.1" step="any" value="30" class="short">
       <select id="h-size-u"><option value="1000" selected>km</option><option value="1">m</option></select></label>
     <label title="Size of a map cell">Cell <input type="number" id="h-cell" min="1" step="any" value="10" class="short">
       <select id="h-cell-u"><option value="1" selected>m</option><option value="1000">km</option></select></label>
     <button id="h-go" class="primary">Build map</button>
+  </div>
+  <div class="controls" id="h-band-row" hidden>
+    <label title="Spectral response function used to convert the radiative transfer tables to the band">Sensor <select id="h-sensor"></select></label>
+    <label>Band <select id="h-band"></select></label>
+    <span class="hint" id="h-band-info"></span>
+    <div id="h-custom-wrap" class="custom-srf" hidden>
+      <textarea id="h-custom" rows="4" placeholder="One band per line: centre, FWHM (nm) — e.g. 865, 30&#10;or a table: wavelength (nm), response band 1, response band 2, …"></textarea>
+      <label>or load a CSV <input type="file" id="h-custom-file" accept=".csv,.txt"></label>
+    </div>
   </div>
   <div class="progress-row"><progress id="h-progress" max="100" value="0" hidden></progress><p class="status" id="h-status"></p></div>
   <div class="map-layout">
@@ -163,13 +166,17 @@
     <aside class="side">
       <div id="h-layers" class="panel"></div>
       <details class="panel-style" open><summary>Style</summary><div id="h-style" class="panel"></div></details>
-      <div class="downloads"><label>Download <select id="h-fmt"></select></label><button id="h-dl" class="ghost" title="Selected layer, same pixels and coordinate system as the grid">Download</button></div>
+      <div class="downloads"><label>Format <select id="h-fmt"></select></label>
+        <label title="Units of the exported values, to match the product you are correcting">Units <select id="h-unit"></select></label>
+        <label title="Multiply the values, e.g. 10000 for scaled integer products">Scale <input type="number" id="h-scale" value="1" step="any" class="short"></label>
+        <button id="h-dl" class="ghost" title="Selected layer, same pixels and coordinate system as the grid">Download</button></div>
     </aside>
   </div>
-  <h2 class="section">Validation against measurements (AERONET)</h2>
-  <p class="hint">Water vapour (ECMWF IFS, about 25 km) and aerosol optical depth (CAMS, about 45 km) corrected with covariates at the time of
-    each Sentinel-2 image (Sentinel-2 water vapour and AOT, reflectances and indices at 60, 500 and 2000 m, terrain) by random forest or gradient
-    boosting, with kriging of the residuals. Each site is tested while left out of the training: the errors are against real sun-photometer measurements.</p>
+  <h2 class="section">Validation against measurements (AERONET, GNSS)</h2>
+  <p class="hint">Water vapour (ECMWF IFS, about 25 km) and aerosol optical depth (CAMS, about 45 km) are corrected by gradient boosting with covariates
+    that exist for every pixel and hour: the model values themselves, terrain (elevation, slope, position in the relief within 500 m and 2 km),
+    location and time. Each site is tested while left out of the training, together with every site in its 0.5° cell:
+    the errors are against real sun-photometer (AERONET) and GNSS measurements.</p>
   <p class="hint" id="hv-info"></p>
   <div class="controls">
     <label>Variable <select id="hv-var"></select></label>
@@ -190,20 +197,18 @@
   <details class="more prose">
     <summary>How the map is made</summary>
     <ol>
-      <li><b>Sample points.</b> A regular grid of 49–121 points covers the area (7 × 7 up to 5 km, 9 × 9 up to 10 km, 11 × 11 above).
-        At each point the value is computed from the Open-Meteo atmosphere (ECMWF IFS, CAMS aerosols) with the 6S tables
-        (or, for the forecast, with the GPR).</li>
-      <li><b>Trend.</b> A linear regression of these values on the ground elevation at 10 m (Copernicus DEM / EU-DEM).
-        Elevation is the only 10 m quantity that changes the atmosphere above the ground (less air and water vapour above high ground);
-        land-cover layers are not used because they are not contemporaneous with the atmosphere.</li>
-      <li><b>Kriging of the residuals.</b> What the trend does not explain is interpolated with ordinary kriging
-        (exponential variogram fitted on the residuals). Map = trend + kriged residual; the kriging standard deviation is its uncertainty.</li>
+      <li><b>Model values.</b> Water vapour, temperature, humidity and pressure from ECMWF IFS (0.25°) and AOD and dust from CAMS (0.4°)
+        at the chosen hour, from the Open-Meteo archive.</li>
+      <li><b>Covariates.</b> On a 30 m lattice: terrain from the elevation tiles (elevation, slope, difference from the mean elevation and its
+        spread within 500 m and 2 km), latitude, longitude, hour and day of the year.</li>
+      <li><b>Correction.</b> The gradient boosting trained on AERONET and GNSS measurements (validation above) gives the correction of the model
+        every 30 m (90 m for large areas); the map pixels take the bilinear value.</li>
+      <li><b>Radiative transfer.</b> For transmittances, path radiance, irradiances and spherical albedo the corrected water vapour and AOD
+        enter the 6S or libRadtran tables with the solar angle and the elevation of each pixel. The tables (every 10 nm, and every 0.1 µm in the
+        thermal) are weighted with the spectral response of the chosen band: measured curves for Sentinel-2, Landsat, Sentinel-3, MODIS,
+        PROBA-V; band limits or Gaussian shapes for the others; the wavelengths of an imported image; or your own.</li>
     </ol>
-    <p><b>Input data.</b> Water vapour column, pressure and temperature come from ECMWF IFS at 0.25° (about 25 km); the aerosol optical depth
-      at 550 nm from CAMS global at 0.4° (about 45 km). Open-Meteo returns the value of the grid cell of each point, so nearby sample points
-      often share the same values. At each point the 6S look-up table is interpolated in water vapour, AOD, solar zenith angle and the
-      elevation of the point.</p>
-    <p>This map interpolates model values and is not checked against measurements; the validated correction with Sentinel-2 is shown above.</p>
+    <p>The kriging of the residuals is not applied to the map: it needs measurements at the same hour and, in the validation, it does not improve the water vapour.</p>
   </details>
 </section>
 
@@ -287,7 +292,7 @@
   <p class="name-note">The name comes from Cicero's <i>Prognostica</i>, his Latin version of the weather signs in Aratus' <i>Phaenomena</i>.</p>
   Model forecasts: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0) ·
   Observations: <a href="https://meteostat.net/">Meteostat</a> ·
-  Atmosphere: ECMWF IFS and CAMS via Open-Meteo, 6S · Elevation: Copernicus DEM / EU-DEM (Mapzen Terrarium tiles) ·
+  Atmosphere: ECMWF IFS and CAMS via Open-Meteo, 6S, libRadtran · Validation: AERONET (NASA), GNSS (Nevada Geodetic Laboratory) · Elevation: Copernicus DEM / EU-DEM (Mapzen Terrarium tiles) ·
   Maps &amp; geocoding: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Photon (komoot), Nominatim ·
   anonymous usage statistics without cookies (GoatCounter) ·
   © 2026 Francesco Rossi · code: all rights reserved · data: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> ·
@@ -305,7 +310,8 @@
 <script src="export.js"></script>
 <script src="atmos.js"></script>
 <script src="hires.js"></script>
-<script src="s2rk.js"></script>
+<script src="srf.js"></script>
+<script src="rkmap.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
