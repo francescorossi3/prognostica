@@ -36,6 +36,11 @@ LUT iperspettrale: workflow Torricelli «Tabella RT 6S» con `hyper` (6 macchine
 ## Piano per la prossima chat (dal 18/11/2026)
 Scopo: infrastruttura per i ricercatori (correzione atmosferica di immagini, test di TES sui siti di calibrazione, mappe).
 7. Siti di calibrazione per il TES: archivio orario LWIR (τ, L↑, L↓ e profili ERA5) ai siti RadCalNet/HYPERNETS e ai siti termici (es. Gobabeb), scaricabile per le ore dei passaggi.
+8. Trasferibilità all'Italia: accuratezza = errore del modello RT (verificato ai siti di calibrazione) + errore degli ingressi atmosferici
+   (vapore, AOD: verificato in Italia con AERONET/GNSS) propagato con la sensibilità delle LUT. Da fare: validazione RK solo sui siti italiani
+   e per ambiente (costa, pianura, collina, montagna, città); mappa d'incertezza per pixel (errore atteso dalle covariate, es. gradient boosting
+   quantile) e avviso dove le covariate escono dall'intervallo di addestramento; incertezza propagata a riflettanza e LST/emissività;
+   eventuali siti di verifica italiani con misure a terra (es. Maccarese, Jolanda di Savoia, AAOT di Venezia).
 Scopo del regression kriging: interpolare e aumentare la risoluzione spaziale di vapore e AOD (non "correggere" il modello).
 1. **ERA5 + IFS + CAMS insieme (Torricelli 05, 07; Prognostica rkmap.js, atmos.js)**: in 05 aggiungere ERA5 (Open-Meteo archive: tcwv, t2m, rh, ps) ai siti;
    in 07 covariate di tutti i modelli (IFS NaN prima del 3/2/2024: HGB gestisce i mancanti), residuo (misura − modello) rispetto a ERA5 (IFS se ERA5 non c'è ancora, ultimi ~5 giorni);
