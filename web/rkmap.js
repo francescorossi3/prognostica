@@ -56,6 +56,8 @@ const RKMAP = (() => {
     return s;
   }
 
+  // ECMWF IFS 0.25° è archiviato da Open-Meteo dal 3 febbraio 2024: prima si usa la rianalisi ERA5 (stessa griglia 0.25°)
+  const IFS025_FROM = "2024-02-03";
   // valori del modello nell'ora scelta, interpolati in modo bilineare tra i centri delle celle di griglia del modello
   // (Open-Meteo restituisce la cella che contiene ogni punto richiesto e le sue coordinate): niente gradini ai bordi delle celle
   async function modelFields(bb, hourIso) {
