@@ -194,9 +194,9 @@ const HR = (() => {
     const raster = (key, name, tip, ramp, visible) => ({ id: key, key, name, tip, kind: "raster", visible, pane: pane("hl-" + key),
       style: MapStyle.create(ramp, 0.67), values: () => (HR.out ? rasterOf(key) : []) });
     S.hl = [
-      raster("est", "Corrected (validated model)", "ECMWF/CAMS value plus the correction learnt from AERONET and GNSS measurements: the best estimate, use this one", "RdYlBu", true),
-      raster("sd", "Correction (corrected − model)", "How much the validated model changes the model value in each pixel: positive = more than ECMWF/CAMS", "RdBu", false),
-      raster("trend", "Model only (ECMWF / CAMS)", "The original model value (25–45 km cells) at the same hour, without correction: for comparison", "RdYlBu", false),
+      raster("est", "RK", "Regression kriging: the model value plus its residual predicted pixel by pixel by the gradient boosting trained on AERONET and GNSS measurements. The best estimate: use this one", "RdYlBu", true),
+      raster("sd", "Predicted residual (RK − model)", "Residual of the model (measurement − model) predicted in each pixel from the covariates: positive where the model underestimates", "RdBu", false),
+      raster("trend", "Model", "The original model value (cells of 25–45 km) at the same hour, without correction: for comparison", "RdYlBu", false),
       raster("elev", "Elevation [m]", "Ground elevation used for the terrain covariates and for the radiative transfer", "Greys", false),
       { id: "base", name: "OpenStreetMap", kind: "base", visible: true, pane: "hl-base", group: base },
     ];
@@ -233,7 +233,11 @@ const HR = (() => {
       const ext = Math.max((G.bb.n - G.bb.s) * mlat, (G.bb.e - G.bb.w) * mlon), pad = 2300;
       const Z = await dem({ s: G.bb.s - pad / mlat, n: G.bb.n + pad / mlat, w: G.bb.w - pad / mlon, e: G.bb.e + pad / mlon }, ext <= 10000 ? 14 : ext <= 40000 ? 13 : 12);
       const R = await RKMAP.run(G, hourIso, kind, vb, step, Z);
-      HR.out = { G, ...R, kind, P: P || { lat: C[1], lon: C[0] },
+      // nomi dei layer: il modello di partenza dipende dalla grandezza (vapore: ECMWF IFS, AOD: CAMS, grandezze RT: entrambi)
+      const model = kind === "tcwv" ? "ECMWF IFS 0.25°" : kind === "aod" ? "CAMS global 0.4°" : "ECMWF IFS + CAMS";
+      S.hl.find(l => l.id === "trend").name = model;
+      S.hl.find(l => l.id === "sd").name = `Predicted residual (RK − ${model})`;
+      HR.out = { G, ...R, kind, model, P: P || { lat: C[1], lon: C[0] },
         label: `${$("#h-target").selectedOptions[0].textContent}${bandLab} · ${hourIso.slice(0, 13).replace("T", " ")} UTC` };
       draw(true); report();
       bar.hidden = true;
@@ -284,7 +288,7 @@ const HR = (() => {
       const [x, y] = o.G.fromLL(e.latlng.lng, e.latlng.lat), r = Math.floor((o.G.y0 - y) / o.G.dy), cc = Math.floor((x - o.G.x0) / o.G.dx);
       if (r < 0 || cc < 0 || r >= o.G.H || cc >= o.G.W) return;
       const i = r * o.G.W + cc, d = o.kind === "aod" || /t_|s_alb|tau/.test(o.kind) ? 4 : 3;
-      L.popup().setLatLng(e.latlng).setContent(`Corrected <b>${fmt(o.est[i], d)}</b><br>Model only ${fmt(o.trd[i], d)} · correction ${fmt(o.sd[i], d)}<br>
+      L.popup().setLatLng(e.latlng).setContent(`RK <b>${fmt(o.est[i], d)}</b><br>${o.model} ${fmt(o.trd[i], d)} · predicted residual ${fmt(o.sd[i], d)}<br>
         Elevation ${fmt(o.elev[i], 0)} m · pixel ${cc + 1}, ${r + 1}`).openOn(S.hmap);
     });
   }
@@ -317,7 +321,7 @@ const HR = (() => {
     const lonlat = (c, r) => G.toLL(G.x0 + (c + 0.5) * G.dx, G.y0 - (r + 0.5) * G.dy);
     if (f === "csv") {
       if (G.W * G.H > 1500000) { $("#h-status").textContent = "CSV is limited to 1.5 million pixels: choose GeoTIFF, ENVI or ASCII grid."; return; }
-      const est = conv(o.est), trd = conv(o.trd), sd = conv(o.sd), rows = [["lon", "lat", "corrected", "model_only", "correction", "elevation_m"]];
+      const est = conv(o.est), trd = conv(o.trd), sd = conv(o.sd), rows = [["lon", "lat", "rk", "model", "predicted_residual", "elevation_m"]];
       for (let r = 0; r < G.H; r++) for (let c = 0; c < G.W; c++) {
         const i = r * G.W + c, [lo, la] = lonlat(c, r);
         rows.push([+lo.toFixed(6), +la.toFixed(6), est[i], trd[i], sd[i], o.elev[i]]);

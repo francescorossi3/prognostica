@@ -12,7 +12,6 @@ const ATM = (() => {
     "terrestrial_radiation"];
   const PROF = LEVELS.flatMap(p => [`temperature_${p}hPa`, `relative_humidity_${p}hPa`, `geopotential_height_${p}hPa`, `wind_speed_${p}hPa`]);
   const RD = 287.05;
-  const S2WL = { "01": 443, "02": 490, "03": 560, "04": 665, "05": 705, "06": 740, "07": 783, "08": 842, "8A": 865, "09": 945, "10": 1375, "11": 1610, "12": 2190 };
 
   // ---------------------------------------------------------------- fisica
   const esat = tc => 6.112 * Math.exp(17.67 * tc / (tc + 243.5));
@@ -102,7 +101,7 @@ const ATM = (() => {
   }
 
   // tutte le grandezze derivate in un'ora (k) di un punto
-  function derive(d, k, lat, lon, elevM, L) {
+  function derive(d, k, lat, lon, elevM) {
     const h = d.h, g = v => (h[v] ? h[v][k] : null);
     const w = g("total_column_integrated_water_vapour") / 10, aod = d.aod[k], z = sza(d.times[k] - 1800000, lat, lon);
     const o = { time: d.times[k], tcwv: g("total_column_integrated_water_vapour"), w, aod, dust: d.dust[k], sza: z,
@@ -113,13 +112,8 @@ const ATM = (() => {
     o.prof = LEVELS.map(p => ({ p, t: g(`temperature_${p}hPa`), rh: g(`relative_humidity_${p}hPa`), z: g(`geopotential_height_${p}hPa`),
       ws: g(`wind_speed_${p}hPa`) })).filter(r => r.z != null && (o.ps == null || r.p <= o.ps));
     o.prof.forEach(r => { r.rho = rho(r.p, r.t, r.rh); });
-    o.rt = null;
     o.tir = S.rtm !== "6s" && TL && Number.isFinite(w) ? tirBand(TL, "L8_B10", w, Math.max(0, (elevM || 0) / 1000), lat, d.times[k]) : null;
-    if (L && Number.isFinite(w) && z < 80) {
-      const a = Number.isFinite(aod) ? aod : 0.1, alt = Math.max(0, (elevM || 0) / 1000);
-      o.rt = Object.fromEntries(Object.keys(L.bands).map(b => [b, rtBand(L, b, w, a, z, alt)]));
-      o.rtIn = { w, aot: a, sza: z, alt };
-    }
+    o.rtIn = Number.isFinite(w) ? { w, aot: Number.isFinite(aod) ? aod : 0.1, sza: z, alt: Math.max(0, (elevM || 0) / 1000) } : null;
     return o;
   }
 
@@ -146,15 +140,14 @@ const ATM = (() => {
     $("#a-date").max = today;
     $("#a-date").onchange = () => { if ($("#a-date").value) render(P); };
     const day = $("#a-date").value > today ? today : $("#a-date").value, d0 = Date.parse(day);
-    let d, L, H;
-    try { [d, L, H] = await Promise.all([fetchPast(P, iso(d0 - 864e5), iso(Math.min(d0 + 864e5, Date.now()))), lut("s2"), lut("hyper"), S.rtm === "6s" ? null : lut("tir")]); }
+    let d, H, lib;
+    try { [d, H, , lib] = await Promise.all([fetchPast(P, iso(d0 - 864e5), iso(Math.min(d0 + 864e5, Date.now()))), lut("hyper"), S.rtm === "6s" ? null : lut("tir"), SRF.library()]); }
     catch (e) { box.innerHTML = `<p class="error">Atmosphere download error: ${e.message}</p>`; return; }
     box.innerHTML = "";
-    cur = { d, L, H, P };
-    const sets = [...(H ? [["hyper", `Every ${Math.round((H.bands[Object.keys(H.bands)[1]].wl_um - H.bands[Object.keys(H.bands)[0]].wl_um) * 1000)} nm (${Object.keys(H.bands).length} wavelengths)`]] : []),
-      ["s2", "Sentinel-2 bands (13)"]];
-    opts($("#a-specset"), sets, $("#a-specset").value && sets.some(x => x[0] === $("#a-specset").value) ? $("#a-specset").value : sets[0][0]);
-    $("#a-specnote").textContent = H ? "" : "The hyperspectral table is not available yet: Sentinel-2 bands for now.";
+    cur = { d, H, P };
+    // risoluzione degli spettri: passo delle tabelle o bande di un sensore (risposte spettrali, srf.js)
+    opts($("#a-specset"), [["grid", "Table grid (10 nm; LWIR 0.1 µm)"], ...Object.keys(lib).map(k => [k, k])], $("#a-specset").value || "grid");
+    $("#a-specnote").textContent = H ? "" : "The radiative transfer tables are not available.";
     $("#a-specset").onchange = () => renderHour(+$("#a-hour").value);
     // ore del giorno scelto (ora locale del luogo); proposta: quella con il sole più alto (passaggio dei satelliti eliosincroni ~10:30)
     const tz = P.tz, idx = d.times.map((t, k) => k).filter(k => localParts(d.times[k], tz).date === day && d.h.total_column_integrated_water_vapour[k] != null);
@@ -178,9 +171,9 @@ const ATM = (() => {
   }
 
   function renderHour(k) {
-    const { d, L, H, P } = cur;
-    const o = derive(d, k, P.lat, P.lon, P.elev, L);
-    renderSpectrum(d, k, P, $("#a-specset").value === "hyper" ? H : L);
+    const { d, H, P } = cur;
+    const o = derive(d, k, P.lat, P.lon, P.elev);
+    if (H) renderSpectrum(d, k, P, o);
     $("#a-surf").innerHTML = `<dl class="kv">
       <dt>Water vapour column</dt><dd>${fmt(o.tcwv, 1)} kg m⁻² · ${fmt(o.w, 2)} g cm⁻²</dd>
       <dt>Aerosol optical depth 550 nm</dt><dd>${fmt(o.aod, 3)} <span class="hint">· dust ${fmt(o.dust, 0)} µg m⁻³</span></dd>
@@ -202,42 +195,55 @@ const ATM = (() => {
       options: { animation: false, plugins: { legend: { position: "bottom" } },
         scales: { y: { title: { display: true, text: "Height [km]" } }, x: { title: { display: true, text: "value (scaled as in legend)" } } } } });
   }
-  // spettro di trasmittanze, radianza di percorso e irradianze all'ora scelta
-  function spectrum(d, k, P, LL) {
-    const o = derive(d, k, P.lat, P.lon, P.elev, LL);
-    if (!o.rt) return { o, rows: [] };
-    const rows = Object.entries(o.rt).map(([b, r]) => ({ band: b, wl: LL.bands[b].wl_um ? LL.bands[b].wl_um * 1000 : S2WL[b.replace("S2_", "")], ...r,
-      t_tot: r.t_down * r.t_up * r.t_gas })).sort((a, b) => a.wl - b.wl);
-    return { o, rows };
-  }
-  function renderSpectrum(d, k, P, LL) {
-    if (!LL) return;
-    const { o, rows } = spectrum(d, k, P, LL);
-    if (!rows.length) {
-      $("#a-specnote").textContent = "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.";
-      ["a-spec-t", "a-spec-l"].forEach(id => drawChart(id, { type: "line", data: { datasets: [] } })); $("#a-leg-t").innerHTML = $("#a-leg-l").innerHTML = "";
-      return;
+  // bande dello spettro: passo delle tabelle o bande del sensore scelto; thermal: LWIR (8-13 µm) invece di VNIR-SWIR
+  async function specBands(thermal) {
+    const set = $("#a-specset").value;
+    if (set === "grid") {
+      const T = await lut(thermal ? "tir" : "hyper");
+      return Object.keys(T.bands).filter(b => b.startsWith("WL_")).map(b => ({ name: b, wl: T.bands[b].wl_um * 1000, L: T, key: b }));
     }
-    const lp = localParts(d.times[k], P.tz), i = o.rtIn;
-    const csvName = `spectrum_${P.lat.toFixed(3)}_${P.lon.toFixed(3)}_${lp.date}_${String(lp.hour).padStart(2, "0")}h`;
-    const csvHead = [`Prognostica - 6S at ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} (${fmt(P.elev, 0)} m), ${lp.date} ${String(lp.hour).padStart(2, "0")}:00 ${P.tz}`,
-      `inputs: water vapour ${i.w.toFixed(3)} g cm-2, AOD550 ${i.aot.toFixed(3)}, solar zenith ${i.sza.toFixed(2)} deg, altitude ${i.alt.toFixed(3)} km; nadir view, continental aerosol, ozone 0.30 cm-atm`];
-    const xy = key => rows.map(r => ({ x: r.wl, y: r[key] }));
-    const line = (label, key, color, extra = {}) => ({ label, data: xy(key), borderColor: color, backgroundColor: color, pointRadius: rows.length < 20 ? 3 : 0, borderWidth: 1.6, showLine: true, ...extra });
+    const bands = Object.entries(((await SRF.library())[set] || {}).bands || {}).filter(([, b]) => (thermal ? b.c > 3000 : b.c < 2550));
+    return Promise.all(bands.map(async ([n, b]) => { const v = await SRF.band(b); return { name: n, wl: b.c, L: v.L, key: v.name }; }));
+  }
+  // spettri all'ora scelta: VNIR-SWIR (trasmittanze, radianza di percorso, irradianze) e LWIR (τ, L↑, L↓; solo libRadtran)
+  async function renderSpectrum(d, k, P, o) {
+    const lp = localParts(d.times[k], P.tz), i = o.rtIn, set = $("#a-specset").value, sensor = set === "grid" ? "" : `_${set.replace(/\W+/g, "")}`;
+    const csvName = `spectrum_${P.lat.toFixed(3)}_${P.lon.toFixed(3)}_${lp.date}_${String(lp.hour).padStart(2, "0")}h${sensor}`;
+    const csvHead = [`Prognostica - ${S.rtm === "6s" ? "6S" : "libRadtran"} at ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} (${fmt(P.elev, 0)} m), ${lp.date} ${String(lp.hour).padStart(2, "0")}:00 ${P.tz}${sensor ? `, bands of ${set}` : ""}`,
+      i ? `inputs: water vapour ${i.w.toFixed(3)} g cm-2, AOD550 ${i.aot.toFixed(3)}, solar zenith ${i.sza.toFixed(2)} deg, altitude ${i.alt.toFixed(3)} km; nadir view, continental aerosol, ozone 0.30 cm-atm` : ""];
+    const few = n => (n < 40 ? 3 : 0);
+    const line = (rows, label, key, color, extra = {}) => ({ label, data: rows.map(r => ({ x: r.wl, y: r[key] })), borderColor: color, backgroundColor: color,
+      pointRadius: few(rows.length), borderWidth: 1.6, showLine: set === "grid", ...extra });
+    // VNIR-SWIR
+    const rows = i && i.sza < 80 ? (await specBands(false)).map(b => { const r = rtBand(b.L, b.key, i.w, i.aot, i.sza, i.alt); return { wl: b.wl, ...r, t_tot: r.t_down * r.t_up * r.t_gas }; })
+      .sort((a, b) => a.wl - b.wl) : [];
+    $("#a-specnote").textContent = rows.length ? "" : "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.";
     const xs = { type: "linear", min: 400, max: 2500, title: { display: true, text: "Wavelength [nm]" } };
-    const ct = drawChart("a-spec-t", { type: "scatter", data: { datasets: [line("T↓ scattering", "t_down", "#1f6feb"), line("T↑ scattering", "t_up", "#17becf"),
-      line("T gas", "t_gas", "#9467bd"), line("Total T (↓·↑·gas)", "t_tot", "#111827", { borderWidth: 2.4 }),
-      line("Spherical albedo S", "s_alb", "#8c564b", { borderDash: [4, 3] })] },
+    const ct = drawChart("a-spec-t", { type: "scatter", data: { datasets: [line(rows, "T↓ scattering", "t_down", "#1f6feb"), line(rows, "T↑ scattering", "t_up", "#17becf"),
+      line(rows, "T gas", "t_gas", "#9467bd"), line(rows, "Total T (↓·↑·gas)", "t_tot", "#111827", { borderWidth: 2.4 }),
+      line(rows, "Spherical albedo S", "s_alb", "#8c564b", { borderDash: [4, 3] })] },
       options: { animation: false, csvName: csvName + "_transmittance", csvHead, plugins: { legend: { display: false } },
         scales: { x: xs, y: { min: 0, max: 1, title: { display: true, text: "Transmittance · spherical albedo" } } } } });
-    const cl = drawChart("a-spec-l", { type: "scatter", data: { datasets: [line("Path radiance [W m⁻² sr⁻¹ µm⁻¹]", "l_path", "#c4661f", { yAxisID: "y" }),
-      line("E direct [W m⁻² µm⁻¹]", "e_dir", "#d62728", { yAxisID: "y1" }), line("E diffuse [W m⁻² µm⁻¹]", "e_dif", "#2ca02c", { yAxisID: "y1" }) ] },
+    const cl = drawChart("a-spec-l", { type: "scatter", data: { datasets: [line(rows, "Path radiance [W m⁻² sr⁻¹ µm⁻¹]", "l_path", "#c4661f", { yAxisID: "y" }),
+      line(rows, "E direct [W m⁻² µm⁻¹]", "e_dir", "#d62728", { yAxisID: "y1" }), line(rows, "E diffuse [W m⁻² µm⁻¹]", "e_dif", "#2ca02c", { yAxisID: "y1" })] },
       options: { animation: false, csvName: csvName + "_radiance_irradiance", csvHead, plugins: { legend: { display: false } },
         scales: { x: xs, y: { title: { display: true, text: "Path radiance" }, min: 0 },
           y1: { position: "right", min: 0, grid: { drawOnChartArea: false }, title: { display: true, text: "Irradiance" } } } } });
     htmlLegend(ct, $("#a-leg-t"), TIPS.slice(0, 5));
     htmlLegend(cl, $("#a-leg-l"), TIPS.slice(5));
+    // LWIR
+    const tir = S.rtm !== "6s" && TL && i ? (await specBands(true)).map(b => ({ wl: b.wl / 1000, ...tirBand(b.L, b.key, i.w, i.alt, P.lat, d.times[k]) })).sort((a, b) => a.wl - b.wl) : [];
+    $("#a-tirnote").textContent = S.rtm === "6s" ? "6S does not cover the LWIR: choose libRadtran." : tir.length ? "" : "This sensor has no thermal bands.";
+    const cw = drawChart("a-spec-tir", { type: "scatter", data: { datasets: [line(tir, "Transmittance τ", "tau", "#111827", { borderWidth: 2.2, yAxisID: "y" }),
+      line(tir, "L↑ path [W m⁻² sr⁻¹ µm⁻¹]", "lu", "#c4661f", { yAxisID: "y1" }), line(tir, "L↓ sky [W m⁻² sr⁻¹ µm⁻¹]", "ld", "#1f6feb", { yAxisID: "y1" })] },
+      options: { animation: false, csvName: csvName + "_lwir", csvHead, plugins: { legend: { display: false } },
+        scales: { x: { type: "linear", min: 8, max: 13, title: { display: true, text: "Wavelength [µm]" } }, y: { min: 0, max: 1, title: { display: true, text: "Transmittance" } },
+          y1: { position: "right", min: 0, grid: { drawOnChartArea: false }, title: { display: true, text: "Radiance" } } } } });
+    htmlLegend(cw, $("#a-leg-tir"), TIR_TIPS);
   }
+  const TIR_TIPS = ["Transmittance of the atmosphere from the ground to the sensor, mostly set by water vapour",
+    "Thermal radiance emitted by the atmosphere towards the sensor (upwelling path radiance)",
+    "Thermal radiance emitted by the sky towards the ground (downwelling), partly reflected by the surface"];
 
   return { render, lut, available, sza, rtBand, tirBand };
 })();

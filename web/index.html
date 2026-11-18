@@ -91,12 +91,18 @@
   </div>
   <div class="card"><h3>Day before, day and day after</h3><canvas id="a-ts"></canvas></div>
   <div class="card">
-    <h3>Spectral radiative transfer, VNIR–SWIR</h3>
-    <div class="controls"><label>Resolution <select id="a-specset"></select></label><span class="hint" id="a-specnote"></span></div>
+    <h3>Spectral radiative transfer</h3>
+    <div class="controls"><label title="Every wavelength of the tables, or the bands of a sensor through its spectral response">Resolution <select id="a-specset"></select></label>
+      <span class="hint" id="a-specnote"></span></div>
     <p class="hint">Nadir view, continental aerosol. Hover over a legend entry to see what it is.</p>
+    <h4>VNIR–SWIR (0.4–2.5 µm)</h4>
     <div class="grid2">
       <div class="chart-box"><div id="a-leg-t" class="chart-legend"></div><canvas id="a-spec-t"></canvas></div>
       <div class="chart-box"><div id="a-leg-l" class="chart-legend"></div><canvas id="a-spec-l"></canvas></div>
+    </div>
+    <div class="lwir">
+      <h4>LWIR (8–13 µm) <span class="hint" id="a-tirnote"></span></h4>
+      <div class="chart-box"><div id="a-leg-tir" class="chart-legend"></div><canvas id="a-spec-tir"></canvas></div>
     </div>
   </div>
   <details class="more prose" open>
