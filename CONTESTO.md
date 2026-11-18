@@ -34,6 +34,8 @@ CSV/Excel con nomi inglesi: `rankings.csv`, `rankings_holdout.csv`, `best_and_we
 LUT iperspettrale: workflow Torricelli «Tabella RT 6S» con `hyper` (6 macchine in parallelo, ~1 h; `scripts/01b_merge_lut.py` unisce le parti).
 
 ## Piano per la prossima chat (dal 18/11/2026)
+Scopo: infrastruttura per i ricercatori (correzione atmosferica di immagini, test di TES sui siti di calibrazione, mappe).
+7. Siti di calibrazione per il TES: archivio orario LWIR (τ, L↑, L↓ e profili ERA5) ai siti RadCalNet/HYPERNETS e ai siti termici (es. Gobabeb), scaricabile per le ore dei passaggi.
 Scopo del regression kriging: interpolare e aumentare la risoluzione spaziale di vapore e AOD (non "correggere" il modello).
 1. **ERA5 + IFS + CAMS insieme (Torricelli 05, 07; Prognostica rkmap.js, atmos.js)**: in 05 aggiungere ERA5 (Open-Meteo archive: tcwv, t2m, rh, ps) ai siti;
    in 07 covariate di tutti i modelli (IFS NaN prima del 3/2/2024: HGB gestisce i mancanti), residuo (misura − modello) rispetto a ERA5 (IFS se ERA5 non c'è ancora, ultimi ~5 giorni);

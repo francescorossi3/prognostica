@@ -1,5 +1,7 @@
 # Prognostica – istruzioni per Claude
 
+**Scopo della famiglia di repository:** infrastruttura per i ricercatori: correzione atmosferica di immagini satellitari, test di algoritmi (es. TES, separazione temperatura/emissività) sui siti di calibrazione, raccolta di dati e mappe (Columella per l'agricoltura).
+
 Front end meteo: previsione accurata (modelli Open-Meteo verificati + GPR), schede in tre gruppi: Forecast / Maps / Accuracy (accuratezza modelli + affidabilità GPR) / Events · Atmosphere / Atmosphere RK (mappe di vapore, AOD e RT con il modello validato su AERONET/GNSS) · Data & method.
 Contesto completo e storia: **CONTESTO.md** (leggerlo solo se serve).
 
