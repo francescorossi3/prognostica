@@ -159,7 +159,7 @@ gantt
 | `web/hires.js` | Atmosphere RK: griglia (quadrato UTM o GeoTIFF/ENVI importato con lunghezze d'onda delle bande e ora di acquisizione), controlli, layer, download con unità, mappa di validazione |
 | `web/mapstyle.js` | Simbologia delle mappe come in QGIS: pannello Layer (mostra/nascondi, ordine) e pannello Stile (scala di colori, min/max, classi, opacità, istogramma, legenda) |
 | `web/export.js` | Download in tutte le schede: grafici e tabelle in CSV; mappe in GeoTIFF Float32, PNG/JPEG + world file, griglia ASCII ESRI, ENVI, CSV, nel sistema di riferimento della griglia |
-| `web/rkmap.js` | Applica il gradient boosting validato su un reticolo di 30 m (ECMWF/CAMS all'ora, terreno, posizione, ora) e il trasferimento radiativo pixel per pixel |
+| `web/rkmap.js` | Applica il gradient boosting validato su un reticolo di 30 m (ECMWF/CAMS all'ora, terreno, ora e stagione) e il trasferimento radiativo pixel per pixel |
 | `web/srf.js` | Risposte spettrali: libreria, metadati dell'immagine (ENVI, GeoTIFF/GDAL), personalizzate; banda virtuale delle tabelle |
 | `web/vendor/` | Leaflet, Chart.js, geotiff.js, proj4js (licenze in `LICENSES.md`) |
 | `web/i18n.js` | Dizionario inglese → italiano |

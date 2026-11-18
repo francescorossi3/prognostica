@@ -5,7 +5,7 @@
 //              interpolato in modo bilineare tra i centri delle celle (niente gradini ai bordi delle celle):
 //              vapore, AOD, polveri, temperatura e umidità a 2 m, pressione al suolo;
 //            - terreno (tasselli Terrarium): quota, pendenza, TPI e rilievo entro 500 e 2000 m (quadrato di area uguale al cerchio);
-//            - posizione, ora e giorno dell'anno.
+//            - ora e giorno dell'anno (non latitudine e longitudine: gli alberi darebbero gradini dritti).
 //          Il modello si applica ogni 30 m (aree piccole) o 90 m e si riporta sui pixel della griglia della mappa.
 //          Le grandezze RT usano vapore e AOD corretti nella LUT (6S o libRadtran) pixel per pixel, nella banda scelta (srf.js).
 // Input:   griglia G (hires.js), data, ora UTC, grandezza, banda virtuale; funzione quota Z(lat, lon); modelli da S.meta.atmos_url.

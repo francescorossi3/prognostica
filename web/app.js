@@ -919,7 +919,7 @@ function initData() {
   and upwelling and downwelling radiance with standard atmospheres chosen by latitude and season.</p>
   <h3>Atmosphere RK: high-resolution maps validated on measurements</h3>
   <p>For a past date and hour, water vapour (ECMWF IFS, about 25 km) and AOD (CAMS, about 45 km) are corrected with a gradient boosting model trained on
-  hourly AERONET and GNSS measurements, using covariates that exist for every pixel: the model values, terrain within 500 m and 2 km, position and time.
+  hourly AERONET and GNSS measurements, using covariates that exist for every pixel: the model values, terrain within 500 m and 2 km, hour and season.
   It is applied every 30 m (90 m for large areas). The validation leaves out each site and every site in its 0.5° cell: errors are against measurements, not
   against the model. The grid can be the square around the place or the grid of an imported GeoTIFF/ENVI image. Radiative transfer quantities are
   converted to the band of a sensor with its spectral response (library, image metadata or custom) and exported in the units of the product.</p>
@@ -983,7 +983,7 @@ function dataTextIT(link, d) {
   e in discesa con atmosfere standard scelte secondo latitudine e stagione.</p>
   <h3>Atmosphere RK: mappe ad alta risoluzione validate sulle misure</h3>
   <p>Per una data e un'ora passate, vapore acqueo (ECMWF IFS, circa 25 km) e AOD (CAMS, circa 45 km) sono corretti con un modello gradient boosting addestrato sulle
-  misure orarie AERONET e GNSS, con covariate che esistono per ogni pixel: i valori del modello, il terreno entro 500 m e 2 km, posizione e ora.
+  misure orarie AERONET e GNSS, con covariate che esistono per ogni pixel: i valori del modello, il terreno entro 500 m e 2 km, ora e stagione.
   Si applica ogni 30 m (90 m per aree grandi). La validazione esclude ogni sito e tutti i siti della sua cella di 0,5°: gli errori sono rispetto alle misure, non al modello.
   La griglia può essere il quadrato intorno al luogo o quella di un'immagine GeoTIFF/ENVI importata. Le grandezze di trasferimento radiativo sono convertite alla banda
   di un sensore con la sua risposta spettrale (libreria, metadati dell'immagine o personalizzata) ed esportate nelle unità del prodotto.</p>

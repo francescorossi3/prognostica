@@ -159,7 +159,7 @@ gantt
 | `web/hires.js` | Atmosphere RK: grid (UTM square or imported GeoTIFF/ENVI with band wavelengths and acquisition time), controls, layers, downloads with units, validation map |
 | `web/mapstyle.js` | QGIS-like map symbology: Layers panel (show/hide, order) and Style panel (colour ramp, min/max, classes, opacity, histogram, legend) |
 | `web/export.js` | Downloads in every tab: charts and tables as CSV; maps as GeoTIFF Float32, PNG/JPEG + world file, ESRI ASCII grid, ENVI, CSV, in the coordinate system of the grid |
-| `web/rkmap.js` | Applies the validated gradient boosting on a 30 m lattice (ECMWF/CAMS at the hour, terrain, position, time) and the radiative transfer pixel by pixel |
+| `web/rkmap.js` | Applies the validated gradient boosting on a 30 m lattice (ECMWF/CAMS at the hour, terrain, hour and season) and the radiative transfer pixel by pixel |
 | `web/srf.js` | Spectral responses: library, image metadata (ENVI, GeoTIFF/GDAL), custom; virtual band of the look-up tables |
 | `web/vendor/` | Leaflet, Chart.js, geotiff.js, proj4js (licences in `LICENSES.md`) |
 | `web/i18n.js` | English → Italian dictionary |
