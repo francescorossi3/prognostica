@@ -3,10 +3,11 @@
 // (spazi normalizzati) o a una delle regole con espressioni regolari; il contenuto aggiunto dopo viene
 // tradotto al volo (MutationObserver). La scelta resta memorizzata nel browser.
 // Input:  testi della pagina (index.html e contenuto generato da app.js, atmos.js, hires.js), pulsante EN/IT.
-// Output: testi tradotti nel DOM, oggetto globale I18N (t, set, lang); chiama onLang() di app.js al cambio lingua.
+// Output: testi tradotti nel DOM, oggetto globale I18N (t, lang); chiama onLang() di app.js al cambio lingua.
 "use strict";
 const I18N = (() => {
   const D = {
+    "· Atmosphere: ECMWF IFS and CAMS via Open-Meteo, 6S, libRadtran · Validation: AERONET (NASA), GNSS (Nevada Geodetic Laboratory) · Elevation: Copernicus DEM / EU-DEM (Mapzen Terrarium tiles) · Maps & geocoding: ©": "· Atmosfera: ECMWF IFS e CAMS tramite Open-Meteo, 6S, libRadtran · Validazione: AERONET (NASA), GNSS (Nevada Geodetic Laboratory) · Quota: Copernicus DEM / EU-DEM (tasselli Mapzen Terrarium) · Mappe e geocodifica: ©",
     "Water vapour, aerosol optical depth and radiative transfer quantities at high resolution, for a past date and hour: ECMWF IFS and CAMS corrected pixel by pixel with the model validated on AERONET and GNSS measurements (below).": "Vapore acqueo, spessore ottico degli aerosol e grandezze di trasferimento radiativo ad alta risoluzione, per una data e un'ora passate: ECMWF IFS e CAMS corretti pixel per pixel con il modello validato sulle misure AERONET e GNSS (sotto).",
     "The map will have exactly the extent, pixels and coordinate system of the image, so the values can be used pixel by pixel. Band wavelengths and acquisition time are read from the metadata when present.": "La mappa avrà esattamente estensione, pixel e sistema di riferimento dell'immagine, così i valori si usano pixel per pixel. Lunghezze d'onda delle bande e ora di acquisizione si leggono dai metadati se presenti.",
     "Hour (UTC)": "Ora (UTC)",
@@ -57,16 +58,14 @@ const I18N = (() => {
     "LWIR tables need libRadtran: choose it in the Atmosphere tab": "le tabelle LWIR richiedono libRadtran: sceglilo nella scheda Atmosfera",
     "area too large for the browser (max about 110 × 110 km)": "area troppo grande per il browser (al massimo circa 110 × 110 km)",
 
-"Date": "Data",
-    "Image": "Immagine", "Build map": "Crea mappa",
-"Model only (ECMWF / CAMS)": "Solo modello (ECMWF / CAMS)",
+    "Date": "Data", "Build map": "Crea mappa",
+    "Model only (ECMWF / CAMS)": "Solo modello (ECMWF / CAMS)",
     "Correction (corrected − model)": "Correzione (corretto − modello)",
     "Download": "Scarica", "Selected layer, same pixels and coordinate system as the grid": "Layer selezionato, stessi pixel e sistema di riferimento della griglia",
     "GeoTIFF (Float32, values)": "GeoTIFF (Float32, valori)", "PNG as shown + world file": "PNG come mostrato + world file", "JPEG as shown + world file": "JPEG come mostrato + world file",
     "ESRI ASCII grid (.asc)": "Griglia ASCII ESRI (.asc)", "ENVI (.img + .hdr)": "ENVI (.img + .hdr)", "CSV (lon, lat, value)": "CSV (lon, lat, valore)",
     "Use the grid of an image": "Usa la griglia di un'immagine", "GeoTIFF / COG, or ENVI .hdr together with its .img": "GeoTIFF / COG, oppure ENVI .hdr insieme al suo .img",
     "Back to the square grid": "Torna alla griglia quadrata",
-    "The map will have exactly the extent, pixels and coordinate system of the image, so the values can be used pixel by pixel.": "La mappa avrà esattamente estensione, pixel e sistema di riferimento dell'immagine, così i valori si usano pixel per pixel.",
     "CSV is limited to 1.5 million pixels: choose GeoTIFF, ENVI or ASCII grid.": "Il CSV è limitato a 1,5 milioni di pixel: scegli GeoTIFF, ENVI o griglia ASCII.",
     "Radiative transfer model": "Modello di trasferimento radiativo", "6S · VNIR–SWIR only": "6S · solo VNIR–SWIR",
     "libRadtran · VNIR–SWIR and LWIR (tables in preparation)": "libRadtran · VNIR–SWIR e LWIR (tabelle in preparazione)",
@@ -75,10 +74,9 @@ const I18N = (() => {
     "6S does not cover the LWIR: τ, L↑ and L↓ come from libRadtran.": "6S non copre il LWIR: τ, L↑ e L↓ vengono da libRadtran.",
 
     // validazione AERONET in Atmosphere RK
-
     "Method on the map": "Metodo sulla mappa", "Errors at the sites": "Errori ai siti", "Which covariates matter": "Quali covariate contano",
     "Model of the map above": "Modello della mappa qui sopra", "How the map is made": "Come si costruisce la mappa",
-    "Covariate": "Covariata","Method": "Metodo",
+    "Covariate": "Covariata", "Method": "Metodo",
     "Model (ECMWF / CAMS)": "Modello (ECMWF / CAMS)",
     "Gradient boosting": "Gradient boosting", "Gradient boosting + kriging": "Gradient boosting + kriging",
     "Size = RMSE at the site": "Dimensione = RMSE al sito", "Better than the model": "Meglio del modello", "Worse than the model": "Peggio del modello",
@@ -90,7 +88,6 @@ const I18N = (() => {
     // download, Atmosphere (modelli RT, equazioni, glossario), Atmosphere RK con sola quota
     "CSV": "CSV", "Download the data of this chart (CSV)": "Scarica i dati di questo grafico (CSV)", "Download this table (CSV)": "Scarica questa tabella (CSV)",
     "Selected layer at the period shown": "Layer selezionato al periodo mostrato",
-    
     "Spectral radiative transfer, VNIR–SWIR": "Trasferimento radiativo spettrale, VNIR–SWIR",
     "6S, nadir view, continental aerosol. Hover over a legend entry to see what it is.": "6S, vista al nadir, aerosol continentale. Passa il mouse su una voce della legenda per sapere cos'è.",
     "Transmittance · spherical albedo": "Trasmittanza · albedo sferica", "Spherical albedo S": "Albedo sferica S", "Total T (↓·↑·gas)": "T totale (↓·↑·gas)",
@@ -118,19 +115,12 @@ const I18N = (() => {
     "Light scattered by the atmosphere into the sensor without touching the ground": "Luce diffusa dall'atmosfera verso il sensore senza toccare il suolo",
     "Solar irradiance reaching a horizontal ground directly from the Sun": "Irradianza solare che arriva su un suolo orizzontale direttamente dal Sole",
     "Irradiance reaching the ground from the whole sky, after scattering": "Irradianza che arriva al suolo da tutto il cielo, dopo lo scattering",
-
-
     // schede raggruppate, grafico scorrevole, Atmosphere RK (validazione e avanzamento)
     "Accuracy": "Accuratezza", "Atmosphere RK": "Atmosfera RK", "How to read the GPR tables": "Come leggere le tabelle GPR",
     "Scroll the chart sideways with the bar, the mouse wheel (Shift + wheel) or a swipe.": "Scorri il grafico di lato con la barra, la rotella del mouse (Maiusc + rotella) o con un dito.",
-
-
-
-
     // nuovo layout, pannelli Layers / Style (mapstyle.js)
     "The name comes from Cicero's": "Il nome viene dai", "Language": "Lingua",
     "Table of values": "Tabella dei valori",
-    "6S, nadir view, continental aerosol.": "6S, vista al nadir, aerosol continentale.", 
     "Choose a place with the search above (or a map click, or a calibration site).": "Scegli un luogo con la ricerca in alto (o con un clic sulla mappa, o un sito di calibrazione).",
     "Choose a place with the search above: the map is built around it.": "Scegli un luogo con la ricerca in alto: la mappa viene costruita intorno a esso.",
     "Green = event forecast, red = missed.": "Verde = evento previsto, rosso = mancato.",
@@ -167,8 +157,7 @@ const I18N = (() => {
     // variabili e periodi
     "Mean temperature": "Temperatura media", "Maximum temperature": "Temperatura massima", "Minimum temperature": "Temperatura minima",
     "Precipitation": "Precipitazione", "Hourly": "Oraria", "6-hourly": "6 ore", "Daily": "Giornaliera", "Today": "Oggi", "Tomorrow (+1 d)": "Domani (+1 g)",
-"Whole record": "Intero archivio",
-"Metric": "Metrica",
+    "Whole record": "Intero archivio", "Metric": "Metrica",
     "RMSE (root mean square error)": "RMSE (errore quadratico medio)", "MAE (mean absolute error)": "MAE (errore assoluto medio)",
     "Bias (forecast − observed)": "Bias (previsto − osservato)", "Correlation": "Correlazione", "R² (explained variance)": "R² (varianza spiegata)",
     "Error versus lead time": "Errore in funzione dell'anticipo", "Monthly trend": "Andamento mensile", "Provider": "Fornitore",
@@ -176,43 +165,34 @@ const I18N = (() => {
     // eventi
     "Event": "Evento", "Lead time": "Anticipo", "Events caught (CSI) versus lead time": "Eventi colti (CSI) in funzione dell'anticipo",
     "Latest observed events": "Ultimi eventi osservati",
-    "heavy rain": "pioggia forte", "very heavy rain": "pioggia molto forte", "heat": "caldo", "frost": "gelo",
     // mappe
-    "Layer": "Strato", "GPR error at stations": "Errore GPR alle stazioni",
+    "GPR error at stations": "Errore GPR alle stazioni",
     "Click on the map to see the value and open the detailed forecast.": "Clicca sulla mappa per vedere il valore e aprire la previsione dettagliata.",
     // atmosfera
-
     "Hour": "Ora", "Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).":
       "Proposta: la prossima ora con il sole più alto (vicina al passaggio delle ~10:30 di Sentinel-2 / Landsat).",
-    "Surface and column": "Superficie e colonna", "Vertical profile": "Profilo verticale", 
+    "Surface and column": "Superficie e colonna", "Vertical profile": "Profilo verticale",
     "Next days": "Prossimi giorni",
-    "Downloading atmospheric data…": "Scarico i dati atmosferici…", 
+    "Downloading atmospheric data…": "Scarico i dati atmosferici…",
     "Solar zenith angle": "Angolo zenitale solare",
     "Surface pressure": "Pressione al suolo", "Air temperature 2 m · dew point": "Temperatura dell'aria 2 m · punto di rugiada",
     "Air density at the surface": "Densità dell'aria al suolo", "Cloud cover": "Copertura nuvolosa", "Irradiance (hour mean)": "Irradianza (media oraria)",
-    "T↓ scattering": "T↓ diffusione", "T↑ scattering": "T↑ diffusione", "T gas": "T gas", 
+    "T↓ scattering": "T↓ diffusione", "T↑ scattering": "T↑ diffusione", "T gas": "T gas",
     "Path radiance [W m⁻² sr⁻¹ µm⁻¹]": "Radianza di percorso [W m⁻² sr⁻¹ µm⁻¹]", "E direct [W m⁻² µm⁻¹]": "E diretta [W m⁻² µm⁻¹]",
-    "E diffuse": "E diffusa", "Spherical albedo": "Albedo sferico", "Height [km]": "Quota [km]",
+    "Spherical albedo": "Albedo sferico", "Height [km]": "Quota [km]",
     "Temperature [°C]": "Temperatura [°C]", "Relative humidity [%] /4": "Umidità relativa [%] /4", "Air density [kg m⁻³] ×20": "Densità dell'aria [kg m⁻³] ×20",
     "value (scaled as in legend)": "valore (scalato come in legenda)", "Water vapour column [kg m⁻² = mm]": "Vapore acqueo in colonna [kg m⁻² = mm]",
     "Global irradiance [W m⁻²] /100": "Irradianza globale [W m⁻²] /100",
-    // mappa 10 m
-
-    "Model": "Modello",
+    // Atmosphere RK
     "Water vapour column [kg m⁻²]": "Vapore acqueo in colonna [kg m⁻²]",
-"Air density [kg m⁻³]": "Densità dell'aria [kg m⁻³]",
-    "Global irradiance [W m⁻²]": "Irradianza globale [W m⁻²]", 
-
-
-
-    "Atmosphere": "Atmosfera", "10 m map": "Mappa 10 m", "Resolution": "Risoluzione", 
-    "Spectral radiative transfer": "Trasferimento radiativo spettrale", 
+    "Atmosphere": "Atmosfera", "Resolution": "Risoluzione",
+    "Spectral radiative transfer": "Trasferimento radiativo spettrale",
     "Sentinel-2 bands (13)": "Bande Sentinel-2 (13)", "The hyperspectral 6S table is not available yet: Sentinel-2 bands for now.": "La tabella 6S iperspettrale non è ancora disponibile: per ora bande Sentinel-2.",
     "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.": "Sole sotto i 10° a quest'ora: nessuno spettro VNIR-SWIR.",
-    "Wavelength [nm]": "Lunghezza d'onda [nm]", "Transmittance": "Trasmittanza", "Total transmittance": "Trasmittanza totale", "Path radiance": "Radianza di percorso",
+    "Wavelength [nm]": "Lunghezza d'onda [nm]", "Path radiance": "Radianza di percorso",
     "Irradiance": "Irradianza", "E diffuse [W m⁻² µm⁻¹]": "E diffusa [W m⁻² µm⁻¹]",
     "(change the place with the search above)": "(cambia il luogo con la ricerca in alto)",
-    "Wavelength": "Lunghezza d'onda", "Cell": "Cella", 
+    "Cell": "Cella",
     "Total transmittance (T↓·T↑·T gas)": "Trasmittanza totale (T↓·T↑·T gas)", "Downward scattering transmittance T↓": "Trasmittanza di diffusione in discesa T↓",
     "Upward scattering transmittance T↑": "Trasmittanza di diffusione in salita T↑", "Gaseous transmittance": "Trasmittanza gassosa",
     "Direct irradiance [W m⁻² µm⁻¹]": "Irradianza diretta [W m⁻² µm⁻¹]", "Diffuse irradiance [W m⁻² µm⁻¹]": "Irradianza diffusa [W m⁻² µm⁻¹]",
@@ -227,7 +207,6 @@ const I18N = (() => {
       "Se l'incertezza è corretta, il valore osservato cade nell'intervallo al 68% circa 68 volte su 100 e in quello al 95% circa 95 volte su 100. Celle verdi: incertezza ben calibrata; ambra/rosso: usare con cautela. “Migliore ex post” è il modello che, a posteriori, è andato meglio in quei giorni: un riferimento che nessun metodo può conoscere in anticipo.",
     // piè di pagina
     "Model forecasts:": "Previsioni dei modelli:", "(CC BY 4.0) · Observations:": "(CC BY 4.0) · Osservazioni:",
-    "· Atmosphere: ECMWF IFS and CAMS via Open-Meteo, 6S · Elevation: Copernicus DEM / EU-DEM (Mapzen Terrarium tiles) · Maps & geocoding: ©": "· Atmosfera: ECMWF IFS e CAMS tramite Open-Meteo, 6S · Quota: Copernicus DEM / EU-DEM (tasselli Mapzen Terrarium) · Mappe e geocodifica: ©",
     "contributors, Photon (komoot), Nominatim · anonymous usage statistics without cookies (GoatCounter) · © 2026 Francesco Rossi · code: all rights reserved · data:":
       "e collaboratori, Photon (komoot), Nominatim · statistiche d'uso anonime senza cookie (GoatCounter) · © 2026 Francesco Rossi · codice: tutti i diritti riservati · dati:",
     "· part of a family with": "· fa parte di una famiglia con", "(agriculture) and": "(agricoltura) e", "(atmosphere)": "(atmosfera)",
@@ -244,10 +223,6 @@ const I18N = (() => {
     [/^\+(\d+) days$/, "+$1 giorni"], [/^\+(\d+)d$/, "+$1g"],
     [/^Verified up to (.+) · updated (.+) UTC$/, "Verificato fino al $1 · aggiornato $2 UTC"],
     [/^6S every (\d+) nm \((\d+) wavelengths\)$/, "6S ogni $1 nm ($2 lunghezze d'onda)"],
-    [/^(.+) at (\d+ nm|Sentinel-2 .+ nm) · (.+)$/, "$1 a $2 · $3"],
-    [/^(\d+) × (\d+) km \((.+)\)$/, "$1 × $2 km ($3)"],
-    [/^Path radiance S2 (.+) nm$/, "Radianza di percorso S2 $1 nm"], [/^Total transmittance S2 (.+) nm$/, "Trasmittanza totale S2 $1 nm"],
-    [/^Direct irradiance S2 (.+) nm$/, "Irradianza diretta S2 $1 nm"], [/^Diffuse irradiance S2 (.+) nm$/, "Irradianza diffusa S2 $1 nm"],
     [/^Observed – (.+)$/, "Osservato – $1"],
   ];
   let lang = "en";
@@ -300,5 +275,5 @@ const I18N = (() => {
     obs.observe(document.body, { childList: true, subtree: true, characterData: true });
     set(lang);
   });
-  return { t, set, get lang() { return lang; } };
+  return { t, get lang() { return lang; } };
 })();

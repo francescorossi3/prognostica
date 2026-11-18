@@ -8,7 +8,7 @@
 //          Il modello si applica ogni 30 m (aree piccole) o 90 m e si riporta sui pixel della griglia della mappa.
 //          Le grandezze RT usano vapore e AOD corretti nella LUT (6S o libRadtran) pixel per pixel, nella banda scelta (srf.js).
 // Input:   griglia G (hires.js), data, ora UTC, grandezza, banda virtuale; funzione quota Z(lat, lon); modelli da S.meta.atmos_url.
-// Output:  { est (corretto), trd (solo modello), sd (correzione), elev } sui pixel della griglia.
+// Output:  oggetto globale RKMAP.run() -> { est (corretto), trd (solo modello), sd (correzione), elev, step, rmse } sui pixel della griglia.
 "use strict";
 
 const RKMAP = (() => {
@@ -132,7 +132,7 @@ const RKMAP = (() => {
         out[p] = raw[p] + predict(M, x);
         if (p % 20000 === 19999) { step(45 + 30 * (vi + p / NP) / vars.length, `3/4 · applying the validated model… ${Math.round(100 * p / NP)} %`); await new Promise(res => setTimeout(res, 0)); }
       }
-      pred[v] = { out: v === "aod550" ? out.map(a => Math.max(0, a)) : out.map(w => Math.max(0, w)), raw };
+      pred[v] = { out: out.map(x => Math.max(0, x)), raw };
     }
     // riporto sui pixel della griglia (bilineare sul reticolo di previsione) ed eventuale trasferimento radiativo
     step(75, "4/4 · values on the map pixels…");
@@ -169,5 +169,5 @@ const RKMAP = (() => {
     return { est, trd, sd, elev, step: k * RES, rmse: Object.fromEntries(vars.map((v, i) => [v, Ms[i].rmse_validation])) };
   }
 
-  return { run, model };
+  return { run };
 })();

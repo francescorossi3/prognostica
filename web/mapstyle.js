@@ -1,4 +1,4 @@
-// mapstyle.js – simbologia delle mappe "come QGIS", condivisa da Maps (app.js) e 10 m map (hires.js).
+// mapstyle.js – simbologia delle mappe "come QGIS", condivisa da Maps (app.js) e Atmosphere RK (hires.js).
 // Cosa fa:  scale di colori, limiti min/max (predefiniti, min-max, percentili 2–98 %, media ± 2σ, manuali),
 //           classi continue / intervalli uguali / quantili, inversione, opacità, valori fuori scala trasparenti,
 //           istogramma con i limiti, legenda; pannello Layers (accendi/spegni, ordine con trascinamento o ▲▼).
@@ -187,5 +187,5 @@ const MapStyle = (() => {
     });
   }
 
-  return { RAMPS, create, classify, legend, stylePanel, layersPanel, css, rampAt };
+  return { create, classify, legend, stylePanel, layersPanel, css };
 })();

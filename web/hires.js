@@ -5,7 +5,8 @@
 //   Bande: risposta spettrale del sensore (srf.js: libreria, immagine importata, personalizzata o singola lunghezza d'onda).
 //   Validazione: errori ai siti AERONET e GNSS calcolati da Torricelli (07_rk_validate.py), su mappa e tabella.
 // Input:  punto (S.point, app.js), DEM Terrarium (AWS), rkmap.js, srf.js, atmos.js (LUT), export.js; rk_validation.json da S.meta.atmos_url.
-// Output: mappa con layer e stile (mapstyle.js), download in GeoTIFF, PNG/JPEG + world file, ASCII, ENVI, CSV nelle unità scelte.
+// Output: mappa con layer e stile (mapstyle.js), download in GeoTIFF, PNG/JPEG + world file, ASCII, ENVI, CSV nelle unità scelte;
+//         oggetto globale HR (init, point, rtm, projDef; HR.out = ultima mappa).
 "use strict";
 
 const HR = (() => {
@@ -113,14 +114,18 @@ const HR = (() => {
       st.innerHTML = `<b>${G.name}</b> · ${G.W} × ${G.H} pixels of ${fmt(G.dx, G.geographic ? 6 : 2)}${G.geographic ? "°" : " m"} · EPSG:${G.epsg || "WKT"} ·
         ${G.bb.s.toFixed(4)}–${G.bb.n.toFixed(4)} N, ${G.bb.w.toFixed(4)}–${G.bb.e.toFixed(4)} E
         · ${S.himgBands.length ? `${S.himgBands.length} bands with wavelengths` : "no wavelengths in the metadata"}${tm ? ` · acquired ${tm[1]}-${tm[2]}-${tm[3]} ${tm[4]}:${tm[5] || "00"} UTC` : ""}`;
-      ["#h-size", "#h-size-u", "#h-cell", "#h-cell-u"].forEach(id => { $(id).disabled = true; });
-      $("#h-img-clear").hidden = false;
+      sizeControls(false);
       S.hmap.fitBounds([[G.bb.s, G.bb.w], [G.bb.n, G.bb.e]]);
     } catch (e) { st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
   function clearImage() {
-    S.himg = null; S.himgBands = []; $("#h-img").value = ""; sensors(); $("#h-img-info").textContent = ""; $("#h-img-clear").hidden = true;
-    ["#h-size", "#h-size-u", "#h-cell", "#h-cell-u"].forEach(id => { $(id).disabled = false; });
+    S.himg = null; S.himgBands = []; $("#h-img").value = ""; sensors(); $("#h-img-info").textContent = "";
+    sizeControls(true);
+  }
+  // lato e cella della griglia quadrata: attivi solo senza immagine importata
+  function sizeControls(on) {
+    ["#h-size", "#h-size-u", "#h-cell", "#h-cell-u"].forEach(id => { $(id).disabled = !on; });
+    $("#h-img-clear").hidden = on;
   }
 
   // ---------------------------------------------------------------- grandezze e bande
@@ -130,9 +135,9 @@ const HR = (() => {
     ["rt:e_dif", "Diffuse irradiance [W m⁻² µm⁻¹]"], ["rt:s_alb", "Spherical albedo"],
     ["tir:tau", "LWIR transmittance τ"], ["tir:lu", "LWIR upwelling path radiance L↑ [W m⁻² sr⁻¹ µm⁻¹]"], ["tir:ld", "LWIR downwelling radiance L↓ [W m⁻² sr⁻¹ µm⁻¹]"]];
   // unità dell'export per tipo di grandezza: [etichetta, fattore rispetto all'unità della mappa]
-  const RAD = [["W m⁻² sr⁻¹ µm⁻¹ (Landsat, PRISMA, MODIS)", 1], ["mW m⁻² sr⁻¹ nm⁻¹ (EnMAP)", 1], ["µW cm⁻² sr⁻¹ nm⁻¹ (AVIRIS)", 0.1],
-    ["mW cm⁻² sr⁻¹ µm⁻¹", 0.1], ["W m⁻² sr⁻¹ nm⁻¹", 0.001]];
-  const UNITS = { tcwv: [["kg m⁻² (= mm)", 1], ["g cm⁻² (= cm)", 0.1]], ratio: [["0–1", 1], ["%", 100]], rad: RAD,
+  const UNITS = { tcwv: [["kg m⁻² (= mm)", 1], ["g cm⁻² (= cm)", 0.1]], ratio: [["0–1", 1], ["%", 100]],
+    rad: [["W m⁻² sr⁻¹ µm⁻¹ (Landsat, PRISMA, MODIS)", 1], ["mW m⁻² sr⁻¹ nm⁻¹ (EnMAP)", 1], ["µW cm⁻² sr⁻¹ nm⁻¹ (AVIRIS)", 0.1],
+      ["mW cm⁻² sr⁻¹ µm⁻¹", 0.1], ["W m⁻² sr⁻¹ nm⁻¹", 0.001]],
     irr: [["W m⁻² µm⁻¹", 1], ["mW m⁻² nm⁻¹", 1], ["mW cm⁻² µm⁻¹", 0.1], ["W m⁻² nm⁻¹", 0.001]], elev: [["m", 1], ["km", 0.001]] };
   const unitKind = t => (t === "tcwv" ? "tcwv" : /l_path|tir:lu|tir:ld/.test(t) ? "rad" : /e_dir|e_dif/.test(t) ? "irr" : "ratio");
   const isBand = t => t.includes(":");
@@ -378,5 +383,5 @@ const HR = (() => {
     else if (isBand($("#h-target").value)) bandOptions();
   }
 
-  return { init, run, point, rtm, validation, projDef };
+  return { init, point, rtm, projDef };
 })();

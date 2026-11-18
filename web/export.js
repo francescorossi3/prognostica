@@ -80,9 +80,8 @@ const EXPORT = (() => {
     if (fmt === "png" || fmt === "jpg") {
       const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
       const g = cv.getContext("2d"), im = g.createImageData(W, H);
-      if (fmt === "jpg") for (let i = 3; i < im.data.length; i += 4) im.data[i] = 255;   // JPEG: sfondo bianco
+      if (fmt === "jpg") im.data.fill(255);                                             // JPEG: sfondo bianco, opaco
       for (let i = 0; i < values.length; i++) { const c = color(values[i]); if (c) im.data.set(fmt === "jpg" ? [...c.slice(0, 3), 255] : c, 4 * i); }
-      if (fmt === "jpg") for (let i = 0; i < values.length; i++) if (!color(values[i])) im.data.set([255, 255, 255, 255], 4 * i);
       g.putImageData(im, 0, 0);
       cv.toBlob(b => save(b, `${base}.${fmt}`), fmt === "png" ? "image/png" : "image/jpeg", 0.95);
       return save(new Blob([world], { type: "text/plain" }), `${base}.${fmt === "png" ? "pgw" : "jgw"}`);
@@ -118,5 +117,5 @@ const EXPORT = (() => {
     return b;
   }
 
-  return { save, csv, chart, table, geotiff, raster, FORMATS, button };
+  return { save, csv, chart, table, raster, FORMATS, button };
 })();

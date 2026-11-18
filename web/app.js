@@ -131,9 +131,8 @@ function showTab(t) {
   const q = location.hash.split("?")[1];
   history.replaceState(null, "", "#" + t + (q && ["point", "atm", "hr"].includes(t) ? "?" + q : ""));
   if (t === "maps" && S.map) setTimeout(() => S.map.invalidateSize(), 50);
-  if (t === "point") Object.values(charts).forEach(c => c.resize());
   if (t === "hr" && S.hmap) setTimeout(() => { S.hmap.invalidateSize(); S.vmap?.invalidateSize(); }, 50);
-  if (t === "atm" || t === "hr") Object.values(charts).forEach(c => c.resize());
+  if (["point", "atm", "hr"].includes(t)) Object.values(charts).forEach(c => c.resize());
 }
 
 // ================================================================== CLASSIFICA
@@ -441,7 +440,7 @@ function mapPanels() {
 }
 
 function mapPopup(ll) {
-  const m = S.maps[`${S.region}/${$("#m-var").value}_${$("#m-agg").value}`];
+  const m = curMap();
   let txt = "";
   if (m) {
     let bi = -1, bd = 1e9;
@@ -682,6 +681,7 @@ async function computePoint(agg, v) {
     const a = aggregateSeries(P.times, P.raw[id].t, P.raw[id].p, agg, P.tz);
     for (const k in a) (per[k] ||= {})[id] = a[k][v];
   }
+  const ver = !!P.region && regionOf(P.region).verify !== false;
   const rows = [];
   for (const k of Object.keys(per).sort()) {
     const lead = dayDiff(k.slice(0, 10), today);
@@ -689,7 +689,6 @@ async function computePoint(agg, v) {
     const ml = Math.max(lead, 0);                  // giorni passati: si usano pesi e GPR a 0 giorni (corto raggio)
     const vals = per[k];
     if (!Object.values(vals).some(x => x != null && isFinite(x))) continue;   // periodo incompleto
-    const ver = !!P.region && regionOf(P.region).verify !== false;
     const sel = ver ? S.weights.filter(w => w.agg === agg && w.var === v && w.lead_day === ml && (!w.region || w.region === P.region)) : [];
     // migliore = primo della classifica disponibile in questo punto
     const ranked = [...sel].sort((a, b) => a.score - b.score).map(w => w.provider);

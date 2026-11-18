@@ -6,7 +6,8 @@
 //          metadati dell'immagine importata (ENVI "wavelength"/"fwhm", GeoTIFF con metadati GDAL), o personalizzate
 //          (testo "centro, FWHM" in nm, oppure CSV con lunghezza d'onda in nm e una colonna di risposta per banda).
 // Input:   S.meta.atmos_url (libreria), tabelle da ATM.lut("hyper") e ATM.lut("tir").
-// Output:  oggetto globale SRF: library(), fromImage(), fromText(), band(srf) -> { L, name, thermal } per ATM.rtBand / ATM.tirBand.
+// Output:  oggetto globale SRF: library(), fromEnvi(), fromTiff(), fromText(), complete(), band(srf) -> { L, name, thermal, outside }
+//          per ATM.rtBand / ATM.tirBand.
 "use strict";
 
 const SRF = (() => {

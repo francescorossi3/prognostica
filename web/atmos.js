@@ -1,8 +1,8 @@
 // Atmosfera nel punto: vapore acqueo, aerosol, radiazione, profili, densità dell'aria
-// e parametri di trasferimento radiativo per la correzione atmosferica (LUT 6S Sentinel-2 + TIR Landsat).
+// e parametri di trasferimento radiativo per la correzione atmosferica (LUT 6S o libRadtran: Sentinel-2, iperspettrale, LWIR Landsat).
 // Input:  punto scelto (S.point di app.js), Open-Meteo Forecast (ECMWF IFS) e Air Quality (CAMS) API,
-//         LUT 6S data/rt/lut_s2.json e lut_hyper.json (da Torricelli, con copia locale di riserva).
-// Output: scheda Atmosphere (riepilogo e grafici, CSV dei grafici con export.js); oggetto globale ATM usato da hires.js.
+//         LUT data/rt/lut_*.json e lut_libradtran_*.json (da Torricelli, con copia locale di riserva).
+// Output: scheda Atmosphere (riepilogo e grafici, CSV dei grafici con export.js); oggetto globale ATM usato da app.js, srf.js e rkmap.js.
 "use strict";
 
 const ATM = (() => {
@@ -12,8 +12,7 @@ const ATM = (() => {
     "terrestrial_radiation"];
   const PROF = LEVELS.flatMap(p => [`temperature_${p}hPa`, `relative_humidity_${p}hPa`, `geopotential_height_${p}hPa`, `wind_speed_${p}hPa`]);
   const RD = 287.05;
-  const S2NAME = { "01": "B1 443", "02": "B2 490", "03": "B3 560", "04": "B4 665", "05": "B5 705", "06": "B6 740", "07": "B7 783",
-    "08": "B8 842", "8A": "B8A 865", "09": "B9 945", "10": "B10 1375", "11": "B11 1610", "12": "B12 2190" };
+  const S2WL = { "01": 443, "02": 490, "03": 560, "04": 665, "05": 705, "06": 740, "07": 783, "08": 842, "8A": 865, "09": 945, "10": 1375, "11": 1610, "12": 2190 };
 
   // ---------------------------------------------------------------- fisica
   const esat = tc => 6.112 * Math.exp(17.67 * tc / (tc + 243.5));
@@ -109,7 +108,7 @@ const ATM = (() => {
   }
 
   // tutte le grandezze derivate in un'ora (k) di un punto
-  function derive(d, k, lat, lon, elevM, L, only = null) {
+  function derive(d, k, lat, lon, elevM, L) {
     const h = d.h, g = v => (h[v] ? h[v][k] : null);
     const w = g("total_column_integrated_water_vapour") / 10, aod = d.aod[k], z = sza(d.times[k] - 1800000, lat, lon);
     const o = { time: d.times[k], tcwv: g("total_column_integrated_water_vapour"), w, aod, dust: d.dust[k], sza: z,
@@ -124,7 +123,7 @@ const ATM = (() => {
     o.tir = S.rtm !== "6s" && TL && Number.isFinite(w) ? tirBand(TL, "L8_B10", w, Math.max(0, (elevM || 0) / 1000), lat, d.times[k]) : null;
     if (L && Number.isFinite(w) && z < 80) {
       const a = Number.isFinite(aod) ? aod : 0.1, alt = Math.max(0, (elevM || 0) / 1000);
-      o.rt = Object.fromEntries((only || Object.keys(L.bands)).map(b => [b, rtBand(L, b, w, a, z, alt)]));
+      o.rt = Object.fromEntries(Object.keys(L.bands).map(b => [b, rtBand(L, b, w, a, z, alt)]));
       o.rtIn = { w, aot: a, sza: z, alt };
     }
     return o;
@@ -141,6 +140,7 @@ const ATM = (() => {
     "Irradiance reaching the ground from the whole sky, after scattering"];
 
   // ---------------------------------------------------------------- pannello nel punto
+  let cur = null;                                   // dati scaricati per il punto: { d, L, H, P }
   async function render(P) {
     const box = $("#a-box");
     $("#a-point").innerHTML = `<b>${P.label || "Point"}</b> · ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} · ${fmt(P.elev, 0)} m · local time ${P.tz}
@@ -150,7 +150,7 @@ const ATM = (() => {
     try { [[d], L, H] = await Promise.all([fetchMulti([{ lat: P.lat, lon: P.lon }], 1, 3, true), lut("s2"), lut("hyper"), S.rtm === "6s" ? null : lut("tir")]); }
     catch (e) { box.innerHTML = `<p class="error">Atmosphere download error: ${e.message}</p>`; return; }
     box.innerHTML = "";
-    ATM.cur = { d, L, H, P };
+    cur = { d, L, H, P };
     const sets = [...(H ? [["hyper", `6S every ${Math.round((H.bands[Object.keys(H.bands)[1]].wl_um - H.bands[Object.keys(H.bands)[0]].wl_um) * 1000)} nm (${Object.keys(H.bands).length} wavelengths)`]] : []),
       ["s2", "Sentinel-2 bands (13)"]];
     opts($("#a-specset"), sets, $("#a-specset").value && sets.some(x => x[0] === $("#a-specset").value) ? $("#a-specset").value : sets[0][0]);
@@ -177,9 +177,8 @@ const ATM = (() => {
   }
 
   function renderHour(k) {
-    const { d, L, H, P } = ATM.cur;
+    const { d, L, H, P } = cur;
     const o = derive(d, k, P.lat, P.lon, P.elev, L);
-    ATM.hour = o;
     renderSpectrum(d, k, P, $("#a-specset").value === "hyper" ? H : L);
     $("#a-surf").innerHTML = `<dl class="kv">
       <dt>Water vapour column</dt><dd>${fmt(o.tcwv, 1)} kg m⁻² · ${fmt(o.w, 2)} g cm⁻²</dd>
@@ -211,10 +210,8 @@ const ATM = (() => {
     return { o, rows };
   }
   function renderSpectrum(d, k, P, LL) {
-    ATM.spec = null;
     if (!LL) return;
     const { o, rows } = spectrum(d, k, P, LL);
-    ATM.spec = { o, rows, time: d.times[k], P };
     if (!rows.length) {
       $("#a-specnote").textContent = "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.";
       ["a-spec-t", "a-spec-l"].forEach(id => drawChart(id, { type: "line", data: { datasets: [] } })); $("#a-leg-t").innerHTML = $("#a-leg-l").innerHTML = "";
@@ -240,7 +237,6 @@ const ATM = (() => {
     htmlLegend(ct, $("#a-leg-t"), TIPS.slice(0, 5));
     htmlLegend(cl, $("#a-leg-l"), TIPS.slice(5));
   }
-  const S2WL = { "01": 443, "02": 490, "03": 560, "04": 665, "05": 705, "06": 740, "07": 783, "08": 842, "8A": 865, "09": 945, "10": 1375, "11": 1610, "12": 2190 };
 
-  return { LEVELS, S2NAME, S2WL, fetchMulti, derive, render, lut, available, sza, rho, rtBand, tirBand };
+  return { render, lut, available, sza, rtBand, tirBand };
 })();

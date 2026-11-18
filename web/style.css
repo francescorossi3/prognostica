@@ -38,8 +38,6 @@ input[type=search]:focus { border-color: var(--accent); outline: none; box-shado
 .suggest small { color: var(--muted); display: block; }
 .results { grid-column: 1 / -1; display: flex; flex-direction: column; gap: .3rem; }
 .results:empty { display: none; }
-.results .result { text-align: left; font: inherit; font-size: .88rem; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: .4rem .6rem; cursor: pointer; }
-.results .result:hover { border-color: var(--accent); }
 
 /* ---------- schede ---------- */
 nav#tabs { display: flex; align-items: flex-end; gap: 1.2rem; padding: 0 1.5rem; border-bottom: 1px solid var(--line); overflow-x: auto;
@@ -173,9 +171,7 @@ ol.layers .mv button:hover:not(:disabled) { color: var(--ink); border-color: var
 .panel-style > summary { cursor: pointer; font-weight: 600; padding: .2rem 0; }
 .panel label { display: flex; flex-direction: column; gap: .2rem; color: var(--muted); margin-top: .5rem; }
 .panel label.chk { flex-direction: row; align-items: center; gap: .4rem; color: var(--ink); }
-.panel label[hidden] { display: none; }
-.panel select, .panel input[type=number] { width: 100%; }
-.panel input[type=range] { width: 100%; }
+.panel select, .panel input[type=number], .panel input[type=range] { width: 100%; }
 .panel .minmax { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
 .ramp-preview { height: 10px; border-radius: 2px; margin-top: .3rem; }
 .histo canvas { width: 100%; height: 80px; display: block; margin-top: .6rem; }
