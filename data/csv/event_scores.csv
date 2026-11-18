@@ -1,249 +1,249 @@
 region,event,event_name,provider,lead_day,n_days,observed,hits,misses,false_alarms,pod,far,csi,bias_on_event,mae_on_event
-italia,pioggia_forte,Heavy rain,arpege,0,6180,234,98,136,69,0.4188,0.4132,0.3234,-19.4667,24.6162
-italia,pioggia_forte,Heavy rain,arpege,1,6180,234,94,140,56,0.4017,0.3733,0.3241,-19.8872,24.1709
-italia,pioggia_forte,Heavy rain,arpege,2,6180,234,90,144,62,0.3846,0.4079,0.3041,-21.0444,25.0239
-italia,pioggia_forte,Heavy rain,arpege,3,6180,234,67,167,81,0.2863,0.5473,0.2127,-24.3214,28.1145
-italia,pioggia_forte,Heavy rain,ecmwf_aifs,0,6180,234,95,139,51,0.406,0.3493,0.3333,-20.7983,22.6709
-italia,pioggia_forte,Heavy rain,ecmwf_aifs,1,6180,234,96,138,44,0.4103,0.3143,0.3453,-20.5278,22.6355
-italia,pioggia_forte,Heavy rain,ecmwf_aifs,2,6180,234,96,138,35,0.4103,0.2672,0.3569,-21.6846,23.6197
-italia,pioggia_forte,Heavy rain,ecmwf_aifs,3,6180,234,81,153,22,0.3462,0.2136,0.3164,-23.7393,24.7966
-italia,pioggia_forte,Heavy rain,ecmwf_aifs,4,6180,234,74,160,26,0.3162,0.26,0.2846,-25.6385,26.3085
-italia,pioggia_forte,Heavy rain,ecmwf_aifs,5,6180,234,75,159,44,0.3205,0.3697,0.2698,-24.3026,26.2094
-italia,pioggia_forte,Heavy rain,ecmwf_aifs,6,6180,234,53,181,72,0.2265,0.576,0.1732,-28.0462,28.3342
-italia,pioggia_forte,Heavy rain,ecmwf_aifs,7,6180,234,48,186,77,0.2051,0.616,0.1543,-29.3466,29.9568
-italia,pioggia_forte,Heavy rain,ecmwf_ifs,0,6180,234,111,123,50,0.4744,0.3106,0.3908,-18.8838,22.2761
-italia,pioggia_forte,Heavy rain,ecmwf_ifs,1,6180,234,109,125,43,0.4658,0.2829,0.3935,-18.1632,22.0923
-italia,pioggia_forte,Heavy rain,ecmwf_ifs,2,6180,234,100,134,43,0.4274,0.3007,0.361,-19.7568,24.0526
-italia,pioggia_forte,Heavy rain,ecmwf_ifs,3,6180,234,82,152,44,0.3504,0.3492,0.295,-22.0538,25.5726
-italia,pioggia_forte,Heavy rain,ecmwf_ifs,4,6180,234,78,156,60,0.3333,0.4348,0.2653,-23.9957,26.5607
-italia,pioggia_forte,Heavy rain,ecmwf_ifs,5,6180,234,79,155,71,0.3376,0.4733,0.259,-23.1714,27.2885
-italia,pioggia_forte,Heavy rain,ecmwf_ifs,6,6180,234,33,201,60,0.141,0.6452,0.1122,-30.9671,32.1782
-italia,pioggia_forte,Heavy rain,ecmwf_ifs,7,6180,234,25,209,52,0.1068,0.6753,0.0874,-33.1017,33.541
-italia,pioggia_forte,Heavy rain,gem,0,6180,234,87,147,43,0.3718,0.3308,0.3141,-20.7534,24.4953
-italia,pioggia_forte,Heavy rain,gem,1,6180,234,92,142,33,0.3932,0.264,0.3446,-20.0265,24.5838
-italia,pioggia_forte,Heavy rain,gem,2,6180,234,77,157,48,0.3291,0.384,0.273,-21.6171,24.8427
-italia,pioggia_forte,Heavy rain,gem,3,6180,234,64,170,43,0.2735,0.4019,0.231,-24.5051,27.0453
-italia,pioggia_forte,Heavy rain,gem,4,6180,234,60,174,60,0.2564,0.5,0.2041,-24.9415,27.7252
-italia,pioggia_forte,Heavy rain,gem,5,6180,234,53,181,86,0.2265,0.6187,0.1656,-27.3996,29.3688
-italia,pioggia_forte,Heavy rain,gem,6,6180,234,60,174,96,0.2564,0.6154,0.1818,-25.3979,29.7885
-italia,pioggia_forte,Heavy rain,gem,7,6180,234,39,195,130,0.1667,0.7692,0.1071,-31.3679,33.0551
-italia,pioggia_forte,Heavy rain,gfs,0,6180,234,79,155,70,0.3376,0.4698,0.2599,-23.4231,25.4556
-italia,pioggia_forte,Heavy rain,gfs,1,6180,234,70,164,45,0.2991,0.3913,0.2509,-24.2718,26.8094
-italia,pioggia_forte,Heavy rain,gfs,2,6180,234,60,174,52,0.2564,0.4643,0.2098,-26.1385,27.9222
-italia,pioggia_forte,Heavy rain,gfs,3,6180,234,50,184,53,0.2137,0.5146,0.1742,-28.2598,30.2256
-italia,pioggia_forte,Heavy rain,gfs,4,6180,234,44,190,58,0.188,0.5686,0.1507,-28.2453,30.6009
-italia,pioggia_forte,Heavy rain,gfs,5,6180,234,32,202,59,0.1368,0.6484,0.1092,-31.6462,32.3846
-italia,pioggia_forte,Heavy rain,gfs,6,6180,234,25,209,54,0.1068,0.6835,0.0868,-33.6436,34.0786
-italia,pioggia_forte,Heavy rain,gfs,7,6180,234,13,221,64,0.0556,0.8312,0.0436,-34.9949,35.8726
-italia,pioggia_forte,Heavy rain,icon2i,0,6180,234,86,148,115,0.3675,0.5721,0.2464,-20.9043,27.0496
-italia,pioggia_forte,Heavy rain,icon2i,1,6180,234,88,146,111,0.3761,0.5578,0.2551,-20.5291,26.0624
-italia,pioggia_forte,Heavy rain,icon2i,2,6180,234,73,161,129,0.312,0.6386,0.2011,-22.7154,29.5436
-italia,pioggia_forte,Heavy rain,icon_eu,0,6180,234,94,140,41,0.4017,0.3037,0.3418,-20.6397,24.885
-italia,pioggia_forte,Heavy rain,icon_eu,1,6180,234,83,151,39,0.3547,0.3197,0.304,-21.7085,24.8316
-italia,pioggia_forte,Heavy rain,icon_eu,2,6180,234,74,160,43,0.3162,0.3675,0.2671,-23.3868,26.0893
-italia,pioggia_forte,Heavy rain,icon_eu,3,6180,234,74,160,46,0.3162,0.3833,0.2643,-23.3081,27.4244
-italia,pioggia_forte,Heavy rain,icon_eu,4,6180,234,69,165,59,0.2949,0.4609,0.2355,-25.3564,28.0966
-italia,pioggia_forte,Heavy rain,icon_global,0,6180,234,91,143,35,0.3889,0.2778,0.3383,-20.9919,24.5885
-italia,pioggia_forte,Heavy rain,icon_global,1,6180,234,86,148,39,0.3675,0.312,0.315,-21.9043,24.5761
-italia,pioggia_forte,Heavy rain,icon_global,2,6180,234,76,158,39,0.3248,0.3391,0.2784,-23.0308,26.2786
-italia,pioggia_forte,Heavy rain,icon_global,3,6180,234,70,164,43,0.2991,0.3805,0.2527,-23.4774,27.5808
-italia,pioggia_forte,Heavy rain,icon_global,4,6180,234,60,174,55,0.2564,0.4783,0.2076,-25.1594,28.3406
-italia,pioggia_forte,Heavy rain,icon_global,5,6180,234,47,187,82,0.2009,0.6357,0.1487,-28.0795,31.1308
-italia,pioggia_forte,Heavy rain,icon_global,6,6180,234,31,203,74,0.1325,0.7048,0.1006,-32.341,33.0615
+italia,pioggia_forte,Heavy rain,arpege,0,6240,236,98,138,72,0.4153,0.4235,0.3182,-19.4263,24.5322
+italia,pioggia_forte,Heavy rain,arpege,1,6240,236,94,142,59,0.3983,0.3856,0.3186,-19.8492,24.0966
+italia,pioggia_forte,Heavy rain,arpege,2,6240,236,90,146,64,0.3814,0.4156,0.3,-20.9864,24.9322
+italia,pioggia_forte,Heavy rain,arpege,3,6240,236,67,169,85,0.2839,0.5592,0.2087,-24.2932,28.0542
+italia,pioggia_forte,Heavy rain,ecmwf_aifs,0,6240,236,95,141,54,0.4025,0.3624,0.3276,-20.7322,22.589
+italia,pioggia_forte,Heavy rain,ecmwf_aifs,1,6240,236,96,140,46,0.4068,0.3239,0.3404,-20.4936,22.5835
+italia,pioggia_forte,Heavy rain,ecmwf_aifs,2,6240,236,96,140,38,0.4068,0.2836,0.3504,-21.6386,23.5572
+italia,pioggia_forte,Heavy rain,ecmwf_aifs,3,6240,236,81,155,23,0.3432,0.2212,0.3127,-23.6843,24.7326
+italia,pioggia_forte,Heavy rain,ecmwf_aifs,4,6240,236,74,162,28,0.3136,0.2745,0.2803,-25.6013,26.2657
+italia,pioggia_forte,Heavy rain,ecmwf_aifs,5,6240,236,76,160,50,0.322,0.3968,0.2657,-24.1576,26.0483
+italia,pioggia_forte,Heavy rain,ecmwf_aifs,6,6240,236,54,182,80,0.2288,0.597,0.1709,-27.8809,28.1665
+italia,pioggia_forte,Heavy rain,ecmwf_aifs,7,6240,236,48,188,77,0.2034,0.616,0.1534,-29.2699,29.875
+italia,pioggia_forte,Heavy rain,ecmwf_ifs,0,6240,236,111,125,53,0.4703,0.3232,0.3841,-18.8669,22.2305
+italia,pioggia_forte,Heavy rain,ecmwf_ifs,1,6240,236,109,127,46,0.4619,0.2968,0.3865,-18.1686,22.0644
+italia,pioggia_forte,Heavy rain,ecmwf_ifs,2,6240,236,100,136,45,0.4237,0.3103,0.3559,-19.7339,23.9932
+italia,pioggia_forte,Heavy rain,ecmwf_ifs,3,6240,236,82,154,46,0.3475,0.3594,0.2908,-22.0352,25.5242
+italia,pioggia_forte,Heavy rain,ecmwf_ifs,4,6240,236,78,158,63,0.3305,0.4468,0.2609,-23.9936,26.5369
+italia,pioggia_forte,Heavy rain,ecmwf_ifs,5,6240,236,79,157,82,0.3347,0.5093,0.2484,-23.097,27.1792
+italia,pioggia_forte,Heavy rain,ecmwf_ifs,6,6240,236,33,203,64,0.1398,0.6598,0.11,-30.8898,32.0907
+italia,pioggia_forte,Heavy rain,ecmwf_ifs,7,6240,236,25,211,53,0.1059,0.6795,0.0865,-32.9949,33.4305
+italia,pioggia_forte,Heavy rain,gem,0,6240,236,87,149,44,0.3686,0.3359,0.3107,-20.7165,24.4267
+italia,pioggia_forte,Heavy rain,gem,1,6240,236,92,144,35,0.3898,0.2756,0.3395,-20.0136,24.5322
+italia,pioggia_forte,Heavy rain,gem,2,6240,236,77,159,49,0.3263,0.3889,0.2702,-21.6055,24.8038
+italia,pioggia_forte,Heavy rain,gem,3,6240,236,64,172,44,0.2712,0.4074,0.2286,-24.4403,26.9589
+italia,pioggia_forte,Heavy rain,gem,4,6240,236,60,176,63,0.2542,0.5122,0.2007,-24.8208,27.5809
+italia,pioggia_forte,Heavy rain,gem,5,6240,236,54,182,93,0.2288,0.6327,0.1641,-27.2648,29.2174
+italia,pioggia_forte,Heavy rain,gem,6,6240,236,61,175,109,0.2585,0.6412,0.1768,-25.2525,29.6059
+italia,pioggia_forte,Heavy rain,gem,7,6240,236,40,196,138,0.1695,0.7753,0.107,-31.1864,32.8593
+italia,pioggia_forte,Heavy rain,gfs,0,6240,236,79,157,72,0.3347,0.4768,0.2565,-23.3547,25.3699
+italia,pioggia_forte,Heavy rain,gfs,1,6240,236,70,166,48,0.2966,0.4068,0.2465,-24.253,26.7691
+italia,pioggia_forte,Heavy rain,gfs,2,6240,236,60,176,55,0.2542,0.4783,0.2062,-26.1216,27.8903
+italia,pioggia_forte,Heavy rain,gfs,3,6240,236,50,186,55,0.2119,0.5238,0.1718,-28.2309,30.1801
+italia,pioggia_forte,Heavy rain,gfs,4,6240,236,44,192,60,0.1864,0.5769,0.1486,-28.2169,30.5525
+italia,pioggia_forte,Heavy rain,gfs,5,6240,236,32,204,65,0.1356,0.6701,0.1063,-31.4479,32.1801
+italia,pioggia_forte,Heavy rain,gfs,6,6240,236,25,211,55,0.1059,0.6875,0.0859,-33.5657,33.997
+italia,pioggia_forte,Heavy rain,gfs,7,6240,236,13,223,64,0.0551,0.8312,0.0433,-34.8708,35.7411
+italia,pioggia_forte,Heavy rain,icon2i,0,6240,236,86,150,116,0.3644,0.5743,0.2443,-20.8742,26.9674
+italia,pioggia_forte,Heavy rain,icon2i,1,6240,236,88,148,111,0.3729,0.5578,0.2536,-20.4936,25.9801
+italia,pioggia_forte,Heavy rain,icon2i,2,6240,236,73,163,130,0.3093,0.6404,0.1995,-22.6648,29.4352
+italia,pioggia_forte,Heavy rain,icon_eu,0,6240,236,94,142,45,0.3983,0.3237,0.3345,-20.6136,24.8229
+italia,pioggia_forte,Heavy rain,icon_eu,1,6240,236,83,153,42,0.3517,0.336,0.2986,-21.6466,24.7432
+italia,pioggia_forte,Heavy rain,icon_eu,2,6240,236,74,162,44,0.3136,0.3729,0.2643,-23.3661,26.0458
+italia,pioggia_forte,Heavy rain,icon_eu,3,6240,236,74,162,48,0.3136,0.3934,0.2606,-23.2873,27.3686
+italia,pioggia_forte,Heavy rain,icon_eu,4,6240,236,69,167,61,0.2924,0.4692,0.2323,-25.3191,28.036
+italia,pioggia_forte,Heavy rain,icon_global,0,6240,236,91,145,37,0.3856,0.2891,0.3333,-20.9771,24.5432
+italia,pioggia_forte,Heavy rain,icon_global,1,6240,236,86,150,41,0.3644,0.3228,0.3105,-21.8602,24.5093
+italia,pioggia_forte,Heavy rain,icon_global,2,6240,236,76,160,40,0.322,0.3448,0.2754,-23.0233,26.2436
+italia,pioggia_forte,Heavy rain,icon_global,3,6240,236,70,166,44,0.2966,0.386,0.25,-23.4737,27.5424
+italia,pioggia_forte,Heavy rain,icon_global,4,6240,236,60,176,56,0.2542,0.4828,0.2055,-25.1403,28.2945
+italia,pioggia_forte,Heavy rain,icon_global,5,6240,236,47,189,82,0.1992,0.6357,0.1478,-28.0386,31.064
+italia,pioggia_forte,Heavy rain,icon_global,6,6240,236,31,205,76,0.1314,0.7103,0.0994,-32.2449,32.9593
 italia,pioggia_forte,Heavy rain,metno,1,240,18,8,10,4,0.4444,0.3333,0.3636,-15.4333,16.0111
 italia,pioggia_forte,Heavy rain,metno,2,180,17,3,14,5,0.1765,0.625,0.1364,-18.5471,18.6647
 italia,pioggia_forte,Heavy rain,metno,3,120,7,2,5,1,0.2857,0.3333,0.25,-17.5429,17.5429
 italia,pioggia_forte,Heavy rain,metno,4,60,2,0,2,3,0.0,1.0,0.0,-9.7,9.7
-italia,pioggia_forte,Heavy rain,ukmo,0,6180,234,101,133,69,0.4316,0.4059,0.3333,-19.9705,24.4603
-italia,pioggia_forte,Heavy rain,ukmo,1,6180,234,99,135,73,0.4231,0.4244,0.3225,-18.8124,23.7466
-italia,pioggia_forte,Heavy rain,ukmo,2,6180,234,97,137,88,0.4145,0.4757,0.3012,-19.3774,24.8415
-italia,pioggia_forte,Heavy rain,ukmo,3,6180,234,83,151,91,0.3547,0.523,0.2554,-22.7346,26.185
-italia,pioggia_forte,Heavy rain,ukmo,4,6180,234,71,163,100,0.3034,0.5848,0.2126,-23.1577,27.6825
-italia,pioggia_forte,Heavy rain,ukmo,5,6180,234,63,171,136,0.2692,0.6834,0.1703,-26.2226,29.5654
-italia,pioggia_forte,Heavy rain,ukmo,6,6180,234,42,192,118,0.1795,0.7375,0.1193,-30.1205,33.3949
-italia,pioggia_molto,Very heavy rain,arpege,0,6180,52,13,39,16,0.25,0.5517,0.1912,-42.4077,45.1154
-italia,pioggia_molto,Very heavy rain,arpege,1,6180,52,11,41,13,0.2115,0.5417,0.1692,-42.6981,43.3596
-italia,pioggia_molto,Very heavy rain,arpege,2,6180,52,6,46,13,0.1154,0.6842,0.0923,-46.5404,47.0365
-italia,pioggia_molto,Very heavy rain,arpege,3,6180,52,3,49,13,0.0577,0.8125,0.0462,-51.0981,51.9942
-italia,pioggia_molto,Very heavy rain,ecmwf_aifs,0,6180,52,7,45,4,0.1346,0.3636,0.125,-46.0865,46.3365
-italia,pioggia_molto,Very heavy rain,ecmwf_aifs,1,6180,52,8,44,3,0.1538,0.2727,0.1455,-46.05,46.1577
-italia,pioggia_molto,Very heavy rain,ecmwf_aifs,2,6180,52,7,45,3,0.1346,0.3,0.1273,-48.5846,48.5885
-italia,pioggia_molto,Very heavy rain,ecmwf_aifs,3,6180,52,2,50,0,0.0385,0.0,0.0385,-51.2827,51.325
-italia,pioggia_molto,Very heavy rain,ecmwf_aifs,4,6180,52,1,51,0,0.0192,0.0,0.0192,-54.8558,54.8558
-italia,pioggia_molto,Very heavy rain,ecmwf_aifs,5,6180,52,4,48,4,0.0769,0.5,0.0714,-52.3077,52.5308
-italia,pioggia_molto,Very heavy rain,ecmwf_aifs,6,6180,52,2,50,1,0.0385,0.3333,0.0377,-58.9635,58.975
-italia,pioggia_molto,Very heavy rain,ecmwf_aifs,7,6180,52,1,51,4,0.0192,0.8,0.0179,-61.7038,61.7038
-italia,pioggia_molto,Very heavy rain,ecmwf_ifs,0,6180,52,11,41,7,0.2115,0.3889,0.1864,-43.5192,44.2269
-italia,pioggia_molto,Very heavy rain,ecmwf_ifs,1,6180,52,10,42,12,0.1923,0.5455,0.1562,-42.8288,44.1481
-italia,pioggia_molto,Very heavy rain,ecmwf_ifs,2,6180,52,8,44,8,0.1538,0.5,0.1333,-46.2519,48.7673
-italia,pioggia_molto,Very heavy rain,ecmwf_ifs,3,6180,52,8,44,10,0.1538,0.5556,0.129,-49.4538,50.4038
-italia,pioggia_molto,Very heavy rain,ecmwf_ifs,4,6180,52,6,46,7,0.1154,0.5385,0.1017,-51.5135,52.3788
-italia,pioggia_molto,Very heavy rain,ecmwf_ifs,5,6180,52,9,43,18,0.1731,0.6667,0.1286,-50.5654,51.5615
-italia,pioggia_molto,Very heavy rain,ecmwf_ifs,6,6180,52,1,51,8,0.0192,0.8889,0.0167,-65.7692,65.7692
-italia,pioggia_molto,Very heavy rain,ecmwf_ifs,7,6180,52,0,52,4,0.0,1.0,0.0,-65.7942,65.7942
-italia,pioggia_molto,Very heavy rain,gem,0,6180,52,12,40,9,0.2308,0.4286,0.1967,-42.55,44.7615
-italia,pioggia_molto,Very heavy rain,gem,1,6180,52,12,40,11,0.2308,0.4783,0.1905,-41.6654,44.9808
-italia,pioggia_molto,Very heavy rain,gem,2,6180,52,11,41,10,0.2115,0.4762,0.1774,-43.7077,46.3769
-italia,pioggia_molto,Very heavy rain,gem,3,6180,52,7,45,9,0.1346,0.5625,0.1148,-47.925,48.3019
-italia,pioggia_molto,Very heavy rain,gem,4,6180,52,12,40,8,0.2308,0.4,0.2,-49.2462,51.4923
-italia,pioggia_molto,Very heavy rain,gem,5,6180,52,7,45,13,0.1346,0.65,0.1077,-55.3885,56.6308
-italia,pioggia_molto,Very heavy rain,gem,6,6180,52,3,49,24,0.0577,0.8889,0.0395,-57.3154,58.2385
-italia,pioggia_molto,Very heavy rain,gem,7,6180,52,3,49,9,0.0577,0.75,0.0492,-61.9769,62.5308
-italia,pioggia_molto,Very heavy rain,gfs,0,6180,52,8,44,11,0.1538,0.5789,0.127,-49.1635,49.8096
-italia,pioggia_molto,Very heavy rain,gfs,1,6180,52,6,46,6,0.1154,0.5,0.1034,-50.9942,51.4135
-italia,pioggia_molto,Very heavy rain,gfs,2,6180,52,2,50,4,0.0385,0.6667,0.0357,-54.6596,54.6596
-italia,pioggia_molto,Very heavy rain,gfs,3,6180,52,2,50,9,0.0385,0.8182,0.0328,-58.8096,58.8096
-italia,pioggia_molto,Very heavy rain,gfs,4,6180,52,6,46,9,0.1154,0.6,0.0984,-56.7077,57.7192
-italia,pioggia_molto,Very heavy rain,gfs,5,6180,52,3,49,9,0.0577,0.75,0.0492,-61.9904,61.9904
-italia,pioggia_molto,Very heavy rain,gfs,6,6180,52,1,51,7,0.0192,0.875,0.0169,-66.2596,66.625
-italia,pioggia_molto,Very heavy rain,gfs,7,6180,52,1,51,5,0.0192,0.8333,0.0175,-70.4038,70.4808
-italia,pioggia_molto,Very heavy rain,icon2i,0,6180,52,7,45,31,0.1346,0.8158,0.0843,-49.1385,51.8154
-italia,pioggia_molto,Very heavy rain,icon2i,1,6180,52,11,41,35,0.2115,0.7609,0.1264,-44.8654,46.15
-italia,pioggia_molto,Very heavy rain,icon2i,2,6180,52,5,47,35,0.0962,0.875,0.0575,-53.3981,55.2942
-italia,pioggia_molto,Very heavy rain,icon_eu,0,6180,52,14,38,5,0.2692,0.2632,0.2456,-41.4712,46.6635
-italia,pioggia_molto,Very heavy rain,icon_eu,1,6180,52,10,42,4,0.1923,0.2857,0.1786,-43.8615,46.7654
-italia,pioggia_molto,Very heavy rain,icon_eu,2,6180,52,7,45,5,0.1346,0.4167,0.1228,-46.9442,48.8327
-italia,pioggia_molto,Very heavy rain,icon_eu,3,6180,52,12,40,7,0.2308,0.3684,0.2034,-44.8846,50.4038
-italia,pioggia_molto,Very heavy rain,icon_eu,4,6180,52,7,45,9,0.1346,0.5625,0.1148,-52.05,53.7654
-italia,pioggia_molto,Very heavy rain,icon_global,0,6180,52,14,38,10,0.2692,0.4167,0.2258,-42.4346,44.5192
-italia,pioggia_molto,Very heavy rain,icon_global,1,6180,52,12,40,6,0.2308,0.3333,0.2069,-43.9827,45.3981
-italia,pioggia_molto,Very heavy rain,icon_global,2,6180,52,10,42,8,0.1923,0.4444,0.1667,-45.7865,46.7942
-italia,pioggia_molto,Very heavy rain,icon_global,3,6180,52,10,42,12,0.1923,0.5455,0.1562,-45.0481,49.7173
-italia,pioggia_molto,Very heavy rain,icon_global,4,6180,52,7,45,11,0.1346,0.6111,0.1111,-51.9096,53.3788
-italia,pioggia_molto,Very heavy rain,icon_global,5,6180,52,5,47,18,0.0962,0.7826,0.0714,-60.2288,61.5673
-italia,pioggia_molto,Very heavy rain,icon_global,6,6180,52,3,49,9,0.0577,0.75,0.0492,-62.8308,63.2615
+italia,pioggia_forte,Heavy rain,ukmo,0,6240,236,102,134,71,0.4322,0.4104,0.3322,-19.8576,24.3093
+italia,pioggia_forte,Heavy rain,ukmo,1,6240,236,99,137,77,0.4195,0.4375,0.3163,-18.7297,23.622
+italia,pioggia_forte,Heavy rain,ukmo,2,6240,236,98,138,92,0.4153,0.4842,0.2988,-19.3059,24.7237
+italia,pioggia_forte,Heavy rain,ukmo,3,6240,236,83,153,94,0.3517,0.5311,0.2515,-22.703,26.1242
+italia,pioggia_forte,Heavy rain,ukmo,4,6240,236,72,164,112,0.3051,0.6087,0.2069,-22.9445,27.653
+italia,pioggia_forte,Heavy rain,ukmo,5,6240,236,64,172,143,0.2712,0.6908,0.1689,-25.8415,29.5398
+italia,pioggia_forte,Heavy rain,ukmo,6,6240,236,43,193,126,0.1822,0.7456,0.1188,-29.922,33.1686
+italia,pioggia_molto,Very heavy rain,arpege,0,6240,52,13,39,16,0.25,0.5517,0.1912,-42.4077,45.1154
+italia,pioggia_molto,Very heavy rain,arpege,1,6240,52,11,41,13,0.2115,0.5417,0.1692,-42.6981,43.3596
+italia,pioggia_molto,Very heavy rain,arpege,2,6240,52,6,46,13,0.1154,0.6842,0.0923,-46.5404,47.0365
+italia,pioggia_molto,Very heavy rain,arpege,3,6240,52,3,49,14,0.0577,0.8235,0.0455,-51.0981,51.9942
+italia,pioggia_molto,Very heavy rain,ecmwf_aifs,0,6240,52,7,45,4,0.1346,0.3636,0.125,-46.0865,46.3365
+italia,pioggia_molto,Very heavy rain,ecmwf_aifs,1,6240,52,8,44,3,0.1538,0.2727,0.1455,-46.05,46.1577
+italia,pioggia_molto,Very heavy rain,ecmwf_aifs,2,6240,52,7,45,3,0.1346,0.3,0.1273,-48.5846,48.5885
+italia,pioggia_molto,Very heavy rain,ecmwf_aifs,3,6240,52,2,50,0,0.0385,0.0,0.0385,-51.2827,51.325
+italia,pioggia_molto,Very heavy rain,ecmwf_aifs,4,6240,52,1,51,0,0.0192,0.0,0.0192,-54.8558,54.8558
+italia,pioggia_molto,Very heavy rain,ecmwf_aifs,5,6240,52,4,48,4,0.0769,0.5,0.0714,-52.3077,52.5308
+italia,pioggia_molto,Very heavy rain,ecmwf_aifs,6,6240,52,2,50,1,0.0385,0.3333,0.0377,-58.9635,58.975
+italia,pioggia_molto,Very heavy rain,ecmwf_aifs,7,6240,52,1,51,4,0.0192,0.8,0.0179,-61.7038,61.7038
+italia,pioggia_molto,Very heavy rain,ecmwf_ifs,0,6240,52,11,41,8,0.2115,0.4211,0.1833,-43.5192,44.2269
+italia,pioggia_molto,Very heavy rain,ecmwf_ifs,1,6240,52,10,42,12,0.1923,0.5455,0.1562,-42.8288,44.1481
+italia,pioggia_molto,Very heavy rain,ecmwf_ifs,2,6240,52,8,44,8,0.1538,0.5,0.1333,-46.2519,48.7673
+italia,pioggia_molto,Very heavy rain,ecmwf_ifs,3,6240,52,8,44,10,0.1538,0.5556,0.129,-49.4538,50.4038
+italia,pioggia_molto,Very heavy rain,ecmwf_ifs,4,6240,52,6,46,8,0.1154,0.5714,0.1,-51.5135,52.3788
+italia,pioggia_molto,Very heavy rain,ecmwf_ifs,5,6240,52,9,43,19,0.1731,0.6786,0.1268,-50.5654,51.5615
+italia,pioggia_molto,Very heavy rain,ecmwf_ifs,6,6240,52,1,51,8,0.0192,0.8889,0.0167,-65.7692,65.7692
+italia,pioggia_molto,Very heavy rain,ecmwf_ifs,7,6240,52,0,52,4,0.0,1.0,0.0,-65.7942,65.7942
+italia,pioggia_molto,Very heavy rain,gem,0,6240,52,12,40,9,0.2308,0.4286,0.1967,-42.55,44.7615
+italia,pioggia_molto,Very heavy rain,gem,1,6240,52,12,40,11,0.2308,0.4783,0.1905,-41.6654,44.9808
+italia,pioggia_molto,Very heavy rain,gem,2,6240,52,11,41,10,0.2115,0.4762,0.1774,-43.7077,46.3769
+italia,pioggia_molto,Very heavy rain,gem,3,6240,52,7,45,9,0.1346,0.5625,0.1148,-47.925,48.3019
+italia,pioggia_molto,Very heavy rain,gem,4,6240,52,12,40,9,0.2308,0.4286,0.1967,-49.2462,51.4923
+italia,pioggia_molto,Very heavy rain,gem,5,6240,52,7,45,14,0.1346,0.6667,0.1061,-55.3885,56.6308
+italia,pioggia_molto,Very heavy rain,gem,6,6240,52,3,49,26,0.0577,0.8966,0.0385,-57.3154,58.2385
+italia,pioggia_molto,Very heavy rain,gem,7,6240,52,3,49,9,0.0577,0.75,0.0492,-61.9769,62.5308
+italia,pioggia_molto,Very heavy rain,gfs,0,6240,52,8,44,11,0.1538,0.5789,0.127,-49.1635,49.8096
+italia,pioggia_molto,Very heavy rain,gfs,1,6240,52,6,46,6,0.1154,0.5,0.1034,-50.9942,51.4135
+italia,pioggia_molto,Very heavy rain,gfs,2,6240,52,2,50,4,0.0385,0.6667,0.0357,-54.6596,54.6596
+italia,pioggia_molto,Very heavy rain,gfs,3,6240,52,2,50,9,0.0385,0.8182,0.0328,-58.8096,58.8096
+italia,pioggia_molto,Very heavy rain,gfs,4,6240,52,6,46,9,0.1154,0.6,0.0984,-56.7077,57.7192
+italia,pioggia_molto,Very heavy rain,gfs,5,6240,52,3,49,10,0.0577,0.7692,0.0484,-61.9904,61.9904
+italia,pioggia_molto,Very heavy rain,gfs,6,6240,52,1,51,7,0.0192,0.875,0.0169,-66.2596,66.625
+italia,pioggia_molto,Very heavy rain,gfs,7,6240,52,1,51,5,0.0192,0.8333,0.0175,-70.4038,70.4808
+italia,pioggia_molto,Very heavy rain,icon2i,0,6240,52,7,45,31,0.1346,0.8158,0.0843,-49.1385,51.8154
+italia,pioggia_molto,Very heavy rain,icon2i,1,6240,52,11,41,35,0.2115,0.7609,0.1264,-44.8654,46.15
+italia,pioggia_molto,Very heavy rain,icon2i,2,6240,52,5,47,35,0.0962,0.875,0.0575,-53.3981,55.2942
+italia,pioggia_molto,Very heavy rain,icon_eu,0,6240,52,14,38,5,0.2692,0.2632,0.2456,-41.4712,46.6635
+italia,pioggia_molto,Very heavy rain,icon_eu,1,6240,52,10,42,4,0.1923,0.2857,0.1786,-43.8615,46.7654
+italia,pioggia_molto,Very heavy rain,icon_eu,2,6240,52,7,45,5,0.1346,0.4167,0.1228,-46.9442,48.8327
+italia,pioggia_molto,Very heavy rain,icon_eu,3,6240,52,12,40,7,0.2308,0.3684,0.2034,-44.8846,50.4038
+italia,pioggia_molto,Very heavy rain,icon_eu,4,6240,52,7,45,9,0.1346,0.5625,0.1148,-52.05,53.7654
+italia,pioggia_molto,Very heavy rain,icon_global,0,6240,52,14,38,10,0.2692,0.4167,0.2258,-42.4346,44.5192
+italia,pioggia_molto,Very heavy rain,icon_global,1,6240,52,12,40,6,0.2308,0.3333,0.2069,-43.9827,45.3981
+italia,pioggia_molto,Very heavy rain,icon_global,2,6240,52,10,42,8,0.1923,0.4444,0.1667,-45.7865,46.7942
+italia,pioggia_molto,Very heavy rain,icon_global,3,6240,52,10,42,12,0.1923,0.5455,0.1562,-45.0481,49.7173
+italia,pioggia_molto,Very heavy rain,icon_global,4,6240,52,7,45,11,0.1346,0.6111,0.1111,-51.9096,53.3788
+italia,pioggia_molto,Very heavy rain,icon_global,5,6240,52,5,47,18,0.0962,0.7826,0.0714,-60.2288,61.5673
+italia,pioggia_molto,Very heavy rain,icon_global,6,6240,52,3,49,10,0.0577,0.7692,0.0484,-62.8308,63.2615
 italia,pioggia_molto,Very heavy rain,metno,1,240,1,0,1,0,0.0,,0.0,-74.7,74.7
 italia,pioggia_molto,Very heavy rain,metno,2,180,1,0,1,0,0.0,,0.0,-80.6,80.6
 italia,pioggia_molto,Very heavy rain,metno,3,120,0,0,0,0,,,,,
 italia,pioggia_molto,Very heavy rain,metno,4,60,0,0,0,0,,,,,
-italia,pioggia_molto,Very heavy rain,ukmo,0,6180,52,9,43,14,0.1731,0.6087,0.1364,-44.8192,46.7385
-italia,pioggia_molto,Very heavy rain,ukmo,1,6180,52,17,35,16,0.3269,0.4848,0.25,-40.5788,42.9635
-italia,pioggia_molto,Very heavy rain,ukmo,2,6180,52,11,41,22,0.2115,0.6667,0.1486,-43.8346,45.1923
-italia,pioggia_molto,Very heavy rain,ukmo,3,6180,52,7,45,19,0.1346,0.7308,0.0986,-49.6058,50.2288
-italia,pioggia_molto,Very heavy rain,ukmo,4,6180,52,11,41,20,0.2115,0.6452,0.1528,-47.4038,52.4846
-italia,pioggia_molto,Very heavy rain,ukmo,5,6180,52,6,46,21,0.1154,0.7778,0.0822,-56.9115,56.9269
-italia,pioggia_molto,Very heavy rain,ukmo,6,6180,52,1,51,23,0.0192,0.9583,0.0133,-65.3731,66.2692
-italia,caldo,Heat,arpege,0,6180,503,410,93,167,0.8151,0.2894,0.6119,-0.1543,1.1264
-italia,caldo,Heat,arpege,1,6180,503,423,80,234,0.841,0.3562,0.5739,0.2427,1.2515
-italia,caldo,Heat,arpege,2,6180,503,437,66,271,0.8688,0.3828,0.5646,0.497,1.4
-italia,caldo,Heat,arpege,3,6180,503,439,64,322,0.8728,0.4231,0.5321,0.7264,1.5805
-italia,caldo,Heat,ecmwf_aifs,0,6180,503,192,311,82,0.3817,0.2993,0.3282,-2.2435,2.4372
-italia,caldo,Heat,ecmwf_aifs,1,6180,503,204,299,111,0.4056,0.3524,0.3322,-2.0819,2.2497
-italia,caldo,Heat,ecmwf_aifs,2,6180,503,183,320,96,0.3638,0.3441,0.3055,-2.3018,2.4298
-italia,caldo,Heat,ecmwf_aifs,3,6180,503,174,329,94,0.3459,0.3507,0.2915,-2.441,2.569
-italia,caldo,Heat,ecmwf_aifs,4,6180,503,164,339,88,0.326,0.3492,0.2775,-2.5091,2.6519
-italia,caldo,Heat,ecmwf_aifs,5,6180,503,151,352,91,0.3002,0.376,0.2542,-2.6835,2.8151
-italia,caldo,Heat,ecmwf_aifs,6,6180,503,136,367,88,0.2704,0.3929,0.2301,-2.795,2.9215
-italia,caldo,Heat,ecmwf_aifs,7,6180,503,130,373,99,0.2584,0.4323,0.2159,-2.9322,3.0698
-italia,caldo,Heat,ecmwf_ifs,0,6180,503,342,161,205,0.6799,0.3748,0.4831,-0.8326,1.5746
-italia,caldo,Heat,ecmwf_ifs,1,6180,503,302,201,162,0.6004,0.3491,0.4541,-1.236,1.7521
-italia,caldo,Heat,ecmwf_ifs,2,6180,503,289,214,165,0.5746,0.3634,0.4326,-1.327,1.832
-italia,caldo,Heat,ecmwf_ifs,3,6180,503,301,202,160,0.5984,0.3471,0.454,-1.3101,1.8032
-italia,caldo,Heat,ecmwf_ifs,4,6180,503,291,212,173,0.5785,0.3728,0.4305,-1.2666,1.869
-italia,caldo,Heat,ecmwf_ifs,5,6180,503,289,214,193,0.5746,0.4004,0.4152,-1.2674,1.9982
-italia,caldo,Heat,ecmwf_ifs,6,6180,503,273,230,193,0.5427,0.4142,0.3922,-1.3885,2.0954
-italia,caldo,Heat,ecmwf_ifs,7,6180,503,284,219,238,0.5646,0.4559,0.3833,-1.3481,2.3008
-italia,caldo,Heat,gem,0,6180,503,313,190,116,0.6223,0.2704,0.5057,-1.1247,1.6455
-italia,caldo,Heat,gem,1,6180,503,279,224,100,0.5547,0.2639,0.4627,-1.538,1.9825
-italia,caldo,Heat,gem,2,6180,503,267,236,102,0.5308,0.2764,0.4413,-1.6698,2.0427
-italia,caldo,Heat,gem,3,6180,503,258,245,99,0.5129,0.2773,0.4286,-1.6899,2.0771
-italia,caldo,Heat,gem,4,6180,503,263,240,97,0.5229,0.2694,0.4383,-1.674,2.1062
-italia,caldo,Heat,gem,5,6180,503,256,247,114,0.5089,0.3081,0.4149,-1.775,2.1817
-italia,caldo,Heat,gem,6,6180,503,248,255,120,0.493,0.3261,0.3981,-1.9107,2.3159
-italia,caldo,Heat,gem,7,6180,503,238,265,125,0.4732,0.3444,0.379,-2.2189,2.6503
-italia,caldo,Heat,gfs,0,6180,503,422,81,284,0.839,0.4023,0.5362,0.571,1.7801
-italia,caldo,Heat,gfs,1,6180,503,419,84,278,0.833,0.3989,0.5365,0.3958,1.797
-italia,caldo,Heat,gfs,2,6180,503,417,86,318,0.829,0.4327,0.5079,0.4809,1.8817
-italia,caldo,Heat,gfs,3,6180,503,414,89,343,0.8231,0.4531,0.4894,0.6547,2.04
-italia,caldo,Heat,gfs,4,6180,503,419,84,368,0.833,0.4676,0.4811,0.7722,2.1829
-italia,caldo,Heat,gfs,5,6180,503,401,102,388,0.7972,0.4918,0.4501,0.7509,2.3696
-italia,caldo,Heat,gfs,6,6180,503,391,112,393,0.7773,0.5013,0.4364,0.6447,2.4113
-italia,caldo,Heat,gfs,7,6180,503,377,126,402,0.7495,0.516,0.4166,0.4763,2.5145
-italia,caldo,Heat,icon2i,0,6180,503,327,176,67,0.6501,0.1701,0.5737,-0.9268,1.297
-italia,caldo,Heat,icon2i,1,6180,503,339,164,72,0.674,0.1752,0.5896,-0.7435,1.2457
-italia,caldo,Heat,icon2i,2,6180,503,337,166,89,0.67,0.2089,0.5693,-0.7256,1.2895
-italia,caldo,Heat,icon_eu,0,6180,503,372,131,86,0.7396,0.1878,0.6316,-0.5575,1.14
-italia,caldo,Heat,icon_eu,1,6180,503,362,141,79,0.7197,0.1791,0.622,-0.63,1.2157
-italia,caldo,Heat,icon_eu,2,6180,503,356,147,83,0.7078,0.1891,0.6075,-0.7374,1.2988
-italia,caldo,Heat,icon_eu,3,6180,503,337,166,82,0.67,0.1957,0.5761,-0.7575,1.3678
-italia,caldo,Heat,icon_eu,4,6180,503,325,178,89,0.6461,0.215,0.549,-0.9304,1.5519
-italia,caldo,Heat,icon_global,0,6180,503,381,122,125,0.7575,0.247,0.6067,-0.4773,1.2085
-italia,caldo,Heat,icon_global,1,6180,503,378,125,126,0.7515,0.25,0.601,-0.5314,1.2491
-italia,caldo,Heat,icon_global,2,6180,503,361,142,131,0.7177,0.2663,0.5694,-0.627,1.3213
-italia,caldo,Heat,icon_global,3,6180,503,356,147,116,0.7078,0.2458,0.5751,-0.6473,1.369
-italia,caldo,Heat,icon_global,4,6180,503,332,171,128,0.66,0.2783,0.5261,-0.7523,1.5352
-italia,caldo,Heat,icon_global,5,6180,503,326,177,173,0.6481,0.3467,0.4822,-0.7354,1.8515
-italia,caldo,Heat,icon_global,6,6180,503,320,183,209,0.6362,0.3951,0.4494,-0.8567,1.9839
+italia,pioggia_molto,Very heavy rain,ukmo,0,6240,52,9,43,15,0.1731,0.625,0.1343,-44.8192,46.7385
+italia,pioggia_molto,Very heavy rain,ukmo,1,6240,52,17,35,18,0.3269,0.5143,0.2429,-40.5788,42.9635
+italia,pioggia_molto,Very heavy rain,ukmo,2,6240,52,11,41,23,0.2115,0.6765,0.1467,-43.8346,45.1923
+italia,pioggia_molto,Very heavy rain,ukmo,3,6240,52,7,45,20,0.1346,0.7407,0.0972,-49.6058,50.2288
+italia,pioggia_molto,Very heavy rain,ukmo,4,6240,52,11,41,25,0.2115,0.6944,0.1429,-47.4038,52.4846
+italia,pioggia_molto,Very heavy rain,ukmo,5,6240,52,6,46,27,0.1154,0.8182,0.0759,-56.9115,56.9269
+italia,pioggia_molto,Very heavy rain,ukmo,6,6240,52,1,51,24,0.0192,0.96,0.0132,-65.3731,66.2692
+italia,caldo,Heat,arpege,0,6240,503,410,93,167,0.8151,0.2894,0.6119,-0.1543,1.1264
+italia,caldo,Heat,arpege,1,6240,503,423,80,234,0.841,0.3562,0.5739,0.2427,1.2515
+italia,caldo,Heat,arpege,2,6240,503,437,66,271,0.8688,0.3828,0.5646,0.497,1.4
+italia,caldo,Heat,arpege,3,6240,503,439,64,322,0.8728,0.4231,0.5321,0.7264,1.5805
+italia,caldo,Heat,ecmwf_aifs,0,6240,503,192,311,82,0.3817,0.2993,0.3282,-2.2435,2.4372
+italia,caldo,Heat,ecmwf_aifs,1,6240,503,204,299,111,0.4056,0.3524,0.3322,-2.0819,2.2497
+italia,caldo,Heat,ecmwf_aifs,2,6240,503,183,320,96,0.3638,0.3441,0.3055,-2.3018,2.4298
+italia,caldo,Heat,ecmwf_aifs,3,6240,503,174,329,94,0.3459,0.3507,0.2915,-2.441,2.569
+italia,caldo,Heat,ecmwf_aifs,4,6240,503,164,339,88,0.326,0.3492,0.2775,-2.5091,2.6519
+italia,caldo,Heat,ecmwf_aifs,5,6240,503,151,352,91,0.3002,0.376,0.2542,-2.6835,2.8151
+italia,caldo,Heat,ecmwf_aifs,6,6240,503,136,367,88,0.2704,0.3929,0.2301,-2.795,2.9215
+italia,caldo,Heat,ecmwf_aifs,7,6240,503,130,373,99,0.2584,0.4323,0.2159,-2.9322,3.0698
+italia,caldo,Heat,ecmwf_ifs,0,6240,503,342,161,205,0.6799,0.3748,0.4831,-0.8326,1.5746
+italia,caldo,Heat,ecmwf_ifs,1,6240,503,302,201,162,0.6004,0.3491,0.4541,-1.236,1.7521
+italia,caldo,Heat,ecmwf_ifs,2,6240,503,289,214,165,0.5746,0.3634,0.4326,-1.327,1.832
+italia,caldo,Heat,ecmwf_ifs,3,6240,503,301,202,160,0.5984,0.3471,0.454,-1.3101,1.8032
+italia,caldo,Heat,ecmwf_ifs,4,6240,503,291,212,173,0.5785,0.3728,0.4305,-1.2666,1.869
+italia,caldo,Heat,ecmwf_ifs,5,6240,503,289,214,193,0.5746,0.4004,0.4152,-1.2674,1.9982
+italia,caldo,Heat,ecmwf_ifs,6,6240,503,273,230,193,0.5427,0.4142,0.3922,-1.3885,2.0954
+italia,caldo,Heat,ecmwf_ifs,7,6240,503,284,219,238,0.5646,0.4559,0.3833,-1.3481,2.3008
+italia,caldo,Heat,gem,0,6240,503,313,190,116,0.6223,0.2704,0.5057,-1.1247,1.6455
+italia,caldo,Heat,gem,1,6240,503,279,224,100,0.5547,0.2639,0.4627,-1.538,1.9825
+italia,caldo,Heat,gem,2,6240,503,267,236,102,0.5308,0.2764,0.4413,-1.6698,2.0427
+italia,caldo,Heat,gem,3,6240,503,258,245,99,0.5129,0.2773,0.4286,-1.6899,2.0771
+italia,caldo,Heat,gem,4,6240,503,263,240,97,0.5229,0.2694,0.4383,-1.674,2.1062
+italia,caldo,Heat,gem,5,6240,503,256,247,114,0.5089,0.3081,0.4149,-1.775,2.1817
+italia,caldo,Heat,gem,6,6240,503,248,255,120,0.493,0.3261,0.3981,-1.9107,2.3159
+italia,caldo,Heat,gem,7,6240,503,238,265,125,0.4732,0.3444,0.379,-2.2189,2.6503
+italia,caldo,Heat,gfs,0,6240,503,422,81,284,0.839,0.4023,0.5362,0.571,1.7801
+italia,caldo,Heat,gfs,1,6240,503,419,84,278,0.833,0.3989,0.5365,0.3958,1.797
+italia,caldo,Heat,gfs,2,6240,503,417,86,318,0.829,0.4327,0.5079,0.4809,1.8817
+italia,caldo,Heat,gfs,3,6240,503,414,89,343,0.8231,0.4531,0.4894,0.6547,2.04
+italia,caldo,Heat,gfs,4,6240,503,419,84,368,0.833,0.4676,0.4811,0.7722,2.1829
+italia,caldo,Heat,gfs,5,6240,503,401,102,388,0.7972,0.4918,0.4501,0.7509,2.3696
+italia,caldo,Heat,gfs,6,6240,503,391,112,393,0.7773,0.5013,0.4364,0.6447,2.4113
+italia,caldo,Heat,gfs,7,6240,503,377,126,402,0.7495,0.516,0.4166,0.4763,2.5145
+italia,caldo,Heat,icon2i,0,6240,503,327,176,67,0.6501,0.1701,0.5737,-0.9268,1.297
+italia,caldo,Heat,icon2i,1,6240,503,339,164,72,0.674,0.1752,0.5896,-0.7435,1.2457
+italia,caldo,Heat,icon2i,2,6240,503,337,166,89,0.67,0.2089,0.5693,-0.7256,1.2895
+italia,caldo,Heat,icon_eu,0,6240,503,372,131,86,0.7396,0.1878,0.6316,-0.5575,1.14
+italia,caldo,Heat,icon_eu,1,6240,503,362,141,79,0.7197,0.1791,0.622,-0.63,1.2157
+italia,caldo,Heat,icon_eu,2,6240,503,356,147,83,0.7078,0.1891,0.6075,-0.7374,1.2988
+italia,caldo,Heat,icon_eu,3,6240,503,337,166,82,0.67,0.1957,0.5761,-0.7575,1.3678
+italia,caldo,Heat,icon_eu,4,6240,503,325,178,89,0.6461,0.215,0.549,-0.9304,1.5519
+italia,caldo,Heat,icon_global,0,6240,503,381,122,125,0.7575,0.247,0.6067,-0.4773,1.2085
+italia,caldo,Heat,icon_global,1,6240,503,378,125,126,0.7515,0.25,0.601,-0.5314,1.2491
+italia,caldo,Heat,icon_global,2,6240,503,361,142,131,0.7177,0.2663,0.5694,-0.627,1.3213
+italia,caldo,Heat,icon_global,3,6240,503,356,147,116,0.7078,0.2458,0.5751,-0.6473,1.369
+italia,caldo,Heat,icon_global,4,6240,503,332,171,128,0.66,0.2783,0.5261,-0.7523,1.5352
+italia,caldo,Heat,icon_global,5,6240,503,326,177,173,0.6481,0.3467,0.4822,-0.7354,1.8515
+italia,caldo,Heat,icon_global,6,6240,503,320,183,209,0.6362,0.3951,0.4494,-0.8567,1.9839
 italia,caldo,Heat,metno,1,240,0,0,0,0,,,,,
 italia,caldo,Heat,metno,2,180,0,0,0,0,,,,,
 italia,caldo,Heat,metno,3,120,0,0,0,0,,,,,
 italia,caldo,Heat,metno,4,60,0,0,0,0,,,,,
-italia,caldo,Heat,ukmo,0,6180,503,412,91,250,0.8191,0.3776,0.5471,0.1211,1.3624
-italia,caldo,Heat,ukmo,1,6180,503,413,90,249,0.8211,0.3761,0.5492,0.1771,1.4638
-italia,caldo,Heat,ukmo,2,6180,503,402,101,260,0.7992,0.3927,0.5269,0.0304,1.5282
-italia,caldo,Heat,ukmo,3,6180,503,402,101,274,0.7992,0.4053,0.5174,-0.037,1.5753
-italia,caldo,Heat,ukmo,4,6180,503,415,88,304,0.825,0.4228,0.5143,0.2515,1.7366
-italia,caldo,Heat,ukmo,5,6180,503,400,103,335,0.7952,0.4558,0.4773,0.1924,1.8493
-italia,caldo,Heat,ukmo,6,6180,503,364,139,331,0.7237,0.4763,0.4365,-0.3137,2.027
-italia,gelo,Frost,arpege,0,6180,145,128,17,30,0.8828,0.1899,0.7314,0.2648,1.0
-italia,gelo,Frost,arpege,1,6180,145,121,24,29,0.8345,0.1933,0.6954,0.3959,1.2414
-italia,gelo,Frost,arpege,2,6180,145,126,19,29,0.869,0.1871,0.7241,0.2069,1.2966
-italia,gelo,Frost,arpege,3,6180,145,126,19,30,0.869,0.1923,0.72,0.0993,1.4359
-italia,gelo,Frost,ecmwf_aifs,0,6180,145,112,33,42,0.7724,0.2727,0.5989,0.4724,1.9897
-italia,gelo,Frost,ecmwf_aifs,1,6180,145,108,37,29,0.7448,0.2117,0.6207,0.8434,1.9221
-italia,gelo,Frost,ecmwf_aifs,2,6180,145,110,35,35,0.7586,0.2414,0.6111,0.7338,1.9352
-italia,gelo,Frost,ecmwf_aifs,3,6180,145,111,34,38,0.7655,0.255,0.6066,0.5407,1.9586
-italia,gelo,Frost,ecmwf_aifs,4,6180,145,108,37,36,0.7448,0.25,0.5967,0.7414,2.0241
-italia,gelo,Frost,ecmwf_aifs,5,6180,145,108,37,35,0.7448,0.2448,0.6,0.5903,2.1848
-italia,gelo,Frost,ecmwf_aifs,6,6180,145,113,32,42,0.7793,0.271,0.6043,0.4372,2.3034
-italia,gelo,Frost,ecmwf_aifs,7,6180,145,110,35,46,0.7586,0.2949,0.5759,0.4869,2.5393
-italia,gelo,Frost,ecmwf_ifs,0,6180,145,138,7,106,0.9517,0.4344,0.5498,-2.5172,2.9628
-italia,gelo,Frost,ecmwf_ifs,1,6180,145,139,6,97,0.9586,0.411,0.5744,-2.7338,3.12
-italia,gelo,Frost,ecmwf_ifs,2,6180,145,142,3,107,0.9793,0.4297,0.5635,-2.8572,3.151
-italia,gelo,Frost,ecmwf_ifs,3,6180,145,141,4,106,0.9724,0.4291,0.5618,-3.1924,3.5179
-italia,gelo,Frost,ecmwf_ifs,4,6180,145,137,8,92,0.9448,0.4017,0.5781,-2.6697,3.0876
-italia,gelo,Frost,ecmwf_ifs,5,6180,145,139,6,105,0.9586,0.4303,0.556,-3.1545,3.5145
-italia,gelo,Frost,ecmwf_ifs,6,6180,145,138,7,123,0.9517,0.4713,0.5149,-2.7717,3.4034
-italia,gelo,Frost,ecmwf_ifs,7,6180,145,129,16,113,0.8897,0.4669,0.5,-2.9186,3.949
-italia,gelo,Frost,gem,0,6180,145,143,2,115,0.9862,0.4457,0.55,-2.2186,2.6517
-italia,gelo,Frost,gem,1,6180,145,142,3,132,0.9793,0.4818,0.5126,-2.6648,2.9862
-italia,gelo,Frost,gem,2,6180,145,141,4,127,0.9724,0.4739,0.5184,-2.6814,3.011
-italia,gelo,Frost,gem,3,6180,145,142,3,126,0.9793,0.4701,0.524,-2.6407,3.0214
-italia,gelo,Frost,gem,4,6180,145,139,6,144,0.9586,0.5088,0.481,-2.6462,3.0255
-italia,gelo,Frost,gem,5,6180,145,141,4,140,0.9724,0.4982,0.4947,-2.6186,3.1028
-italia,gelo,Frost,gem,6,6180,145,137,8,160,0.9448,0.5387,0.4492,-2.3634,3.2283
-italia,gelo,Frost,gem,7,6180,145,134,11,144,0.9241,0.518,0.4637,-1.5986,2.9655
-italia,gelo,Frost,gfs,0,6180,145,128,17,38,0.8828,0.2289,0.6995,-0.4069,1.3793
-italia,gelo,Frost,gfs,1,6180,145,134,11,40,0.9241,0.2299,0.7243,-0.6607,1.5076
-italia,gelo,Frost,gfs,2,6180,145,130,15,43,0.8966,0.2486,0.6915,-0.8,1.7076
-italia,gelo,Frost,gfs,3,6180,145,131,14,50,0.9034,0.2762,0.6718,-1.0255,1.7869
-italia,gelo,Frost,gfs,4,6180,145,127,18,46,0.8759,0.2659,0.6649,-0.8966,1.9503
-italia,gelo,Frost,gfs,5,6180,145,129,16,51,0.8897,0.2833,0.6582,-0.9379,2.0331
-italia,gelo,Frost,gfs,6,6180,145,124,21,72,0.8552,0.3673,0.5714,-0.7883,2.2972
-italia,gelo,Frost,gfs,7,6180,145,123,22,84,0.8483,0.4058,0.5371,-0.4414,2.5228
-italia,gelo,Frost,icon2i,0,6180,145,100,45,5,0.6897,0.0476,0.6667,1.4579,1.6938
-italia,gelo,Frost,icon2i,1,6180,145,95,50,3,0.6552,0.0306,0.6419,1.5366,1.6731
-italia,gelo,Frost,icon2i,2,6180,145,96,49,6,0.6621,0.0588,0.6358,1.4903,1.6931
-italia,gelo,Frost,icon_eu,0,6180,145,103,42,6,0.7103,0.055,0.6821,1.2966,1.4703
-italia,gelo,Frost,icon_eu,1,6180,145,112,33,7,0.7724,0.0588,0.7368,1.2593,1.4124
-italia,gelo,Frost,icon_eu,2,6180,145,108,37,7,0.7448,0.0609,0.7105,1.1607,1.4338
-italia,gelo,Frost,icon_eu,3,6180,145,111,34,7,0.7655,0.0593,0.7303,1.2028,1.4138
-italia,gelo,Frost,icon_eu,4,6180,145,110,35,17,0.7586,0.1339,0.679,1.1234,1.5497
-italia,gelo,Frost,icon_global,0,6180,145,106,39,23,0.731,0.1783,0.631,1.2076,1.5759
-italia,gelo,Frost,icon_global,1,6180,145,108,37,25,0.7448,0.188,0.6353,1.1579,1.5897
-italia,gelo,Frost,icon_global,2,6180,145,108,37,25,0.7448,0.188,0.6353,1.1076,1.5945
-italia,gelo,Frost,icon_global,3,6180,145,109,36,19,0.7517,0.1484,0.6646,1.149,1.6593
-italia,gelo,Frost,icon_global,4,6180,145,107,38,34,0.7379,0.2411,0.5978,1.0807,1.7386
-italia,gelo,Frost,icon_global,5,6180,145,108,37,27,0.7448,0.2,0.6279,1.1055,1.8697
-italia,gelo,Frost,icon_global,6,6180,145,113,32,23,0.7793,0.1691,0.6726,1.2779,1.9759
-italia,gelo,Frost,metno,1,240,21,19,2,3,0.9048,0.1364,0.7917,-2.1524,2.7048
-italia,gelo,Frost,metno,2,180,14,13,1,3,0.9286,0.1875,0.7647,-2.2357,2.7786
-italia,gelo,Frost,metno,3,120,8,8,0,4,1.0,0.3333,0.6667,-1.9625,2.0375
-italia,gelo,Frost,metno,4,60,3,3,0,2,1.0,0.4,0.6,-2.2333,2.2333
-italia,gelo,Frost,ukmo,0,6180,145,118,27,72,0.8138,0.3789,0.5438,-1.58,2.9966
-italia,gelo,Frost,ukmo,1,6180,145,124,21,72,0.8552,0.3673,0.5714,-1.6462,2.9414
-italia,gelo,Frost,ukmo,2,6180,145,122,23,74,0.8414,0.3776,0.5571,-1.6586,2.9621
-italia,gelo,Frost,ukmo,3,6180,145,125,20,65,0.8621,0.3421,0.5952,-1.829,2.9931
-italia,gelo,Frost,ukmo,4,6180,145,126,19,67,0.869,0.3472,0.5943,-1.8807,2.991
-italia,gelo,Frost,ukmo,5,6180,145,127,18,72,0.8759,0.3618,0.5853,-1.9738,3.0097
-italia,gelo,Frost,ukmo,6,6180,145,123,22,88,0.8483,0.4171,0.5279,-1.2966,3.2
+italia,caldo,Heat,ukmo,0,6240,503,412,91,250,0.8191,0.3776,0.5471,0.1211,1.3624
+italia,caldo,Heat,ukmo,1,6240,503,413,90,249,0.8211,0.3761,0.5492,0.1771,1.4638
+italia,caldo,Heat,ukmo,2,6240,503,402,101,260,0.7992,0.3927,0.5269,0.0304,1.5282
+italia,caldo,Heat,ukmo,3,6240,503,402,101,274,0.7992,0.4053,0.5174,-0.037,1.5753
+italia,caldo,Heat,ukmo,4,6240,503,415,88,304,0.825,0.4228,0.5143,0.2515,1.7366
+italia,caldo,Heat,ukmo,5,6240,503,400,103,335,0.7952,0.4558,0.4773,0.1924,1.8493
+italia,caldo,Heat,ukmo,6,6240,503,364,139,331,0.7237,0.4763,0.4365,-0.3137,2.027
+italia,gelo,Frost,arpege,0,6240,148,130,18,32,0.8784,0.1975,0.7222,0.2959,1.0162
+italia,gelo,Frost,arpege,1,6240,148,123,25,31,0.8311,0.2013,0.6872,0.4297,1.2581
+italia,gelo,Frost,arpege,2,6240,148,128,20,31,0.8649,0.195,0.7151,0.2372,1.3047
+italia,gelo,Frost,arpege,3,6240,148,128,20,31,0.8649,0.195,0.7151,0.1155,1.4358
+italia,gelo,Frost,ecmwf_aifs,0,6240,148,114,34,43,0.7703,0.2739,0.5969,0.4811,2.0054
+italia,gelo,Frost,ecmwf_aifs,1,6240,148,111,37,30,0.75,0.2128,0.6236,0.8385,1.9223
+italia,gelo,Frost,ecmwf_aifs,2,6240,148,113,35,36,0.7635,0.2416,0.6141,0.7182,1.9331
+italia,gelo,Frost,ecmwf_aifs,3,6240,148,114,34,39,0.7703,0.2549,0.6096,0.5115,1.9574
+italia,gelo,Frost,ecmwf_aifs,4,6240,148,111,37,37,0.75,0.25,0.6,0.7311,2.0176
+italia,gelo,Frost,ecmwf_aifs,5,6240,148,111,37,36,0.75,0.2449,0.6033,0.5351,2.1838
+italia,gelo,Frost,ecmwf_aifs,6,6240,148,116,32,44,0.7838,0.275,0.6042,0.3568,2.3284
+italia,gelo,Frost,ecmwf_aifs,7,6240,148,113,35,49,0.7635,0.3025,0.5736,0.4122,2.5527
+italia,gelo,Frost,ecmwf_ifs,0,6240,148,140,8,107,0.9459,0.4332,0.549,-2.4716,2.9365
+italia,gelo,Frost,ecmwf_ifs,1,6240,148,142,6,98,0.9595,0.4083,0.5772,-2.7351,3.1203
+italia,gelo,Frost,ecmwf_ifs,2,6240,148,145,3,108,0.9797,0.4269,0.5664,-2.8419,3.1338
+italia,gelo,Frost,ecmwf_ifs,3,6240,148,144,4,108,0.973,0.4286,0.5625,-3.1662,3.4851
+italia,gelo,Frost,ecmwf_ifs,4,6240,148,140,8,94,0.9459,0.4017,0.5785,-2.65,3.0595
+italia,gelo,Frost,ecmwf_ifs,5,6240,148,142,6,108,0.9595,0.432,0.5547,-3.2709,3.6236
+italia,gelo,Frost,ecmwf_ifs,6,6240,148,141,7,128,0.9527,0.4758,0.5109,-2.9203,3.5392
+italia,gelo,Frost,ecmwf_ifs,7,6240,148,132,16,118,0.8919,0.472,0.4962,-3.0041,4.0135
+italia,gelo,Frost,gem,0,6240,148,145,3,118,0.9797,0.4487,0.5451,-2.2095,2.6568
+italia,gelo,Frost,gem,1,6240,148,145,3,135,0.9797,0.4821,0.5124,-2.6642,2.9912
+italia,gelo,Frost,gem,2,6240,148,144,4,130,0.973,0.4745,0.518,-2.6905,3.0135
+italia,gelo,Frost,gem,3,6240,148,145,3,129,0.9797,0.4708,0.5235,-2.6372,3.0182
+italia,gelo,Frost,gem,4,6240,148,142,6,147,0.9595,0.5087,0.4814,-2.6318,3.0047
+italia,gelo,Frost,gem,5,6240,148,144,4,143,0.973,0.4983,0.4948,-2.5878,3.0824
+italia,gelo,Frost,gem,6,6240,148,140,8,164,0.9459,0.5395,0.4487,-2.4196,3.2669
+italia,gelo,Frost,gem,7,6240,148,136,12,147,0.9189,0.5194,0.461,-1.5804,2.9466
+italia,gelo,Frost,gfs,0,6240,148,131,17,39,0.8851,0.2294,0.7005,-0.4142,1.3669
+italia,gelo,Frost,gfs,1,6240,148,137,11,42,0.9257,0.2346,0.7211,-0.6581,1.4878
+italia,gelo,Frost,gfs,2,6240,148,133,15,45,0.8986,0.2528,0.6891,-0.7899,1.6858
+italia,gelo,Frost,gfs,3,6240,148,134,14,53,0.9054,0.2834,0.6667,-1.023,1.7689
+italia,gelo,Frost,gfs,4,6240,148,130,18,47,0.8784,0.2655,0.6667,-0.923,1.9554
+italia,gelo,Frost,gfs,5,6240,148,132,16,52,0.8919,0.2826,0.66,-0.9878,2.0608
+italia,gelo,Frost,gfs,6,6240,148,126,22,73,0.8514,0.3668,0.5701,-0.7453,2.2858
+italia,gelo,Frost,gfs,7,6240,148,125,23,85,0.8446,0.4048,0.5365,-0.4155,2.4885
+italia,gelo,Frost,icon2i,0,6240,148,101,47,6,0.6824,0.0561,0.6558,1.4777,1.7088
+italia,gelo,Frost,icon2i,1,6240,148,96,52,4,0.6486,0.04,0.6316,1.5507,1.6845
+italia,gelo,Frost,icon2i,2,6240,148,97,51,7,0.6554,0.0673,0.6258,1.5047,1.7101
+italia,gelo,Frost,icon_eu,0,6240,148,105,43,6,0.7095,0.0541,0.6818,1.2892,1.4595
+italia,gelo,Frost,icon_eu,1,6240,148,114,34,8,0.7703,0.0656,0.7308,1.2655,1.4155
+italia,gelo,Frost,icon_eu,2,6240,148,110,38,8,0.7432,0.0678,0.7051,1.1595,1.427
+italia,gelo,Frost,icon_eu,3,6240,148,113,35,8,0.7635,0.0661,0.7244,1.1939,1.4007
+italia,gelo,Frost,icon_eu,4,6240,148,113,35,19,0.7635,0.1439,0.6766,1.0899,1.5291
+italia,gelo,Frost,icon_global,0,6240,148,108,40,24,0.7297,0.1818,0.6279,1.2291,1.5899
+italia,gelo,Frost,icon_global,1,6240,148,110,38,26,0.7432,0.1912,0.6322,1.1824,1.6054
+italia,gelo,Frost,icon_global,2,6240,148,110,38,26,0.7432,0.1912,0.6322,1.1324,1.6095
+italia,gelo,Frost,icon_global,3,6240,148,111,37,20,0.75,0.1527,0.6607,1.1628,1.6628
+italia,gelo,Frost,icon_global,4,6240,148,109,39,35,0.7365,0.2431,0.5956,1.0628,1.7128
+italia,gelo,Frost,icon_global,5,6240,148,111,37,30,0.75,0.2128,0.6236,1.0419,1.873
+italia,gelo,Frost,icon_global,6,6240,148,116,32,26,0.7838,0.1831,0.6667,1.2412,1.9561
+italia,gelo,Frost,metno,1,240,21,19,2,3,0.9048,0.1364,0.7917,-2.1333,2.6857
+italia,gelo,Frost,metno,2,180,14,13,1,3,0.9286,0.1875,0.7647,-2.2071,2.75
+italia,gelo,Frost,metno,3,120,8,8,0,4,1.0,0.3333,0.6667,-1.9125,2.0375
+italia,gelo,Frost,metno,4,60,3,3,0,2,1.0,0.4,0.6,-2.1,2.1
+italia,gelo,Frost,ukmo,0,6240,148,120,28,74,0.8108,0.3814,0.5405,-1.6203,3.0568
+italia,gelo,Frost,ukmo,1,6240,148,126,22,74,0.8514,0.37,0.5676,-1.6122,2.9432
+italia,gelo,Frost,ukmo,2,6240,148,124,24,76,0.8378,0.38,0.5536,-1.6169,2.9655
+italia,gelo,Frost,ukmo,3,6240,148,127,21,66,0.8581,0.342,0.5935,-1.7932,2.9919
+italia,gelo,Frost,ukmo,4,6240,148,128,20,68,0.8649,0.3469,0.5926,-1.8959,3.027
+italia,gelo,Frost,ukmo,5,6240,148,129,19,73,0.8716,0.3614,0.5837,-2.0115,3.0547
+italia,gelo,Frost,ukmo,6,6240,148,126,22,91,0.8514,0.4194,0.5272,-1.4007,3.2655
