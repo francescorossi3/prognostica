@@ -313,12 +313,23 @@ def merge_stats(stats, new):
     return out.sort_values(["date", "region", "provider", "agg", "var", "lead_day"]).reset_index(drop=True)
 
 
+def same_days(stats):
+    """Per ogni caso (regione, aggregazione, variabile, anticipo) con le combinazioni (BEST, WEIGHTED, GPR) tiene solo i giorni
+    in cui esistono anche le combinazioni: provider e combinazioni si confrontano sugli stessi giorni.
+    Le combinazioni esistono solo dai giorni fuori campione (holdout); i casi senza combinazioni restano interi."""
+    key = ["region", "agg", "var", "lead_day"]
+    cd = stats.loc[stats["provider"].isin(COMBOS), key + ["date"]].drop_duplicates()
+    st = stats.merge(cd[key].drop_duplicates().assign(_c=1), on=key, how="left")
+    return pd.concat([st[st["_c"].isna()], st[st["_c"].notna()].merge(cd, on=key + ["date"])], ignore_index=True).drop(columns="_c")
+
+
 def rankings(stats, provider_names=None):
-    """Classifiche su finestre mobili + trend mensile, provider e combinazioni (BEST, WEIGHTED, GPR)."""
+    """Classifiche su finestre mobili (provider e combinazioni BEST, WEIGHTED, GPR sugli stessi giorni) + trend mensile (tutti i giorni)."""
     last_day = stats["date"].max()
+    common = same_days(stats)
     boards = []
     for w in VCFG["score_windows_days"] + ["all"]:
-        s = stats if w == "all" else stats[stats["date"] > last_day - pd.Timedelta(days=w)]
+        s = common if w == "all" else common[common["date"] > last_day - pd.Timedelta(days=w)]
         sc = stats_to_scores(s)
         sc.insert(0, "window", f"{w}d" if w != "all" else "all")
         boards.append(sc)

@@ -7,6 +7,7 @@
 "use strict";
 const I18N = (() => {
   const D = {
+    "★ Best is chosen in advance for each lead time, as the provider with the lowest error in the 90 days before, and then tested on the following days: so it can be slightly worse than the provider that turns out best afterwards, which nobody can know in advance. All rows are computed on the same days.": "★ Best si sceglie in anticipo per ogni anticipo, come il fornitore con l'errore più basso nei 90 giorni precedenti, e poi si prova sui giorni successivi: per questo può essere un po' peggiore del fornitore che risulta migliore dopo, cosa che nessuno può sapere in anticipo. Tutte le righe sono calcolate sugli stessi giorni.",
     "Acquisition date of the satellite image": "Data di acquisizione dell'immagine satellitare",
     "Local time of the place": "Ora locale del luogo",
     "Water vapour column from ECMWF IFS (0.25°, about 25 km) at that hour [kg m⁻²]: the value to be corrected for water vapour": "Vapore acqueo in colonna di ECMWF IFS (0,25°, circa 25 km) a quell'ora [kg m⁻²]: il valore da correggere per il vapore",

@@ -133,7 +133,7 @@ gantt
 | `scripts/00_setup_stations.py` | Chooses well-spread Meteostat stations → `data/stations.csv` |
 | `scripts/01_fetch_forecasts.py` | Downloads model forecasts at stations and sites → `data/forecasts/` |
 | `scripts/02_fetch_observations.py` | Downloads hourly observations → `data/observations/` |
-| `scripts/03_verify.py` | Forecast/observation pairs, rankings, best model and weights, events → `data/stats/`, `data/csv/`, site JSON |
+| `scripts/03_verify.py` | Forecast/observation pairs, rankings (providers and combinations on the same days), best model and weights, events → `data/stats/`, `data/csv/`, site JSON |
 | `scripts/04_train_gpr.py` | Trains and validates GPR models, exports them as JSON for the browser |
 | `scripts/05_build_maps.py` | Forecast maps on a regular grid for each region |
 | `scripts/06_build_site.py` | Assembles `build/site` (web files, data, `meta.json`, recent observations) |
