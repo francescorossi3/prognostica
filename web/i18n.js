@@ -7,6 +7,7 @@
 "use strict";
 const I18N = (() => {
   const D = {
+    "Before February 2024 ECMWF IFS 0.25° is not archived: values from the ERA5 reanalysis (0.25°), without the vertical profile.": "Prima di febbraio 2024 ECMWF IFS 0,25° non è in archivio: valori della rianalisi ERA5 (0,25°), senza il profilo verticale.",
     "Radiative transfer code of the tables (the same choice as in the Atmosphere tab)": "Codice di trasferimento radiativo delle tabelle (la stessa scelta della scheda Atmosfera)",
     "Radiative transfer": "Trasferimento radiativo",
     "Regression kriging: the model value plus its residual predicted pixel by pixel by the gradient boosting trained on AERONET and GNSS measurements. The best estimate: use this one": "Regression kriging: il valore del modello più il suo residuo previsto pixel per pixel dal gradient boosting addestrato sulle misure AERONET e GNSS. La stima migliore: usa questa",
@@ -245,12 +246,16 @@ const I18N = (() => {
     "· part of a family with": "· fa parte di una famiglia con", "(agriculture) and": "(agricoltura) e", "(atmosphere)": "(atmosfera)",
   };
   const R = [
+    [/^no water vapour values for (.+) UTC in the archive$/, "nessun valore di vapore acqueo per le $1 UTC in archivio"],
+    [/^no CAMS aerosol values for (.+) UTC \(the CAMS archive starts in August 2022\)$/, "nessun valore di aerosol CAMS per le $1 UTC (l'archivio CAMS inizia ad agosto 2022)"],
     [/^Predicted residual \(RK − (.+)\)$/, "Residuo previsto (RK − $1)"],
     [/^0\/4 · elevation… · (\d+) s$/, "0/4 · quota… · $1 s"], [/^1\/4 · terrain and model values… · (\d+) s$/, "1/4 · terreno e valori del modello… · $1 s"],
     [/^2\/4 · covariates at ([\d.,]+) points… · (\d+) s$/, "2/4 · covariate in $1 punti… · $2 s"],
     [/^3\/4 · applying the validated model…(.*) · (\d+) s$/, "3/4 · applico il modello validato…$1 · $2 s"],
     [/^4\/4 · values on the map pixels…(.*) · (\d+) s$/, "4/4 · valori sui pixel della mappa…$1 · $2 s"],
-    [/^Done in (\d+) s · (\d+) × (\d+) cells of (.+) \((EPSG:.+)\) · model applied every (\d+) m(.*)$/, "Fatto in $1 s · $2 × $3 celle da $4 ($5) · modello applicato ogni $6 m$7"],
+    [/^Done in (\d+) s · (\d+) × (\d+) cells of (.+) \((EPSG:.+)\) · model applied every (\d+) m(.*)$/, (m, t, w, h, c, e, k, rest) => `Fatto in ${t} s · ${w} × ${h} celle da ${c} (${e}) · modello applicato ogni ${k} m`
+      + rest.replace(" · band outside the tables: nearest wavelength used", " · banda fuori dalle tabelle: usata la lunghezza d'onda più vicina")
+        .replace(" · before February 2024 ECMWF IFS 0.25° is not archived: ERA5 reanalysis used, the correction was trained on IFS", " · prima di febbraio 2024 ECMWF IFS 0,25° non è in archivio: usata la rianalisi ERA5, la correzione è stata addestrata su IFS")],
     [/^(\d+) AERONET sites(?: and (\d+) GNSS stations)? · ([\d.,]+) hourly measurements · (.+) · each site left out of training when it is tested$/,
       (m, a, g, n, p) => `${a} siti AERONET${g ? ` e ${g} stazioni GNSS` : ""} · ${n} misure orarie · ${p} · ogni sito escluso dall'addestramento quando viene provato`],
     [/^(.+) bands with wavelengths$/, "$1 bande con lunghezze d'onda"],

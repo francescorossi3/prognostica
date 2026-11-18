@@ -91,13 +91,16 @@ const ATM = (() => {
   // dal giorno start al giorno end (AAAA-MM-GG, UTC): ECMWF IFS dall'archivio delle previsioni, AOD e polveri da CAMS
   async function fetchPast(P, start, end) {
     const q = `latitude=${P.lat.toFixed(4)}&longitude=${P.lon.toFixed(4)}&start_date=${start}&end_date=${end}&timeformat=unixtime&timezone=GMT`;
+    // ECMWF IFS 0.25° è archiviato dal 3 febbraio 2024: prima si usa la rianalisi ERA5 (senza i livelli di pressione)
+    const era5 = start < "2024-02-03";
     const [a, b] = await Promise.all([
-      fetch(`https://historical-forecast-api.open-meteo.com/v1/forecast?${q}&hourly=${[...SURF, ...PROF].join(",")}&models=ecmwf_ifs025`).then(r => r.json()),
+      fetch(era5 ? `https://archive-api.open-meteo.com/v1/archive?${q}&hourly=${SURF.join(",")}&models=era5`
+        : `https://historical-forecast-api.open-meteo.com/v1/forecast?${q}&hourly=${[...SURF, ...PROF].join(",")}&models=ecmwf_ifs025`).then(r => r.json()),
       fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${q}&hourly=aerosol_optical_depth,dust&domains=cams_global`).then(r => r.json()).catch(() => null)]);
     if (a.error) throw new Error(a.reason);
     const times = a.hourly.time.map(t => t * 1000), aq = b && !b.error ? b.hourly : null;
     const amap = new Map((aq?.time || []).map((t, k) => [t * 1000, [aq.aerosol_optical_depth[k], aq.dust[k]]]));
-    return { times, h: a.hourly, elev: a.elevation, aod: times.map(t => amap.get(t)?.[0] ?? null), dust: times.map(t => amap.get(t)?.[1] ?? null) };
+    return { times, h: a.hourly, elev: a.elevation, source: era5 ? "ERA5 reanalysis 0.25°" : "ECMWF IFS 0.25°", aod: times.map(t => amap.get(t)?.[0] ?? null), dust: times.map(t => amap.get(t)?.[1] ?? null) };
   }
 
   // tutte le grandezze derivate in un'ora (k) di un punto
@@ -143,7 +146,8 @@ const ATM = (() => {
     let d, H, lib;
     try { [d, H, , lib] = await Promise.all([fetchPast(P, iso(d0 - 864e5), iso(Math.min(d0 + 864e5, Date.now()))), lut("hyper"), S.rtm === "6s" ? null : lut("tir"), SRF.library()]); }
     catch (e) { box.innerHTML = `<p class="error">Atmosphere download error: ${e.message}</p>`; return; }
-    box.innerHTML = "";
+    box.innerHTML = d.source.startsWith("ERA5")
+      ? '<p class="hint">Before February 2024 ECMWF IFS 0.25° is not archived: values from the ERA5 reanalysis (0.25°), without the vertical profile.</p>' : "";
     cur = { d, H, P };
     // risoluzione degli spettri: passo delle tabelle o bande di un sensore (risposte spettrali, srf.js)
     opts($("#a-specset"), [["grid", "Table grid (10 nm; LWIR 0.1 µm)"], ...Object.keys(lib).map(k => [k, k])], $("#a-specset").value || "grid");

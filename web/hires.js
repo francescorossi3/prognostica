@@ -234,14 +234,15 @@ const HR = (() => {
       const Z = await dem({ s: G.bb.s - pad / mlat, n: G.bb.n + pad / mlat, w: G.bb.w - pad / mlon, e: G.bb.e + pad / mlon }, ext <= 10000 ? 14 : ext <= 40000 ? 13 : 12);
       const R = await RKMAP.run(G, hourIso, kind, vb, step, Z);
       // nomi dei layer: il modello di partenza dipende dalla grandezza (vapore: ECMWF IFS, AOD: CAMS, grandezze RT: entrambi)
-      const model = kind === "tcwv" ? "ECMWF IFS 0.25°" : kind === "aod" ? "CAMS global 0.4°" : "ECMWF IFS + CAMS";
+      const model = kind === "tcwv" ? R.source : kind === "aod" ? "CAMS global 0.4°" : `${R.source.split(" ")[0]} + CAMS`;
       S.hl.find(l => l.id === "trend").name = model;
       S.hl.find(l => l.id === "sd").name = `Predicted residual (RK − ${model})`;
       HR.out = { G, ...R, kind, model, P: P || { lat: C[1], lon: C[0] },
         label: `${$("#h-target").selectedOptions[0].textContent}${bandLab} · ${hourIso.slice(0, 13).replace("T", " ")} UTC` };
       draw(true); report();
       bar.hidden = true;
-      st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${W0(G)} · model applied every ${R.step} m${vb?.outside ? " · band outside the tables: nearest wavelength used" : ""}`;
+      st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${W0(G)} · model applied every ${R.step} m${vb?.outside ? " · band outside the tables: nearest wavelength used" : ""}`
+        + (R.source.startsWith("ERA5") && kind !== "aod" ? " · before February 2024 ECMWF IFS 0.25° is not archived: ERA5 reanalysis used, the correction was trained on IFS" : "");
     } catch (e) { bar.hidden = true; st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
 

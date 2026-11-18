@@ -1,7 +1,7 @@
 // rkmap.js – vapore acqueo, AOD e grandezze di trasferimento radiativo ad alta risoluzione con il modello validato sulle misure.
 // Cosa fa: per una data e un'ora passate calcola nel browser, su un reticolo di 30 m, le stesse covariate usate da Torricelli
 //          (07_rk_validate.py) e applica il gradient boosting esportato (rk_model_<var>.json) che corregge ECMWF IFS / CAMS:
-//            - modello (Open-Meteo: ECMWF IFS 0.25°, CAMS globale) nell'ora scelta, valore della cella di griglia:
+//            - modello (Open-Meteo: ECMWF IFS 0.25°, dal 3/2/2024; prima la rianalisi ERA5 0.25°; CAMS globale) nell'ora scelta, valore della cella di griglia:
 //              vapore, AOD, polveri, temperatura e umidità a 2 m, pressione al suolo;
 //            - terreno (tasselli Terrarium): quota, pendenza, TPI e rilievo entro 500 e 2000 m (quadrato di area uguale al cerchio);
 //            - posizione, ora e giorno dell'anno.
@@ -56,23 +56,29 @@ const RKMAP = (() => {
   }
 
   // valori del modello su un reticolo 9 x 9, nell'ora scelta; restituisce la funzione del punto più vicino (= cella del modello)
+  // ECMWF IFS 0.25° è archiviato da Open-Meteo dal 3 febbraio 2024: prima si usa la rianalisi ERA5 (stessa griglia 0.25°)
+  const IFS025_FROM = "2024-02-03";
+  // valori del modello su un reticolo 9 x 9, nell'ora scelta; restituisce la funzione del punto più vicino (= cella del modello) e la fonte
   async function modelFields(bb, hourIso) {
     const n = 9, pts = [];
     for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) pts.push([bb.s + (bb.n - bb.s) * (i + 0.5) / n, bb.w + (bb.e - bb.w) * (j + 0.5) / n]);
     const day = hourIso.slice(0, 10), q = `latitude=${pts.map(p => p[0].toFixed(4))}&longitude=${pts.map(p => p[1].toFixed(4))}&start_date=${day}&end_date=${day}&timezone=GMT`;
+    const era5 = day < IFS025_FROM, met = "hourly=total_column_integrated_water_vapour,temperature_2m,relative_humidity_2m,surface_pressure";
     const [m, a] = await Promise.all([
-      fetch(`https://historical-forecast-api.open-meteo.com/v1/forecast?${q}&models=ecmwf_ifs025&hourly=total_column_integrated_water_vapour,temperature_2m,relative_humidity_2m,surface_pressure`).then(r => r.json()),
+      fetch(era5 ? `https://archive-api.open-meteo.com/v1/archive?${q}&models=era5&${met}` : `https://historical-forecast-api.open-meteo.com/v1/forecast?${q}&models=ecmwf_ifs025&${met}`).then(r => r.json()),
       fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${q}&domains=cams_global&hourly=aerosol_optical_depth,dust`).then(r => r.json())]);
     if (m.error || a.error) throw new Error(m.reason || a.reason);
     const at = (j, v) => { const h = j.hourly, k = h.time.indexOf(hourIso.slice(0, 13) + ":00"); return k < 0 ? NaN : h[v][k] ?? NaN; };
     const M = [].concat(m), A = [].concat(a);
     const val = pts.map((p, k) => ({ tcwv_model: at(M[k], "total_column_integrated_water_vapour"), t2m_c: at(M[k], "temperature_2m"),
       rh2m: at(M[k], "relative_humidity_2m"), ps_hpa: at(M[k], "surface_pressure"), aod_model: at(A[k], "aerosol_optical_depth"), dust_ugm3: at(A[k], "dust") }));
-    if (!val.some(v => Number.isFinite(v.tcwv_model))) throw new Error(`no model values for ${hourIso.slice(0, 13)} UTC (only past dates from 2022 are available)`);
-    return (lat, lon) => {
+    if (!val.some(v => Number.isFinite(v.tcwv_model))) throw new Error(`no water vapour values for ${hourIso.slice(0, 13)} UTC in the archive`);
+    if (!val.some(v => Number.isFinite(v.aod_model))) throw new Error(`no CAMS aerosol values for ${hourIso.slice(0, 13)} UTC (the CAMS archive starts in August 2022)`);
+    const near = (lat, lon) => {
       const i = Math.max(0, Math.min(n - 1, Math.floor((lat - bb.s) / (bb.n - bb.s) * n))), j = Math.max(0, Math.min(n - 1, Math.floor((lon - bb.w) / (bb.e - bb.w) * n)));
       return val[i * n + j];
     };
+    return { near, source: era5 ? "ERA5 0.25°" : "ECMWF IFS 0.25°" };
   }
 
   // target: "tcwv", "aod", "rt:<grandezza>" (VNIR-SWIR) o "tir:<tau|lu|ld>"; vb: banda virtuale (srf.js) per rt/tir
@@ -98,7 +104,7 @@ const RKMAP = (() => {
           lon[i] = a0[0] + t * (a1[0] - a0[0]); lat[i] = a0[1] + t * (a1[1] - a0[1]); z[i] = Z(lat[i], lon[i]); }
       }
     }
-    const mf = await modelFields(G.bb, hourIso), ms = Date.parse(hourIso);
+    const { near: mf, source } = await modelFields(G.bb, hourIso), ms = Date.parse(hourIso);
     const doy = (ms - Date.UTC(new Date(ms).getUTCFullYear(), 0, 0)) / 864e5;
     const fixed = { hour: new Date(ms).getUTCHours(), doy_sin: Math.sin(2 * Math.PI * doy / 365.25), doy_cos: Math.cos(2 * Math.PI * doy / 365.25) };
     // punti di previsione: ogni k pixel (30 m se l'area è piccola, altrimenti 90 m), dentro il margine
@@ -166,7 +172,7 @@ const RKMAP = (() => {
       }
       if (r % 50 === 49) { step(75 + 25 * r / G.H, `4/4 · values on the map pixels… ${Math.round(100 * r / G.H)} %`); await new Promise(res => setTimeout(res, 0)); }
     }
-    return { est, trd, sd, elev, step: k * RES, rmse: Object.fromEntries(vars.map((v, i) => [v, Ms[i].rmse_validation])) };
+    return { est, trd, sd, elev, step: k * RES, source, rmse: Object.fromEntries(vars.map((v, i) => [v, Ms[i].rmse_validation])) };
   }
 
   return { run };
