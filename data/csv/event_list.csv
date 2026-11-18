@@ -1871,6 +1871,14 @@ italia,pioggia_forte,2026-11-16,16337,4,42.0,,10.1,8.2,13.9,5.4,,15.1,16.3,,9.0,
 italia,pioggia_forte,2026-11-16,16337,5,42.0,,13.1,0.4,9.0,5.7,,,30.2,,11.5,Bonifati
 italia,pioggia_forte,2026-11-16,16337,6,42.0,,14.0,58.9,24.3,22.9,,,22.1,,44.6,Bonifati
 italia,pioggia_forte,2026-11-16,16337,7,42.0,,19.5,5.5,32.4,0.2,,,,,,Bonifati
+italia,pioggia_forte,2026-11-17,16170,1,30.0,,,,,,,,,13.4,,Firenze / Peretola
+italia,pioggia_forte,2026-11-17,16170,2,30.0,,,,,,,,,15.1,,Firenze / Peretola
+italia,pioggia_forte,2026-11-17,16170,3,30.0,,,,,,,,,11.3,,Firenze / Peretola
+italia,pioggia_forte,2026-11-17,16170,4,30.0,,,,,,,,,19.3,,Firenze / Peretola
+italia,pioggia_forte,2026-11-17,16181,1,24.3,,,,,,,,,10.2,,Perugia
+italia,pioggia_forte,2026-11-17,16181,2,24.3,,,,,,,,,9.2,,Perugia
+italia,pioggia_forte,2026-11-17,16181,3,24.3,,,,,,,,,2.6,,Perugia
+italia,pioggia_forte,2026-11-17,16181,4,24.3,,,,,,,,,15.6,,Perugia
 italia,pioggia_molto,2026-08-20,16036,0,57.5,44.5,26.6,32.6,29.3,28.3,15.9,35.2,22.5,,28.8,Aviano
 italia,pioggia_molto,2026-08-20,16036,1,57.5,36.1,26.2,29.6,29.9,24.4,35.4,25.1,28.1,,38.2,Aviano
 italia,pioggia_molto,2026-08-20,16036,2,57.5,31.0,26.8,20.7,42.7,12.4,11.7,36.1,50.9,,76.4,Aviano
@@ -7471,15 +7479,15 @@ italia,gelo,2026-11-16,16052,4,-9.5,,-7.5,-10.7,-6.2,-11.4,,-9.1,-9.1,,-25.3,Pia
 italia,gelo,2026-11-16,16052,5,-9.5,,-8.3,-15.0,-11.1,-11.0,,,-7.8,,-11.5,Pian Rosa
 italia,gelo,2026-11-16,16052,6,-9.5,,-7.7,-20.1,-8.9,-10.3,,,-7.5,,-14.7,Pian Rosa
 italia,gelo,2026-11-16,16052,7,-9.5,,-8.6,-15.6,-5.8,-9.8,,,,,,Pian Rosa
-italia,gelo,2026-11-17,16008,1,-0.2,,,,,,,,,0.5,,S. Valentino Alla Muta
-italia,gelo,2026-11-17,16008,2,-0.2,,,,,,,,,-1.2,,S. Valentino Alla Muta
-italia,gelo,2026-11-17,16008,3,-0.2,,,,,,,,,-0.3,,S. Valentino Alla Muta
+italia,gelo,2026-11-17,16008,1,-0.2,,,,,,,,,-0.9,,S. Valentino Alla Muta
+italia,gelo,2026-11-17,16008,2,-0.2,,,,,,,,,-1.4,,S. Valentino Alla Muta
+italia,gelo,2026-11-17,16008,3,-0.2,,,,,,,,,-0.4,,S. Valentino Alla Muta
 italia,gelo,2026-11-17,16008,4,-0.2,,,,,,,,,-0.9,,S. Valentino Alla Muta
 italia,gelo,2026-11-17,16022,1,-2.2,,,,,,,,,-5.4,,Paganella
 italia,gelo,2026-11-17,16022,2,-2.2,,,,,,,,,-5.8,,Paganella
 italia,gelo,2026-11-17,16022,3,-2.2,,,,,,,,,-5.9,,Paganella
 italia,gelo,2026-11-17,16022,4,-2.2,,,,,,,,,-5.8,,Paganella
-italia,gelo,2026-11-17,16052,1,-6.8,,,,,,,,,-9.7,,Pian Rosa
-italia,gelo,2026-11-17,16052,2,-6.8,,,,,,,,,-11.8,,Pian Rosa
-italia,gelo,2026-11-17,16052,3,-6.8,,,,,,,,,-9.2,,Pian Rosa
-italia,gelo,2026-11-17,16052,4,-6.8,,,,,,,,,-9.5,,Pian Rosa
+italia,gelo,2026-11-17,16052,1,-7.1,,,,,,,,,-11.4,,Pian Rosa
+italia,gelo,2026-11-17,16052,2,-7.1,,,,,,,,,-12.0,,Pian Rosa
+italia,gelo,2026-11-17,16052,3,-7.1,,,,,,,,,-11.0,,Pian Rosa
+italia,gelo,2026-11-17,16052,4,-7.1,,,,,,,,,-9.5,,Pian Rosa
