@@ -60,6 +60,23 @@ function htmlLegend(ch, el, tips = {}) {
     const c = Chart.getChart(id), k = +b.dataset.k;                       // istanza attuale (il grafico può essere stato ricreato)
     c.setDatasetVisibility(k, !c.isDatasetVisible(k)); b.classList.toggle("off"); c.update(); });
 }
+// riquadro di spiegazione per gli elementi con data-tip (passaggio del mouse, o tocco/tastiera tramite focus);
+// posizione fissa, così non viene tagliato dai contenitori con scorrimento
+const tipBox = Object.assign(document.createElement("div"), { className: "tipbox", hidden: true });
+document.body.append(tipBox);
+const showTip = e => {
+  const el = e.target.closest?.("[data-tip]");
+  if (!el || !el.dataset.tip) return;
+  tipBox.textContent = el.dataset.tip; tipBox.hidden = false;
+  const r = el.getBoundingClientRect(), w = tipBox.offsetWidth, h = tipBox.offsetHeight;
+  tipBox.style.left = `${Math.max(6, Math.min(innerWidth - w - 6, r.left))}px`;
+  tipBox.style.top = `${r.bottom + 6 + h > innerHeight ? r.top - h - 6 : r.bottom + 6}px`;
+};
+const hideTip = e => { if (e.target.closest?.("[data-tip]")) tipBox.hidden = true; };
+document.addEventListener("mouseover", showTip); document.addEventListener("focusin", showTip);
+document.addEventListener("mouseout", hideTip); document.addEventListener("focusout", hideTip);
+addEventListener("scroll", () => { tipBox.hidden = true; }, true);
+
 // pulsante CSV per ogni tabella del sito
 function tableDownloads() {
   document.querySelectorAll("main table").forEach(t => {

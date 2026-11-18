@@ -7,6 +7,27 @@
 "use strict";
 const I18N = (() => {
   const D = {
+    "Water vapour column from ECMWF IFS (0.25°, about 25 km) at that hour [kg m⁻²]: the value to be corrected for water vapour": "Vapore acqueo in colonna di ECMWF IFS (0,25°, circa 25 km) a quell'ora [kg m⁻²]: il valore da correggere per il vapore",
+    "Aerosol optical depth at 550 nm from CAMS global (0.4°, about 45 km) at that hour: the value to be corrected for AOD": "Spessore ottico degli aerosol a 550 nm di CAMS globale (0,4°, circa 45 km) a quell'ora: il valore da correggere per l'AOD",
+    "Dust concentration near the ground from CAMS [µg m⁻³]": "Concentrazione di polveri vicino al suolo di CAMS [µg m⁻³]",
+    "Air temperature at 2 m from ECMWF IFS [°C]": "Temperatura dell'aria a 2 m di ECMWF IFS [°C]",
+    "Relative humidity at 2 m from ECMWF IFS [%]": "Umidità relativa a 2 m di ECMWF IFS [%]",
+    "Surface pressure from ECMWF IFS [hPa]: lower over high ground, where there is less air and water vapour above": "Pressione al suolo di ECMWF IFS [hPa]: più bassa in quota, dove sopra c'è meno aria e meno vapore",
+    "Ground elevation from the Copernicus DEM (30 m) [m]": "Quota del terreno dal Copernicus DEM (30 m) [m]",
+    "Slope of the terrain [degrees]": "Pendenza del terreno [gradi]",
+    "Topographic position within 500 m: elevation minus the mean elevation around [m]; positive on ridges and hilltops, negative in valleys": "Posizione topografica entro 500 m: quota meno la quota media intorno [m]; positiva su creste e colline, negativa nelle valli",
+    "Relief within 500 m: standard deviation of the elevation around [m]; high where the terrain is rugged": "Rilievo entro 500 m: deviazione standard della quota intorno [m]; alta dove il terreno è accidentato",
+    "Topographic position within 2 km: elevation minus the mean elevation around [m]; positive on ridges and hilltops, negative in valleys": "Posizione topografica entro 2 km: quota meno la quota media intorno [m]; positiva su creste e colline, negativa nelle valli",
+    "Relief within 2 km: standard deviation of the elevation around [m]; high where the terrain is rugged": "Rilievo entro 2 km: deviazione standard della quota intorno [m]; alta dove il terreno è accidentato",
+    "Latitude [degrees]": "Latitudine [gradi]",
+    "Longitude [degrees]": "Longitudine [gradi]",
+    "Hour, UTC: the model error changes during the day": "Ora, UTC: l'errore del modello cambia durante il giorno",
+    "Season: sine of the day of the year (with the cosine, 31 December and 1 January are close)": "Stagione: seno del giorno dell'anno (con il coseno, 31 dicembre e 1° gennaio risultano vicini)",
+    "Season: cosine of the day of the year (with the sine, 31 December and 1 January are close)": "Stagione: coseno del giorno dell'anno (con il seno, 31 dicembre e 1° gennaio risultano vicini)",
+    "ECMWF/CAMS value plus the correction learnt from AERONET and GNSS measurements: the best estimate, use this one": "Valore ECMWF/CAMS più la correzione appresa dalle misure AERONET e GNSS: la stima migliore, da usare",
+    "How much the validated model changes the model value in each pixel: positive = more than ECMWF/CAMS": "Quanto il modello validato cambia il valore del modello in ogni pixel: positivo = più di ECMWF/CAMS",
+    "The original model value (25–45 km cells) at the same hour, without correction: for comparison": "Il valore originale del modello (celle di 25–45 km) alla stessa ora, senza correzione: per confronto",
+    "Ground elevation used for the terrain covariates and for the radiative transfer": "Quota del terreno usata per le covariate del terreno e per il trasferimento radiativo",
     "· Atmosphere: ECMWF IFS and CAMS via Open-Meteo, 6S, libRadtran · Validation: AERONET (NASA), GNSS (Nevada Geodetic Laboratory) · Elevation: Copernicus DEM / EU-DEM (Mapzen Terrarium tiles) · Maps & geocoding: ©": "· Atmosfera: ECMWF IFS e CAMS tramite Open-Meteo, 6S, libRadtran · Validazione: AERONET (NASA), GNSS (Nevada Geodetic Laboratory) · Quota: Copernicus DEM / EU-DEM (tasselli Mapzen Terrarium) · Mappe e geocodifica: ©",
     "Water vapour, aerosol optical depth and radiative transfer quantities at high resolution, for a past date and hour: ECMWF IFS and CAMS corrected pixel by pixel with the model validated on AERONET and GNSS measurements (below).": "Vapore acqueo, spessore ottico degli aerosol e grandezze di trasferimento radiativo ad alta risoluzione, per una data e un'ora passate: ECMWF IFS e CAMS corretti pixel per pixel con il modello validato sulle misure AERONET e GNSS (sotto).",
     "The map will have exactly the extent, pixels and coordinate system of the image, so the values can be used pixel by pixel. Band wavelengths and acquisition time are read from the metadata when present.": "La mappa avrà esattamente estensione, pixel e sistema di riferimento dell'immagine, così i valori si usano pixel per pixel. Lunghezze d'onda delle bande e ora di acquisizione si leggono dai metadati se presenti.",
@@ -246,7 +267,7 @@ const I18N = (() => {
       return;
     }
     if (n.nodeType !== 1) return;
-    for (const a of ["placeholder", "title"]) if (n.hasAttribute?.(a)) {
+    for (const a of ["placeholder", "title", "data-tip"]) if (n.hasAttribute?.(a)) {
       const key = "_en_" + a; if (n[key] == null) n[key] = n.getAttribute(a);
       n.setAttribute(a, lang === "it" ? t(n[key]) : n[key]);
     }

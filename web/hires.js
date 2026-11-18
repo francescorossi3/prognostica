@@ -191,13 +191,13 @@ const HR = (() => {
     const pane = id => { S.hmap.createPane(id); return id; };
     const base = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap", pane: pane("hl-base") }).addTo(S.hmap);
     // layer della mappa: in alto = disegnato sopra (pannello Layers come in QGIS)
-    const raster = (key, name, ramp, visible) => ({ id: key, key, name, kind: "raster", visible, pane: pane("hl-" + key),
+    const raster = (key, name, tip, ramp, visible) => ({ id: key, key, name, tip, kind: "raster", visible, pane: pane("hl-" + key),
       style: MapStyle.create(ramp, 0.67), values: () => (HR.out ? rasterOf(key) : []) });
     S.hl = [
-      raster("est", "Corrected (validated model)", "RdYlBu", true),
-      raster("sd", "Correction (corrected − model)", "RdBu", false),
-      raster("trend", "Model only (ECMWF / CAMS)", "RdYlBu", false),
-      raster("elev", "Elevation [m]", "Greys", false),
+      raster("est", "Corrected (validated model)", "ECMWF/CAMS value plus the correction learnt from AERONET and GNSS measurements: the best estimate, use this one", "RdYlBu", true),
+      raster("sd", "Correction (corrected − model)", "How much the validated model changes the model value in each pixel: positive = more than ECMWF/CAMS", "RdBu", false),
+      raster("trend", "Model only (ECMWF / CAMS)", "The original model value (25–45 km cells) at the same hour, without correction: for comparison", "RdYlBu", false),
+      raster("elev", "Elevation [m]", "Ground elevation used for the terrain covariates and for the radiative transfer", "Greys", false),
       { id: "base", name: "OpenStreetMap", kind: "base", visible: true, pane: "hl-base", group: base },
     ];
     S.hsel = "est";
@@ -340,6 +340,26 @@ const HR = (() => {
 
   // ---------------------------------------------------------------- validazione sulle misure AERONET e GNSS (da Torricelli)
   // ogni sito: pallino grande quanto l'RMSE del metodo scelto; verde-acqua = meglio del modello grezzo, ocra = peggio
+  // spiegazione delle covariate (riquadro al passaggio del mouse o al tocco)
+  const COV = {
+    tcwv_model: "Water vapour column from ECMWF IFS (0.25°, about 25 km) at that hour [kg m⁻²]: the value to be corrected for water vapour",
+    aod_model: "Aerosol optical depth at 550 nm from CAMS global (0.4°, about 45 km) at that hour: the value to be corrected for AOD",
+    dust_ugm3: "Dust concentration near the ground from CAMS [µg m⁻³]",
+    t2m_c: "Air temperature at 2 m from ECMWF IFS [°C]",
+    rh2m: "Relative humidity at 2 m from ECMWF IFS [%]",
+    ps_hpa: "Surface pressure from ECMWF IFS [hPa]: lower over high ground, where there is less air and water vapour above",
+    dem_elev: "Ground elevation from the Copernicus DEM (30 m) [m]",
+    slope_deg: "Slope of the terrain [degrees]",
+    tpi_500: "Topographic position within 500 m: elevation minus the mean elevation around [m]; positive on ridges and hilltops, negative in valleys",
+    relief_500: "Relief within 500 m: standard deviation of the elevation around [m]; high where the terrain is rugged",
+    tpi_2000: "Topographic position within 2 km: elevation minus the mean elevation around [m]; positive on ridges and hilltops, negative in valleys",
+    relief_2000: "Relief within 2 km: standard deviation of the elevation around [m]; high where the terrain is rugged",
+    lat: "Latitude [degrees]",
+    lon: "Longitude [degrees]",
+    hour: "Hour, UTC: the model error changes during the day",
+    doy_sin: "Season: sine of the day of the year (with the cosine, 31 December and 1 January are close)",
+    doy_cos: "Season: cosine of the day of the year (with the sine, 31 December and 1 January are close)",
+  };
   const VM = { model: "Model (ECMWF / CAMS)", hgb: "Gradient boosting", hgb_rk: "Gradient boosting + kriging" };
   async function validation() {
     const url = (S.meta.atmos_url || "").replace(/\/?$/, "/") + "data/validation/rk_validation.json";
@@ -375,7 +395,7 @@ const HR = (() => {
         <div class="lg-row"><span class="sw" style="background:#d49a3a"></span><span>Worse than the model</span></div>
         <div class="lg-row"><span class="dot dashed"></span><span>Dashed border = GNSS station</span></div></div>`;
       $("#hv-imp").innerHTML = `<thead><tr><th>Covariate</th><th>Importance (RMSE increase when shuffled${u})</th></tr></thead><tbody>`
-        + x.importance.map(i => `<tr><td>${i.feature}</td><td>${fmt(i.importance, d)}</td></tr>`).join("") + "</tbody>";
+        + x.importance.map(i => `<tr><td><span class="tip" tabindex="0" data-tip="${COV[i.feature] || ""}">${i.feature}</span></td><td>${fmt(i.importance, d)}</td></tr>`).join("") + "</tbody>";
     };
     $("#hv-var").onchange = show; $("#hv-method").onchange = show;
     show();

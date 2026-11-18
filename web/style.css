@@ -193,6 +193,11 @@ footer { color: var(--muted); font-size: .8rem; padding: 1rem 1.5rem 2rem; text-
 footer a { color: inherit; }
 .name-note { font-style: normal; margin: 0 0 .4rem; }
 
+/* spiegazione al passaggio del mouse (o al tocco: tabindex) */
+.tip[data-tip] { cursor: help; text-decoration: underline dotted var(--muted); text-underline-offset: 3px; }
+.tipbox { position: fixed; z-index: 2000; max-width: min(320px, 85vw); font-size: .82rem; line-height: 1.35; color: var(--ink); background: #fff;
+  border: 1px solid var(--line); border-radius: 6px; padding: .45rem .6rem; box-shadow: 0 4px 14px rgba(21, 35, 59, .15); pointer-events: none; }
+
 /* SRF personalizzata */
 .custom-srf { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: flex-start; flex: 1 1 100%; }
 .custom-srf textarea { font: .85rem/1.4 ui-monospace, Menlo, Consolas, monospace; flex: 1 1 420px; min-height: 5.5rem; padding: .4rem .5rem;

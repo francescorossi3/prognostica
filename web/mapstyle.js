@@ -170,7 +170,7 @@ const MapStyle = (() => {
       <li draggable="true" data-i="${i}" class="${l.id === sel ? "sel" : ""}">
         <span class="grip" aria-hidden="true">⋮⋮</span>
         <input type="checkbox" ${l.visible ? "checked" : ""} title="Show / hide" aria-label="Show / hide ${l.name}">
-        <button class="name" title="Select to change the style">${l.name}</button>
+        <button class="name${l.tip ? " tip" : ""}" title="Select to change the style"${l.tip ? ` data-tip="${l.tip}"` : ""}>${l.name}</button>
         <span class="mv"><button data-d="-1" title="Move up" aria-label="Move up"${i === 0 ? " disabled" : ""}>▲</button><button data-d="1" title="Move down" aria-label="Move down"${i === list.length - 1 ? " disabled" : ""}>▼</button>${l.removable ? `<button data-x title="Remove layer" aria-label="Remove layer">✕</button>` : ""}</span>
       </li>`).join("")}</ol>`;
     const move = (from, to) => { if (to < 0 || to >= list.length || from === to) return; const [l] = list.splice(from, 1); list.splice(to, 0, l); cb.order(); };
