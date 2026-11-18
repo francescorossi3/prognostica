@@ -559,14 +559,17 @@ function initPoint() {
   upd();
   // modello di trasferimento radiativo: con 6S la parte termica (LWIR) è ingrigita
   S.rtm = "6s"; document.body.classList.add("rtm-6s");
-  ATM.available("libradtran").then(ok => {
-    const o = $('#a-rtm option[value="libradtran"]');
+  // lo stesso selettore c'è in Atmosphere e in Atmosphere RK: la scelta vale per entrambe le schede
+  const rtmSel = ["#a-rtm", "#h-rtm"].map(id => $(id));
+  ATM.available("libradtran").then(ok => rtmSel.forEach(sel => {
+    const o = sel.querySelector('option[value="libradtran"]');
     o.disabled = !ok; if (ok) o.textContent = "libRadtran · VNIR–SWIR and LWIR";
-  });
-  $("#a-rtm").onchange = () => {
-    S.rtm = $("#a-rtm").value; document.body.classList.toggle("rtm-6s", S.rtm === "6s");
+  }));
+  rtmSel.forEach(sel => { sel.onchange = () => {
+    S.rtm = sel.value; rtmSel.forEach(x => { x.value = S.rtm; });
+    document.body.classList.toggle("rtm-6s", S.rtm === "6s");
     HR.rtm(); if (S.point) ATM.render(S.point);
-  };
+  }; });
   HR.init();
   const q = new URLSearchParams(location.hash.split("?")[1] || "");
   if (q.has("lat") && q.has("lon")) { setPoint(+q.get("lat"), +q.get("lon")); runPoint(); }

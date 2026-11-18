@@ -7,6 +7,8 @@
 "use strict";
 const I18N = (() => {
   const D = {
+    "Radiative transfer code of the tables (the same choice as in the Atmosphere tab)": "Codice di trasferimento radiativo delle tabelle (la stessa scelta della scheda Atmosfera)",
+    "Radiative transfer": "Trasferimento radiativo",
     "Regression kriging: the model value plus its residual predicted pixel by pixel by the gradient boosting trained on AERONET and GNSS measurements. The best estimate: use this one": "Regression kriging: il valore del modello più il suo residuo previsto pixel per pixel dal gradient boosting addestrato sulle misure AERONET e GNSS. La stima migliore: usa questa",
     "Residual of the model (measurement − model) predicted in each pixel from the covariates: positive where the model underestimates": "Residuo del modello (misura − modello) previsto in ogni pixel dalle covariate: positivo dove il modello sottostima",
     "The original model value (cells of 25–45 km) at the same hour, without correction: for comparison": "Il valore originale del modello (celle di 25–45 km) alla stessa ora, senza correzione: per confronto",

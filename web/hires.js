@@ -226,7 +226,7 @@ const HR = (() => {
         const b = S.hbands?.[+$("#h-band").value];
         if (!b) throw new Error("choose a spectral band");
         vb = await SRF.band(b);
-        bandLab = ` · ${$("#h-sensor").selectedOptions[0].textContent} ${b.name}`;
+        bandLab = ` · ${$("#h-sensor").selectedOptions[0].textContent} ${b.name} · ${S.rtm === "6s" ? "6S" : "libRadtran"}`;
       }
       step(2, "0/4 · elevation…");
       const C = G.toLL(G.x0 + G.W * G.dx / 2, G.y0 - G.H * G.dy / 2), mlat = 111320, mlon = 111320 * Math.cos(C[1] * Math.PI / 180);
@@ -308,7 +308,9 @@ const HR = (() => {
     const o = HR.out, rm = Object.entries(o.rmse).map(([v, e]) => `${v === "tcwv" ? "water vapour" : "AOD"} ${fmt(e, v === "tcwv" ? 2 : 3)}${v === "tcwv" ? " kg m⁻²" : ""}`);
     $("#h-model").innerHTML = `<dl class="kv"><dt>Map</dt><dd>${o.label}</dd><dt>Method</dt><dd>gradient boosting correction of ECMWF IFS / CAMS,
       validated on AERONET and GNSS; applied every ${o.step} m and interpolated on the ${W0(o.G)}</dd>
-      <dt>Validation RMSE</dt><dd>${rm.join(" · ")} (sites left out of training)</dd></dl>`;
+      <dt>Validation RMSE</dt><dd>${rm.join(" · ")} (sites left out of training)</dd>
+      ${isBand(o.kind) ? `<dt>Radiative transfer</dt><dd>${S.rtm === "6s" ? "6S" : "libRadtran"} tables, interpolated in water vapour and AOD (RK), solar zenith angle and elevation of each pixel;
+        fixed: nadir view, continental aerosol, ozone 0.30 cm-atm${thermal(o.kind) ? ", AFGL standard atmosphere chosen by latitude and season" : ""}</dd>` : ""}</dl>`;
   }
 
   // download nel formato e nelle unità scelti, con i pixel e il sistema di riferimento della griglia (anche quella di un'immagine importata)

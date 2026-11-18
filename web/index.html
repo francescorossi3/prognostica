@@ -160,6 +160,9 @@
     <button id="h-go" class="primary">Build map</button>
   </div>
   <div class="controls" id="h-band-row" hidden>
+    <label title="Radiative transfer code of the tables (the same choice as in the Atmosphere tab)">Radiative transfer model <select id="h-rtm">
+      <option value="6s">6S · VNIR–SWIR only</option>
+      <option value="libradtran" disabled>libRadtran · VNIR–SWIR and LWIR (tables in preparation)</option></select></label>
     <label title="Spectral response function used to convert the radiative transfer tables to the band">Sensor <select id="h-sensor"></select></label>
     <label>Band <select id="h-band"></select></label>
     <span class="hint" id="h-band-info"></span>
