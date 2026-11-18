@@ -7,6 +7,8 @@
 "use strict";
 const I18N = (() => {
   const D = {
+    "One band per line: centre, FWHM — e.g. 865, 30 (nm) or 10.9, 0.6 (µm)\nor a table: wavelength, response band 1, response band 2, …": "Una banda per riga: centro, FWHM — es. 865, 30 (nm) o 10.9, 0.6 (µm)\noppure una tabella: lunghezza d'onda, risposta banda 1, risposta banda 2, …",
+    "automatic (below 30 = µm)": "automatica (sotto 30 = µm)",
     "Before February 2024 ECMWF IFS 0.25° is not archived: values from the ERA5 reanalysis (0.25°), without the vertical profile.": "Prima di febbraio 2024 ECMWF IFS 0,25° non è in archivio: valori della rianalisi ERA5 (0,25°), senza il profilo verticale.",
     "Radiative transfer code of the tables (the same choice as in the Atmosphere tab)": "Codice di trasferimento radiativo delle tabelle (la stessa scelta della scheda Atmosfera)",
     "Radiative transfer": "Trasferimento radiativo",

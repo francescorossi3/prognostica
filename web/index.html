@@ -167,7 +167,8 @@
     <label>Band <select id="h-band"></select></label>
     <span class="hint" id="h-band-info"></span>
     <div id="h-custom-wrap" class="custom-srf" hidden>
-      <textarea id="h-custom" rows="4" placeholder="One band per line: centre, FWHM (nm) — e.g. 865, 30&#10;or a table: wavelength (nm), response band 1, response band 2, …"></textarea>
+      <textarea id="h-custom" rows="4" placeholder="One band per line: centre, FWHM — e.g. 865, 30 (nm) or 10.9, 0.6 (µm)&#10;or a table: wavelength, response band 1, response band 2, …"></textarea>
+      <label>Units <select id="h-custom-u"><option value="auto">automatic (below 30 = µm)</option><option value="nm">nm</option><option value="um">µm</option></select></label>
       <label>or load a CSV <input type="file" id="h-custom-file" accept=".csv,.txt"></label>
     </div>
   </div>

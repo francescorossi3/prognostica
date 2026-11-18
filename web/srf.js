@@ -78,15 +78,18 @@ const SRF = (() => {
     return bands.map((b, i) => (b.fwhm ? b : { ...b, fwhm: Math.max(1, Math.abs((bands[i + 1] || bands[i - 1] || { c: b.c + 10 }).c - b.c)) }));
   }
 
-  // testo personalizzato: righe "centro, FWHM" (nm) oppure CSV con intestazione: lunghezza d'onda (nm), risposta banda 1, banda 2, ...
-  function fromText(t) {
+  // testo personalizzato: righe "centro, FWHM" oppure CSV con intestazione: lunghezza d'onda, risposta banda 1, banda 2, ...
+  // unit: "nm", "um" (micrometri) o "auto" (valori sotto 30 = micrometri)
+  function fromText(t, unit = "auto") {
     const rows = t.trim().split(/\r?\n/).map(r => r.split(/[,;\t ]+/).filter(Boolean));
     if (!rows.length) return [];
     const head = rows[0].some(x => !Number.isFinite(+x)) ? rows.shift() : null, nums = rows.map(r => r.map(Number)).filter(r => r.every(Number.isFinite));
-    if (nums.length && nums[0].length === 2 && nums.length <= 50 && !head) {
-      return nums.map(([c, f], i) => ({ name: `Band ${i + 1}`, c, fwhm: f }));
+    if (!nums.length) return [];
+    const k = unit === "um" || (unit === "auto" && nums[0][0] < 30) ? 1000 : 1;
+    if (nums[0].length === 2 && nums.length <= 50 && !head) {
+      return nums.map(([c, f], i) => ({ name: `Band ${i + 1}`, c: c * k, fwhm: f * k }));
     }
-    const wl = nums.map(r => r[0]);
+    const wl = nums.map(r => r[0] * k);
     return nums[0].slice(1).map((_, j) => {
       const r = nums.map(x => x[j + 1]), mx = Math.max(...r), dw = (wl[wl.length - 1] - wl[0]) / (wl.length - 1);
       // ricampionata a passo costante per response()

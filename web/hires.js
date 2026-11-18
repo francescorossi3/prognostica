@@ -151,7 +151,7 @@ const HR = (() => {
     if (src === "wl") list = tir ? Array.from({ length: 51 }, (_, i) => ({ name: `${(8 + i / 10).toFixed(1)} µm`, c: 8000 + 100 * i, fwhm: 100 }))
       : Array.from({ length: 211 }, (_, i) => ({ name: `${400 + 10 * i} nm`, c: 400 + 10 * i, fwhm: 10 }));
     else if (src === "image") list = S.himgBands || [];
-    else if (src === "custom") list = SRF.fromText($("#h-custom").value);
+    else if (src === "custom") list = SRF.fromText($("#h-custom").value, $("#h-custom-u").value);
     else list = Object.entries(((await SRF.library())[src] || {}).bands || {}).map(([n, b]) => ({ ...b, name: n }));
     S.hbands = list.filter(b => (tir ? b.c > 3000 : b.c >= 350 && b.c <= 2550));
     opts($("#h-band"), S.hbands.map((b, i) => [i, src === "wl" ? b.name : `${b.name} · ${b.c >= 3000 ? fmt(b.c / 1000, 2) + " µm" : fmt(b.c, 0) + " nm"}`]),
@@ -176,7 +176,7 @@ const HR = (() => {
     opts($("#h-target"), TARGETS, "tcwv");
     $("#h-target").onchange = targetChange;
     $("#h-sensor").onchange = bandOptions;
-    $("#h-custom").onchange = bandOptions;
+    $("#h-custom").onchange = bandOptions; $("#h-custom-u").onchange = bandOptions;
     $("#h-custom-file").onchange = async e => { if (e.target.files[0]) { $("#h-custom").value = await e.target.files[0].text(); bandOptions(); } };
     opts($("#h-hour"), Array.from({ length: 24 }, (_, h) => [h, `${String(h).padStart(2, "0")}:00`]), 10);
     $("#h-date").value = new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10);
