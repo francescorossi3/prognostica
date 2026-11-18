@@ -56,7 +56,8 @@ function htmlLegend(ch, el, tips = {}) {
   el.innerHTML = ch.data.datasets.map((d, k) => d.label.startsWith("_") ? ""
     : `<button data-k="${k}" title="${tips[k] || "Show / hide"}"><i style="background:${d.borderColor || d.backgroundColor}"></i>${d.label}</button>`).join("");
   el.querySelectorAll("button").forEach(b => b.onclick = () => {
-    const k = +b.dataset.k; ch.setDatasetVisibility(k, !ch.isDatasetVisible(k)); b.classList.toggle("off"); ch.update(); });
+    const c = Chart.getChart(ch.canvas) || ch, k = +b.dataset.k;            // istanza attuale (il grafico può essere stato ricreato)
+    c.setDatasetVisibility(k, !c.isDatasetVisible(k)); b.classList.toggle("off"); c.update(); });
 }
 // pulsante CSV per ogni tabella del sito
 function tableDownloads() {
@@ -132,8 +133,13 @@ function showTab(t) {
   history.replaceState(null, "", "#" + t + (q && ["point", "atm", "hr"].includes(t) ? "?" + q : ""));
   if (t === "maps" && S.map) setTimeout(() => S.map.invalidateSize(), 50);
   if (t === "hr" && S.hmap) setTimeout(() => { S.hmap.invalidateSize(); S.vmap?.invalidateSize(); }, 50);
-  // i grafici disegnati mentre la scheda era nascosta hanno dimensione zero: si ridimensionano quando la scheda si vede
-  if (["point", "atm", "hr", "rank", "events"].includes(t)) setTimeout(() => Object.values(charts).forEach(c => c.resize()), 0);
+  // i grafici disegnati mentre la scheda era nascosta restano a dimensione zero: quando la scheda si vede si ricreano, gli altri si ridimensionano
+  setTimeout(() => Object.entries(charts).forEach(([id, c]) => {
+    if (!c.canvas?.offsetParent) return;
+    if (c.width) return c.resize();
+    const { type, data, options, plugins } = c.config._config;
+    c.destroy(); charts[id] = new Chart(document.getElementById(id), { type, data, options, plugins });
+  }), 0);
 }
 
 // ================================================================== CLASSIFICA
