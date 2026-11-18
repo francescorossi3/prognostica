@@ -1,7 +1,8 @@
 // rkmap.js – vapore acqueo, AOD e grandezze di trasferimento radiativo ad alta risoluzione con il modello validato sulle misure.
 // Cosa fa: per una data e un'ora passate calcola nel browser, su un reticolo di 30 m, le stesse covariate usate da Torricelli
 //          (07_rk_validate.py) e applica il gradient boosting esportato (rk_model_<var>.json) che corregge ECMWF IFS / CAMS:
-//            - modello (Open-Meteo: ECMWF IFS 0.25°, dal 3/2/2024; prima la rianalisi ERA5 0.25°; CAMS globale) nell'ora scelta, valore della cella di griglia:
+//            - modello (Open-Meteo: ECMWF IFS 0.25°, dal 3/2/2024; prima la rianalisi ERA5 0.25°; CAMS globale) nell'ora scelta,
+//              interpolato in modo bilineare tra i centri delle celle (niente gradini ai bordi delle celle):
 //              vapore, AOD, polveri, temperatura e umidità a 2 m, pressione al suolo;
 //            - terreno (tasselli Terrarium): quota, pendenza, TPI e rilievo entro 500 e 2000 m (quadrato di area uguale al cerchio);
 //            - posizione, ora e giorno dell'anno.
@@ -55,28 +56,47 @@ const RKMAP = (() => {
     return s;
   }
 
-  // valori del modello su un reticolo 9 x 9, nell'ora scelta; restituisce la funzione del punto più vicino (= cella del modello)
-  // ECMWF IFS 0.25° è archiviato da Open-Meteo dal 3 febbraio 2024: prima si usa la rianalisi ERA5 (stessa griglia 0.25°)
-  const IFS025_FROM = "2024-02-03";
-  // valori del modello su un reticolo 9 x 9, nell'ora scelta; restituisce la funzione del punto più vicino (= cella del modello) e la fonte
+  // valori del modello nell'ora scelta, interpolati in modo bilineare tra i centri delle celle di griglia del modello
+  // (Open-Meteo restituisce la cella che contiene ogni punto richiesto e le sue coordinate): niente gradini ai bordi delle celle
   async function modelFields(bb, hourIso) {
-    const n = 9, pts = [];
-    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) pts.push([bb.s + (bb.n - bb.s) * (i + 0.5) / n, bb.w + (bb.e - bb.w) * (j + 0.5) / n]);
+    const pad = 0.5, step = 0.15, la0 = bb.s - pad, lo0 = bb.w - pad;
+    const ni = Math.ceil((bb.n - bb.s + 2 * pad) / step) + 1, nj = Math.ceil((bb.e - bb.w + 2 * pad) / step) + 1, pts = [];
+    for (let i = 0; i < ni; i++) for (let j = 0; j < nj; j++) pts.push([la0 + i * step, lo0 + j * step]);
     const day = hourIso.slice(0, 10), q = `latitude=${pts.map(p => p[0].toFixed(4))}&longitude=${pts.map(p => p[1].toFixed(4))}&start_date=${day}&end_date=${day}&timezone=GMT`;
     const era5 = day < IFS025_FROM, met = "hourly=total_column_integrated_water_vapour,temperature_2m,relative_humidity_2m,surface_pressure";
     const [m, a] = await Promise.all([
       fetch(era5 ? `https://archive-api.open-meteo.com/v1/archive?${q}&models=era5&${met}` : `https://historical-forecast-api.open-meteo.com/v1/forecast?${q}&models=ecmwf_ifs025&${met}`).then(r => r.json()),
       fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${q}&domains=cams_global&hourly=aerosol_optical_depth,dust`).then(r => r.json())]);
     if (m.error || a.error) throw new Error(m.reason || a.reason);
-    const at = (j, v) => { const h = j.hourly, k = h.time.indexOf(hourIso.slice(0, 13) + ":00"); return k < 0 ? NaN : h[v][k] ?? NaN; };
-    const M = [].concat(m), A = [].concat(a);
-    const val = pts.map((p, k) => ({ tcwv_model: at(M[k], "total_column_integrated_water_vapour"), t2m_c: at(M[k], "temperature_2m"),
-      rh2m: at(M[k], "relative_humidity_2m"), ps_hpa: at(M[k], "surface_pressure"), aod_model: at(A[k], "aerosol_optical_depth"), dust_ugm3: at(A[k], "dust") }));
-    if (!val.some(v => Number.isFinite(v.tcwv_model))) throw new Error(`no water vapour values for ${hourIso.slice(0, 13)} UTC in the archive`);
-    if (!val.some(v => Number.isFinite(v.aod_model))) throw new Error(`no CAMS aerosol values for ${hourIso.slice(0, 13)} UTC (the CAMS archive starts in August 2022)`);
+    const hour = hourIso.slice(0, 13) + ":00";
+    // griglia regolare dei centri delle celle (valori unici per latitudine e longitudine) con interpolazione bilineare
+    const field = (js, vars) => {
+      const cells = new Map();
+      for (const j of [].concat(js)) {
+        const k = j.hourly.time.indexOf(hour);
+        if (k >= 0) cells.set(`${j.latitude.toFixed(3)},${j.longitude.toFixed(3)}`, { lat: j.latitude, lon: j.longitude, v: vars.map(v => j.hourly[v][k] ?? NaN) });
+      }
+      const C = [...cells.values()], LA = [...new Set(C.map(c => +c.lat.toFixed(3)))].sort((x, y) => x - y), LO = [...new Set(C.map(c => +c.lon.toFixed(3)))].sort((x, y) => x - y);
+      const at = (i, j) => cells.get(`${LA[i].toFixed(3)},${LO[j].toFixed(3)}`)?.v;
+      const pos = (ax, x) => { let i = 0; while (i < ax.length - 2 && x > ax[i + 1]) i++; return [i, ax.length > 1 ? Math.min(1, Math.max(0, (x - ax[i]) / (ax[i + 1] - ax[i]))) : 0]; };
+      return (lat, lon) => {
+        const [i, t] = pos(LA, lat), [j, u] = pos(LO, lon), out = [];
+        const c = [[at(i, j), (1 - t) * (1 - u)], [at(i, j + 1), (1 - t) * u], [at(i + 1, j), t * (1 - u)], [at(i + 1, j + 1), t * u]];
+        for (let q2 = 0; q2 < vars.length; q2++) {
+          let sw = 0, sv = 0;
+          for (const [v, w] of c) if (v && Number.isFinite(v[q2]) && w > 0) { sv += w * v[q2]; sw += w; }
+          out.push(sw ? sv / sw : NaN);
+        }
+        return out;
+      };
+    };
+    const fm = field(m, ["total_column_integrated_water_vapour", "temperature_2m", "relative_humidity_2m", "surface_pressure"]), fa = field(a, ["aerosol_optical_depth", "dust"]);
+    const c0 = [(bb.s + bb.n) / 2, (bb.w + bb.e) / 2];
+    if (!Number.isFinite(fm(...c0)[0])) throw new Error(`no water vapour values for ${hourIso.slice(0, 13)} UTC in the archive`);
+    if (!Number.isFinite(fa(...c0)[0])) throw new Error(`no CAMS aerosol values for ${hourIso.slice(0, 13)} UTC (the CAMS archive starts in August 2022)`);
     const near = (lat, lon) => {
-      const i = Math.max(0, Math.min(n - 1, Math.floor((lat - bb.s) / (bb.n - bb.s) * n))), j = Math.max(0, Math.min(n - 1, Math.floor((lon - bb.w) / (bb.e - bb.w) * n)));
-      return val[i * n + j];
+      const [w, t, rh, ps] = fm(lat, lon), [aod, dust] = fa(lat, lon);
+      return { tcwv_model: w, t2m_c: t, rh2m: rh, ps_hpa: ps, aod_model: aod, dust_ugm3: dust };
     };
     return { near, source: era5 ? "ERA5 0.25°" : "ECMWF IFS 0.25°" };
   }
