@@ -40,7 +40,7 @@ function drawChart(id, cfg) {
   const ratio = w => (w < 560 ? 1.05 : w < 900 ? 1.5 : 2);
   if (cfg.options?.maintainAspectRatio !== false) {
     cfg.options = { ...cfg.options, aspectRatio: ratio(cv.parentElement.clientWidth || innerWidth),
-      onResize: (c, size) => { if (c.options.aspectRatio !== ratio(size.width)) { c.options.aspectRatio = ratio(size.width); c.resize(); } } };
+      onResize: (c, size) => { if (size.width && c.options.aspectRatio !== ratio(size.width)) { c.options.aspectRatio = ratio(size.width); c.resize(); } } };
   }
   charts[id] = new Chart(cv, cfg);
   // pulsante CSV del grafico (uno per grafico, usa sempre i dati attuali)
@@ -132,7 +132,8 @@ function showTab(t) {
   history.replaceState(null, "", "#" + t + (q && ["point", "atm", "hr"].includes(t) ? "?" + q : ""));
   if (t === "maps" && S.map) setTimeout(() => S.map.invalidateSize(), 50);
   if (t === "hr" && S.hmap) setTimeout(() => { S.hmap.invalidateSize(); S.vmap?.invalidateSize(); }, 50);
-  if (["point", "atm", "hr"].includes(t)) Object.values(charts).forEach(c => c.resize());
+  // i grafici disegnati mentre la scheda era nascosta hanno dimensione zero: si ridimensionano quando la scheda si vede
+  if (["point", "atm", "hr", "rank", "events"].includes(t)) setTimeout(() => Object.values(charts).forEach(c => c.resize()), 0);
 }
 
 // ================================================================== CLASSIFICA
