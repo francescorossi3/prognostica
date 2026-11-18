@@ -312,8 +312,8 @@ function initMaps() {
   };
   $("#m-agg").onchange = upd; $("#m-var").onchange = loadMap;
   $("#m-time").oninput = () => renderMap();
-  $("#m-tif").onclick = () => mapExport("tif");
-  $("#m-csv").onclick = () => mapExport("csv");
+  opts($("#m-fmt"), EXPORT.FORMATS, "tif");
+  $("#m-dl").onclick = () => mapExport($("#m-fmt").value);
   $("#m-add").onclick = () => { const o = $("#m-layer").selectedOptions[0]; if (o) { addMapLayer(o.value, o.text); renderMap(); } };
   S.map.on("click", e => mapPopup(e.latlng.wrap()));
   opts($("#m-var"), varsFor($("#m-agg").value).map(v => [v, VAR_LABEL[v]]), "t2m");
@@ -411,7 +411,7 @@ function mapExport(kind) {
   if (!m || !l) return;
   const vals = layerValues(m, l.key, i), per = m.periods[i].replace(/[T:]/g, "-");
   const name = `${S.region}_${$("#m-var").value}_${$("#m-agg").value}_${l.key.replace(":", "-")}_${per}`;
-  if (kind === "csv" || !m.res) {
+  if (!m.res) {                                    // regione a punti: solo CSV
     return EXPORT.save(EXPORT.csv([["lat", "lon", ...(m.names ? ["name"] : []), l.key], ...vals.map((x, k) => [m.lat[k], m.lon[k], ...(m.names ? [m.names[k]] : []), x])],
       [`${l.name} · ${m.periods[i]} · unit ${unitOf(l.key)}`]), name + ".csv");
   }
@@ -419,7 +419,9 @@ function mapExport(kind) {
   const W = Math.round((Math.max(...m.lon) - Math.min(...m.lon)) / r) + 1, H = Math.round((Math.max(...m.lat) - Math.min(...m.lat)) / r) + 1;
   const g = new Float32Array(W * H).fill(NaN);
   vals.forEach((x, k) => { if (x != null) g[Math.round((lat0 - r / 2 - m.lat[k]) / r) * W + Math.round((m.lon[k] - lon0 - r / 2) / r)] = x; });
-  EXPORT.geotiff(g, W, H, lon0, lat0, r, r, `${l.name} | ${m.periods[i]} | ${unitOf(l.key)} | Prognostica`, name + ".tif");
+  const G = { W, H, x0: lon0, y0: lat0, dx: r, dy: r, epsg: 4326 };
+  EXPORT.raster(kind, g, G, `${l.name} | ${m.periods[i]} | ${unitOf(l.key)} | Prognostica`, name, MapStyle.classify(l.style, vals).color,
+    (c, rr) => [lon0 + (c + 0.5) * r, lat0 - (rr + 0.5) * r]);
 }
 
 function mapPanels() {
@@ -525,6 +527,16 @@ function initPoint() {
     if (x) { setPoint(x.lat, x.lon, `${x.name} (${x.id})`); runPoint(); }
   };
   upd();
+  // modello di trasferimento radiativo: con 6S la parte termica (LWIR) è ingrigita
+  S.rtm = "6s"; document.body.classList.add("rtm-6s");
+  ATM.available("libradtran").then(ok => {
+    const o = $('#a-rtm option[value="libradtran"]');
+    o.disabled = !ok; if (ok) o.textContent = "libRadtran · VNIR–SWIR and LWIR";
+  });
+  $("#a-rtm").onchange = () => {
+    S.rtm = $("#a-rtm").value; document.body.classList.toggle("rtm-6s", S.rtm === "6s");
+    HR.rtm(); if (S.point) ATM.render(S.point);
+  };
   HR.init();
   const q = new URLSearchParams(location.hash.split("?")[1] || "");
   if (q.has("lat") && q.has("lon")) { setPoint(+q.get("lat"), +q.get("lon")); runPoint(); }

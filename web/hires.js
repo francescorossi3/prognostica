@@ -9,7 +9,6 @@
 "use strict";
 
 const HR = (() => {
-  let CELL = 10;                                    // m (scelto dall'utente: 10, 20, 30)
   let NS = 7;                                       // punti campione per lato (7 x 7 = 49 ... 11 x 11 = 121)
 
   // ---------------------------------------------------------------- DEM (tasselli Terrarium: EU-DEM/Copernicus in Europa)
@@ -104,6 +103,71 @@ const HR = (() => {
     return A;
   }
 
+  // ---------------------------------------------------------------- griglia della mappa (sistema di riferimento vero)
+  // G = { W, H, x0, y0 (angolo nord-ovest), dx, dy, epsg, def (proj4), name }; toLL(x, y) -> [lon, lat], fromLL(lon, lat) -> [x, y]
+  function projDef(epsg) {
+    if (epsg === 4326 || epsg === 3857) return `EPSG:${epsg}`;
+    if (epsg >= 32601 && epsg <= 32660) return `+proj=utm +zone=${epsg - 32600} +datum=WGS84 +units=m +no_defs`;
+    if (epsg >= 32701 && epsg <= 32760) return `+proj=utm +zone=${epsg - 32700} +south +datum=WGS84 +units=m +no_defs`;
+    if (epsg >= 25828 && epsg <= 25838) return `+proj=utm +zone=${epsg - 25800} +ellps=GRS80 +units=m +no_defs`;
+    if (epsg === 6707 || epsg === 6708) return `+proj=utm +zone=${epsg - 6675} +ellps=GRS80 +units=m +no_defs`;    // RDN2008 / UTM 32N, 33N
+    if (epsg === 3035) return "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs";
+    if (epsg === 3003 || epsg === 3004) return `+proj=tmerc +lat_0=0 +lon_0=${epsg === 3003 ? 9 : 15} +k=0.9996 +x_0=${epsg === 3003 ? 1500000 : 2520000} +y_0=0 +ellps=intl +towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs`;
+    if (epsg === 4258 || epsg === 6706) return "+proj=longlat +ellps=GRS80 +no_defs";
+    return null;
+  }
+  function makeGrid(G) {
+    const T = proj4("EPSG:4326", G.def);
+    G.toLL = (x, y) => T.inverse([x, y]); G.fromLL = (lon, lat) => T.forward([lon, lat]);
+    G.geographic = /longlat|EPSG:4326/.test(G.def);
+    const pts = [];                                     // contorno in lat/lon (5 punti per lato) per riquadro e sovrapposizione
+    for (let k = 0; k <= 4; k++) for (const [fx, fy] of [[k / 4, 0], [k / 4, 1], [0, k / 4], [1, k / 4]])
+      pts.push(G.toLL(G.x0 + fx * G.W * G.dx, G.y0 - fy * G.H * G.dy));
+    G.bb = { s: Math.min(...pts.map(q => q[1])), n: Math.max(...pts.map(q => q[1])), w: Math.min(...pts.map(q => q[0])), e: Math.max(...pts.map(q => q[0])) };
+    return G;
+  }
+  // griglia quadrata centrata sul luogo, in UTM (fuso del luogo)
+  function centredGrid(P, size, cell) {
+    const zone = Math.floor((P.lon + 180) / 6) + 1, epsg = (P.lat >= 0 ? 32600 : 32700) + zone, def = projDef(epsg);
+    const [cx, cy] = proj4("EPSG:4326", def, [P.lon, P.lat]), N = Math.round(size / cell);
+    return makeGrid({ W: N, H: N, x0: cx - N * cell / 2, y0: cy + N * cell / 2, dx: cell, dy: cell, epsg, def, name: `UTM${zone}_${P.lat.toFixed(3)}_${P.lon.toFixed(3)}` });
+  }
+  // immagine importata (GeoTIFF/COG o ENVI .hdr + .img): estensione, pixel e sistema di riferimento diventano la griglia
+  async function importImage(files) {
+    const st = $("#h-img-info"), list = [...files];
+    try {
+      const tif = list.find(f => /\.tiff?$/i.test(f.name)), hdr = list.find(f => /\.hdr$/i.test(f.name));
+      let G;
+      if (tif) {
+        const im = await (await GeoTIFF.fromBlob(tif)).getImage(), k = im.getGeoKeys() || {}, [ox, oy] = im.getOrigin(), [rx, ry] = im.getResolution();
+        const epsg = k.ProjectedCSTypeGeoKey && k.ProjectedCSTypeGeoKey !== 32767 ? k.ProjectedCSTypeGeoKey : k.GeographicTypeGeoKey;
+        G = { W: im.getWidth(), H: im.getHeight(), x0: ox, y0: oy, dx: Math.abs(rx), dy: Math.abs(ry), epsg, def: projDef(epsg), name: tif.name.replace(/\.[^.]+$/, "") };
+      } else if (hdr) {
+        const t = await hdr.text();
+        const get = key => { const m = t.match(new RegExp("^\\s*" + key + "\\s*=\\s*(\\{[^}]*\\}|[^\\n]*)", "mi")); return m ? m[1].replace(/[{}]/g, "").trim() : ""; };
+        const mi = get("map info").split(",").map(x => x.trim()), W = +get("samples"), H = +get("lines");
+        const [px, py, x, y, dx, dy] = mi.slice(1, 7).map(Number);
+        let epsg = 0, def = null;
+        if (/^UTM/i.test(mi[0])) { epsg = (/south/i.test(mi[8]) ? 32700 : 32600) + +mi[7]; def = projDef(epsg); }
+        else if (/Geographic/i.test(mi[0])) { epsg = 4326; def = projDef(4326); }
+        if (!def && get("coordinate system string")) def = get("coordinate system string");
+        G = { W, H, x0: x - (px - 1) * dx, y0: y + (py - 1) * dy, dx, dy, epsg, def, name: hdr.name.replace(/\.[^.]+$/, "") };
+      } else throw new Error("choose a GeoTIFF (.tif) or an ENVI header (.hdr, with its .img)");
+      if (!G.def) throw new Error(`coordinate system EPSG:${G.epsg} not supported yet (supported: WGS84, UTM, ETRS89 and RDN2008 UTM, LAEA Europe, Monte Mario Gauss-Boaga)`);
+      if (G.W * G.H > 25e6) throw new Error(`${G.W} × ${G.H} pixels: too many for the browser (max 25 million): crop the image first`);
+      S.himg = makeGrid(G);
+      st.innerHTML = `<b>${G.name}</b> · ${G.W} × ${G.H} pixels of ${fmt(G.dx, G.geographic ? 6 : 2)}${G.geographic ? "°" : " m"} · EPSG:${G.epsg || "WKT"} ·
+        ${G.bb.s.toFixed(4)}–${G.bb.n.toFixed(4)} N, ${G.bb.w.toFixed(4)}–${G.bb.e.toFixed(4)} E`;
+      ["#h-size", "#h-size-u", "#h-cell", "#h-cell-u"].forEach(id => { $(id).disabled = true; });
+      $("#h-img-clear").hidden = false;
+      S.hmap.fitBounds([[G.bb.s, G.bb.w], [G.bb.n, G.bb.e]]);
+    } catch (e) { st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
+  }
+  function clearImage() {
+    S.himg = null; $("#h-img").value = ""; $("#h-img-info").textContent = ""; $("#h-img-clear").hidden = true;
+    ["#h-size", "#h-size-u", "#h-cell", "#h-cell-u"].forEach(id => { $(id).disabled = false; });
+  }
+
   // ---------------------------------------------------------------- covariate
   const NAMES = ["elevation [m]"];
   const covariates = (z, lat, lon) => [z(lat, lon)];
@@ -167,9 +231,7 @@ const HR = (() => {
       if (name === "rho") return o.rho;
       if (name === "t2m") return o.t2m;
       if (name === "ghi") return o.ghi;
-      if (name === "tirtau") return o.tir.tau;
-      if (name === "tirlu") return o.tir.lu;
-      if (name === "tirld") return o.tir.ld;
+      if (name.startsWith("tir")) return o.tir ? o.tir[name.slice(3)] : NaN;
       if (name !== "spec" || !o.rt || !o.rt[band]) return NaN;
       const r = o.rt[band];
       return qty === "t_tot" ? r.t_down * r.t_up * r.t_gas : r[qty];
@@ -183,7 +245,7 @@ const HR = (() => {
   function targetOptions() {
     return [["forecast", "Forecast variable shown in the Forecast tab (GPR)"], ["tcwv", "Water vapour column [kg m⁻²]"], ["aod", "AOD 550 nm"],
       ["t2m", "Air temperature 2 m [°C]"], ["rho", "Air density [kg m⁻³]"], ["ghi", "Global irradiance [W m⁻²]"],
-      ["tirtau", "TIR L8/9 B10 transmittance"], ["tirlu", "TIR L8/9 B10 upwelling radiance"], ["tirld", "TIR L8/9 B10 downwelling radiance"],
+      ["tirtau", "LWIR L8/9 B10 transmittance (libRadtran)"], ["tirlu", "LWIR L8/9 B10 upwelling radiance (libRadtran)"], ["tirld", "LWIR L8/9 B10 downwelling radiance (libRadtran)"],
       ["spec:t_tot", "Total transmittance (T↓·T↑·T gas)"], ["spec:t_down", "Downward scattering transmittance T↓"], ["spec:t_up", "Upward scattering transmittance T↑"],
       ["spec:t_gas", "Gaseous transmittance"], ["spec:l_path", "Path radiance [W m⁻² sr⁻¹ µm⁻¹]"], ["spec:e_dir", "Direct irradiance [W m⁻² µm⁻¹]"],
       ["spec:e_dif", "Diffuse irradiance [W m⁻² µm⁻¹]"], ["spec:s_alb", "Spherical albedo"]];
@@ -198,9 +260,12 @@ const HR = (() => {
     opts($("#h-target"), targetOptions(), "spec:t_tot");
     const tg = () => { $("#h-wl-wrap").style.display = $("#h-target").value.startsWith("spec:") ? "" : "none"; periods(); };
     $("#h-target").onchange = tg;
+    rtm();
     $("#h-go").onclick = run;
-    $("#h-csv").onclick = csv;
-    $("#h-tif").onclick = geotiff;
+    opts($("#h-fmt"), EXPORT.FORMATS, "tif");
+    $("#h-dl").onclick = download;
+    $("#h-img").onchange = e => importImage(e.target.files);
+    $("#h-img-clear").onclick = clearImage;
     S.hmap = L.map("hmap");
     const pane = id => { S.hmap.createPane(id); return id; };
     const base = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap", pane: pane("hl-base") }).addTo(S.hmap);
@@ -234,24 +299,25 @@ const HR = (() => {
   }
 
   async function run() {
-    const P = S.point; if (!P) return;
+    const P = S.point; if (!P && !S.himg) return;
     track("map-10m-" + $("#h-target").value.split(":")[0]);
-    const st = $("#h-status"), size = +$("#h-size").value * +$("#h-size-u").value, kind = $("#h-target").value;
-    CELL = +$("#h-cell").value * +$("#h-cell-u").value;
-    // limiti: almeno 10 celle per lato, al massimo 4000 (16 milioni di celle: oltre il browser non regge)
-    if (!(size > 0 && CELL > 0) || size / CELL < 10 || size / CELL > 4000) {
-      st.innerHTML = `<span class="error">Area / cell gives ${Math.round(size / CELL)} cells per side: choose values between 10 and 4000 cells per side.</span>`;
+    const st = $("#h-status"), kind = $("#h-target").value;
+    const G = S.himg || centredGrid(P, +$("#h-size").value * +$("#h-size-u").value, +$("#h-cell").value * +$("#h-cell-u").value);
+    // limiti: almeno 10 celle per lato, al massimo 25 milioni di celle (oltre il browser non regge)
+    if (!(G.W >= 10 && G.H >= 10) || G.W * G.H > 25e6) {
+      st.innerHTML = `<span class="error">The grid has ${G.W} × ${G.H} cells: choose at least 10 per side and at most 25 million in total.</span>`;
       return;
     }
-    NS = size <= 5000 ? 7 : size <= 10000 ? 9 : 11;
-    const mlat = 111320, mlon = 111320 * Math.cos(P.lat * Math.PI / 180);
-    const half = size / 2, pad = size * 0.1;
-    const bb = { s: P.lat - (half + pad) / mlat, n: P.lat + (half + pad) / mlat, w: P.lon - (half + pad) / mlon, e: P.lon + (half + pad) / mlon };
+    const C = G.toLL(G.x0 + G.W * G.dx / 2, G.y0 - G.H * G.dy / 2), mlat = 111320, mlon = 111320 * Math.cos(C[1] * Math.PI / 180);
+    const ext = Math.max((G.bb.n - G.bb.s) * mlat, (G.bb.e - G.bb.w) * mlon), pad = 0.1 * ext;
+    NS = ext <= 5000 ? 7 : ext <= 10000 ? 9 : 11;
+    const bb = { s: G.bb.s - pad / mlat, n: G.bb.n + pad / mlat, w: G.bb.w - pad / mlon, e: G.bb.e + pad / mlon };
+    const cellM = G.geographic ? G.dx * mlon : G.dx, label = `${fmt(G.dx, G.geographic ? 6 : 2)}${G.geographic ? "°" : " m"}`;
     const bar = $("#h-progress"), t0 = performance.now();
     const step = (pct, text) => { bar.hidden = false; bar.value = pct; st.textContent = `${text} · ${((performance.now() - t0) / 1000).toFixed(0)} s`; };
     try {
       step(2, "1/4 · downloading the elevation (Copernicus DEM)…");
-      const Z = await dem(bb, size <= 10000 ? 14 : 13);
+      const Z = await dem(bb, ext <= 10000 ? 14 : 13);
       // punti campione: griglia regolare NS x NS sul riquadro
       const samples = [];
       for (let i = 0; i < NS; i++) for (let j = 0; j < NS; j++)
@@ -261,42 +327,45 @@ const HR = (() => {
       const T = await targets(kind, samples, opt, Z);
       const good = T.values.map((v, i) => (Number.isFinite(v) ? i : -1)).filter(i => i >= 0);
       if (good.length < 12) throw new Error("too few valid sample values for this variable and period (VNIR-SWIR parameters need the sun above 10°: choose a daytime hour)");
-      const xyOf = (lat, lon) => [(lon - P.lon) * mlon, (lat - P.lat) * mlat];
+      const xyOf = (lat, lon) => [(lon - C[0]) * mlon, (lat - C[1]) * mlat];
       const F = good.map(i => covariates(Z, samples[i].lat, samples[i].lon));
       const y = good.map(i => T.values[i]), xy = good.map(i => xyOf(samples[i].lat, samples[i].lon));
       step(35, "3/4 · fitting trend + variogram…");
       await new Promise(r => setTimeout(r, 20));
       const M = fit(F, y, xy);
-      step(45, `4/4 · predicting on the ${CELL} m grid…`);
+      step(45, `4/4 · predicting on the ${label} grid…`);
       await new Promise(r => setTimeout(r, 20));
-      const N = Math.round(size / CELL), est = new Float32Array(N * N), trd = new Float32Array(N * N), sd = new Float32Array(N * N),
-        elev = new Float32Array(N * N);
-      const A = okSystem(xy, M.vg), n = xy.length, alpha = solve(A, [...M.res, 0]);
-      const Ainv = invert(A), lat0 = P.lat + half / mlat, lon0 = P.lon - half / mlon;
-      const SD_STEP = Math.max(5, Math.round(50 / CELL)), qx = Float64Array.from(xy, q => q[0]), qy = Float64Array.from(xy, q => q[1]);
-      const k = new Float64Array(n + 1), sill = M.vg.nug + M.vg.sill;
-      for (let r = 0; r < N; r++) {
-        const lat = lat0 - (r + 0.5) * CELL / mlat;
-        for (let c = 0; c < N; c++) {
-          const lon = lon0 + (c + 0.5) * CELL / mlon, f = covariates(Z, lat, lon);
-          const px = (lon - P.lon) * mlon, py = (lat - P.lat) * mlat;
+      const W = G.W, H = G.H, NP = W * H, est = new Float32Array(NP), trd = new Float32Array(NP), sd = new Float32Array(NP), elev = new Float32Array(NP);
+      const A = okSystem(xy, M.vg), n = xy.length, alpha = solve(A, [...M.res, 0]), Ainv = invert(A);
+      const SD_STEP = Math.max(5, Math.round(50 / cellM)), qx = Float64Array.from(xy, q => q[0]), qy = Float64Array.from(xy, q => q[1]);
+      const k = new Float64Array(n + 1), sill = M.vg.nug + M.vg.sill, ST = 16;
+      const lonR = new Float64Array(W), latR = new Float64Array(W);
+      for (let r = 0; r < H; r++) {
+        // lon/lat dei centri dei pixel della riga: proiezione esatta ogni 16 pixel, interpolazione lineare in mezzo
+        const y = G.y0 - (r + 0.5) * G.dy;
+        for (let c0 = 0; c0 < W; c0 += ST) {
+          const c1 = Math.min(c0 + ST, W - 1), a0 = G.toLL(G.x0 + (c0 + 0.5) * G.dx, y), a1 = G.toLL(G.x0 + (c1 + 0.5) * G.dx, y);
+          for (let c = c0; c <= c1; c++) { const t = c1 === c0 ? 0 : (c - c0) / (c1 - c0); lonR[c] = a0[0] + t * (a1[0] - a0[0]); latR[c] = a0[1] + t * (a1[1] - a0[1]); }
+        }
+        for (let c = 0; c < W; c++) {
+          const lat = latR[c], lon = lonR[c], f = covariates(Z, lat, lon);
+          const px = (lon - C[0]) * mlon, py = (lat - C[1]) * mlat;
           let kr = alpha[n];
           for (let j = 0; j < n; j++) { const h = Math.hypot(qx[j] - px, qy[j] - py); k[j] = h === 0 ? sill : M.vg.sill * Math.exp(-h / M.vg.a); kr += k[j] * alpha[j]; }
-          const t = M.trend(f), i = r * N + c;
+          const t = M.trend(f), i = r * W + c;
           trd[i] = t; est[i] = t + kr; elev[i] = f[0];
           if (r % SD_STEP === 0 && c % SD_STEP === 0) {
             k[n] = 1; let q = 0;
             for (let a2 = 0; a2 <= n; a2++) { let s2 = 0; const row = Ainv[a2]; for (let b2 = 0; b2 <= n; b2++) s2 += row[b2] * k[b2]; q += k[a2] * s2; }
             sd[i] = Math.sqrt(Math.max(0, sill - q));
-          } else sd[i] = sd[Math.floor(r / SD_STEP) * SD_STEP * N + Math.floor(c / SD_STEP) * SD_STEP];
+          } else sd[i] = sd[Math.floor(r / SD_STEP) * SD_STEP * W + Math.floor(c / SD_STEP) * SD_STEP];
         }
-        if (r % 20 === 19) { step(45 + 55 * (r + 1) / N, `4/4 · predicting on the ${CELL} m grid… ${Math.round(100 * (r + 1) / N)} %`); await new Promise(res => setTimeout(res, 0)); }
+        if (r % 20 === 19) { step(45 + 55 * (r + 1) / H, `4/4 · predicting on the ${label} grid… ${Math.round(100 * (r + 1) / H)} %`); await new Promise(res => setTimeout(res, 0)); }
       }
-      HR.out = { N, cell: CELL, est, trd, sd, elev, lat0, lon0, mlat, mlon, half, T, M, samples: good.map(i => samples[i]), y, P };
+      HR.out = { G, est, trd, sd, elev, T, M, samples: good.map(i => samples[i]), y, P: P || { lat: C[1], lon: C[0] } };
       draw(true); report();
       bar.hidden = true;
-      st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${N} × ${N} cells of ${CELL} m · ${good.length} sample points`;
-      $("#h-csv").disabled = N * N > 1500000;
+      st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${W} × ${H} cells of ${label} (EPSG:${G.epsg || "WKT"}) · ${good.length} sample points`;
     } catch (e) { bar.hidden = true; st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
 
@@ -306,8 +375,8 @@ const HR = (() => {
 
   async function rasterImage(l, bounds) {
     const o = HR.out, C = MapStyle.classify(l.style, l.values());
-    const c = document.createElement("canvas"); c.width = c.height = o.N;
-    const g = c.getContext("2d"), im = g.createImageData(o.N, o.N), a = l.values();
+    const c = document.createElement("canvas"); c.width = o.G.W; c.height = o.G.H;
+    const g = c.getContext("2d"), im = g.createImageData(o.G.W, o.G.H), a = l.values();
     for (let i = 0; i < a.length; i++) { const col = C.color(a[i]); if (col) im.data.set(col, 4 * i); }
     g.putImageData(im, 0, 0);
     if (l.overlay) S.hmap.removeLayer(l.overlay);
@@ -322,7 +391,7 @@ const HR = (() => {
   async function draw(fit = false, keepPanels = false) {
     const o = HR.out;
     if (!o) return panels();
-    const bounds = [[o.P.lat - o.half / o.mlat, o.P.lon - o.half / o.mlon], [o.P.lat + o.half / o.mlat, o.P.lon + o.half / o.mlon]];
+    const bounds = [[o.G.bb.s, o.G.bb.w], [o.G.bb.n, o.G.bb.e]];       // sovrapposizione approssimata della griglia proiettata
     const legends = [];
     for (const [n, l] of S.hl.entries()) {
       S.hmap.getPane(l.pane).style.zIndex = 450 - 5 * n;
@@ -344,9 +413,9 @@ const HR = (() => {
     if (fit) S.hmap.fitBounds(bounds);
     if (!keepPanels) panels();
     S.hmap.off("click"); S.hmap.on("click", e => {
-      const r = Math.floor((o.lat0 - e.latlng.lat) * o.mlat / o.cell), cc = Math.floor((e.latlng.lng - o.lon0) * o.mlon / o.cell);
-      if (r < 0 || cc < 0 || r >= o.N || cc >= o.N) return;
-      const i = r * o.N + cc;
+      const [x, y] = o.G.fromLL(e.latlng.lng, e.latlng.lat), r = Math.floor((o.G.y0 - y) / o.G.dy), cc = Math.floor((x - o.G.x0) / o.G.dx);
+      if (r < 0 || cc < 0 || r >= o.G.H || cc >= o.G.W) return;
+      const i = r * o.G.W + cc;
       L.popup().setLatLng(e.latlng).setContent(`<b>${fmt(o.est[i], 3)}</b> ± ${fmt(o.sd[i], 3)} (kriging SD)<br>trend ${fmt(o.trd[i], 3)} · elevation ${fmt(o.elev[i], 0)} m`).openOn(S.hmap);
     });
   }
@@ -370,22 +439,23 @@ const HR = (() => {
       <dt>Residual variogram</dt><dd>exponential · nugget ${fmt(M.vg.nug, 5)} · partial sill ${fmt(M.vg.sill, 5)} · range ${fmt(M.vg.a * 3 / 1000, 2)} km (practical)</dd></dl>`;
   }
 
-  function csv() {
-    const o = HR.out; if (!o || o.N * o.N > 1500000) return;
-    const rows = [["lat", "lon", "estimate", "kriging_sd", "trend", "elevation_m"]];
-    for (let r = 0; r < o.N; r++) for (let c = 0; c < o.N; c++) {
-      const i = r * o.N + c;
-      rows.push([+(o.lat0 - (r + 0.5) * o.cell / o.mlat).toFixed(6), +(o.lon0 + (c + 0.5) * o.cell / o.mlon).toFixed(6), o.est[i], o.sd[i], o.trd[i], o.elev[i]]);
-    }
-    EXPORT.save(EXPORT.csv(rows, [o.T.label]), `rk_${o.cell}m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.csv`);
-  }
-
-  // GeoTIFF dello strato selezionato nel pannello Layers
-  function geotiff() {
+  // download nel formato scelto, con i pixel e il sistema di riferimento della griglia (anche quella di un'immagine importata);
+  // CSV: stima, deviazione standard del kriging, trend e quota per ogni pixel; altri formati: lo strato selezionato nel pannello Layers
+  function download() {
     const o = HR.out; if (!o) return;
-    const lay = selRaster();
-    EXPORT.geotiff(rasterOf(lay.key), o.N, o.N, o.lon0, o.lat0, o.cell / o.mlon, o.cell / o.mlat, `${o.T.label} | ${lay.name} | regression kriging, Prognostica`,
-      `rk_${lay.key}_${o.cell}m_${o.P.lat.toFixed(4)}_${o.P.lon.toFixed(4)}.tif`);
+    const G = o.G, f = $("#h-fmt").value, lay = selRaster(), name = `rk_${lay.key}_${G.name.replace(/\W+/g, "_")}`;
+    const lonlat = (c, r) => G.toLL(G.x0 + (c + 0.5) * G.dx, G.y0 - (r + 0.5) * G.dy);
+    if (f === "csv") {
+      if (G.W * G.H > 1500000) { $("#h-status").textContent = "CSV is limited to 1.5 million pixels: choose GeoTIFF, ENVI or ASCII grid."; return; }
+      const rows = [["lon", "lat", "estimate", "kriging_sd", "trend", "elevation_m"]];
+      for (let r = 0; r < G.H; r++) for (let c = 0; c < G.W; c++) {
+        const i = r * G.W + c, [lo, la] = lonlat(c, r);
+        rows.push([+lo.toFixed(6), +la.toFixed(6), o.est[i], o.sd[i], o.trd[i], o.elev[i]]);
+      }
+      return EXPORT.save(EXPORT.csv(rows, [o.T.label, `grid EPSG:${G.epsg || "WKT"}`]), `rk_${G.name.replace(/\W+/g, "_")}.csv`);
+    }
+    const C = MapStyle.classify(lay.style, lay.values());
+    EXPORT.raster(f, rasterOf(lay.key), G, `${o.T.label} | ${lay.name} | regression kriging, Prognostica`, name, C.color, lonlat);
   }
 
   // punto scelto con la ricerca: marcatore sulla mappa e riga sopra i controlli
@@ -394,7 +464,7 @@ const HR = (() => {
       <span class="hint">(change the place with the search above)</span>`;
     if (S.hmark) S.hmark.setLatLng([P.lat, P.lon]);
     else S.hmark = L.marker([P.lat, P.lon], { title: "Selected place", zIndexOffset: 1000 }).addTo(S.hmap);
-    if (!HR.out || HR.out.P !== P) S.hmap.setView([P.lat, P.lon], 11);
+    if (!S.himg && (!HR.out || HR.out.P !== P)) S.hmap.setView([P.lat, P.lon], 11);
   }
 
   // ---------------------------------------------------------------- validazione sulle misure AERONET (da Torricelli)
@@ -437,5 +507,12 @@ const HR = (() => {
     show();
   }
 
-  return { init, periods, run, point, geotiff, validation };
+  // grandezze termiche disponibili solo con un modello che copre il LWIR (non 6S)
+  function rtm() {
+    const off = S.rtm === "6s";
+    [...$("#h-target").options].filter(o => o.value.startsWith("tir")).forEach(o => { o.disabled = off; });
+    if (off && $("#h-target").value.startsWith("tir")) { $("#h-target").value = "spec:t_tot"; $("#h-target").onchange(); }
+  }
+
+  return { init, periods, run, point, rtm, validation };
 })();

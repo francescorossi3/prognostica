@@ -8,6 +8,20 @@
 
 const I18N = (() => {
   const D = {
+    "Download": "Scarica", "Selected layer, same pixels and coordinate system as the grid": "Layer selezionato, stessi pixel e sistema di riferimento della griglia",
+    "GeoTIFF (Float32, values)": "GeoTIFF (Float32, valori)", "PNG as shown + world file": "PNG come mostrato + world file", "JPEG as shown + world file": "JPEG come mostrato + world file",
+    "ESRI ASCII grid (.asc)": "Griglia ASCII ESRI (.asc)", "ENVI (.img + .hdr)": "ENVI (.img + .hdr)", "CSV (lon, lat, value)": "CSV (lon, lat, valore)",
+    "Use the grid of an image": "Usa la griglia di un'immagine", "GeoTIFF / COG, or ENVI .hdr together with its .img": "GeoTIFF / COG, oppure ENVI .hdr insieme al suo .img",
+    "Back to the square grid": "Torna alla griglia quadrata",
+    "The map will have exactly the extent, pixels and coordinate system of the image, so the values can be used pixel by pixel.": "La mappa avrà esattamente estensione, pixel e sistema di riferimento dell'immagine, così i valori si usano pixel per pixel.",
+    "CSV is limited to 1.5 million pixels: choose GeoTIFF, ENVI or ASCII grid.": "Il CSV è limitato a 1,5 milioni di pixel: scegli GeoTIFF, ENVI o griglia ASCII.",
+    "Radiative transfer model": "Modello di trasferimento radiativo", "6S · VNIR–SWIR only": "6S · solo VNIR–SWIR",
+    "libRadtran · VNIR–SWIR and LWIR (tables in preparation)": "libRadtran · VNIR–SWIR e LWIR (tabelle in preparazione)",
+    "libRadtran · VNIR–SWIR and LWIR": "libRadtran · VNIR–SWIR e LWIR", "With 6S the thermal (LWIR) part is greyed out.": "Con 6S la parte termica (LWIR) è ingrigita.",
+    "Thermal (LWIR)": "Termico (LWIR)", "not covered by 6S: choose libRadtran": "non coperto da 6S: scegli libRadtran", "tables not available yet": "tabelle non ancora disponibili",
+    "6S does not cover the LWIR: τ, L↑ and L↓ come from libRadtran.": "6S non copre il LWIR: τ, L↑ e L↓ vengono da libRadtran.",
+    "LWIR L8/9 B10 transmittance (libRadtran)": "Trasmittanza LWIR L8/9 B10 (libRadtran)", "LWIR L8/9 B10 upwelling radiance (libRadtran)": "Radianza LWIR L8/9 B10 verso l'alto (libRadtran)",
+    "LWIR L8/9 B10 downwelling radiance (libRadtran)": "Radianza LWIR L8/9 B10 verso il basso (libRadtran)",
     "A regular grid of 49–121 points covers the area (7 × 7 up to 5 km, 9 × 9 up to 10 km, 11 × 11 above). At each point the value is computed from the Open-Meteo atmosphere (ECMWF IFS, CAMS aerosols) with the 6S tables (or, for the forecast, with the GPR).": "Una griglia regolare di 49–121 punti copre l'area (7 × 7 fino a 5 km, 9 × 9 fino a 10 km, 11 × 11 oltre). In ogni punto il valore si calcola dall'atmosfera di Open-Meteo (ECMWF IFS, aerosol CAMS) con le tabelle 6S (o, per la previsione, con il GPR).",
     // validazione AERONET in Atmosphere RK
     "Validation against measurements (AERONET)": "Validazione con le misure (AERONET)",
@@ -29,8 +43,8 @@ const I18N = (() => {
     // download, Atmosphere (modelli RT, equazioni, glossario), Atmosphere RK con sola quota
     "CSV": "CSV", "Download the data of this chart (CSV)": "Scarica i dati di questo grafico (CSV)", "Download this table (CSV)": "Scarica questa tabella (CSV)",
     "Selected layer at the period shown": "Layer selezionato al periodo mostrato",
-    "Radiative transfer model, VNIR–SWIR": "Modello di trasferimento radiativo, VNIR–SWIR", "LWIR": "LWIR",
-    "Water-vapour functions, Jiménez-Muñoz et al. 2014 (Landsat B10)": "Funzioni del vapore acqueo, Jiménez-Muñoz et al. 2014 (Landsat B10)",
+    
+    
     "Spectral radiative transfer, VNIR–SWIR": "Trasferimento radiativo spettrale, VNIR–SWIR",
     "6S, nadir view, continental aerosol. Hover over a legend entry to see what it is.": "6S, vista al nadir, aerosol continentale. Passa il mouse su una voce della legenda per sapere cos'è.",
     "Transmittance · spherical albedo": "Trasmittanza · albedo sferica", "Spherical albedo S": "Albedo sferica S", "Total T (↓·↑·gas)": "T totale (↓·↑·gas)",
@@ -50,7 +64,7 @@ const I18N = (() => {
     "Upwelling path radiance emitted by the atmosphere towards the sensor.": "Radianza di percorso emessa dall'atmosfera verso il sensore.",
     "Downwelling radiance emitted by the atmosphere towards the ground (hemispheric, divided by π), partly reflected by the surface.": "Radianza emessa dall'atmosfera verso il suolo (emisferica, divisa per π), in parte riflessa dalla superficie.",
     "Surface emissivity.": "Emissività della superficie.", "Planck radiance of a black body at the land surface temperature": "Radianza di Planck di un corpo nero alla temperatura della superficie",
-    "6S does not cover the LWIR: τ, L↑ and L↓ come from the water-vapour functions of Jiménez-Muñoz et al. (2014) for Landsat 8/9 band 10.": "6S non copre il LWIR: τ, L↑ e L↓ vengono dalle funzioni del vapore acqueo di Jiménez-Muñoz et al. (2014) per la banda 10 di Landsat 8/9.",
+    
     "Downward transmittance (Sun → ground) left by scattering of molecules and aerosols, direct + diffuse": "Trasmittanza verso il basso (Sole → suolo) lasciata dallo scattering di molecole e aerosol, diretta + diffusa",
     "Upward transmittance (ground → sensor) left by scattering, direct + diffuse": "Trasmittanza verso l'alto (suolo → sensore) lasciata dallo scattering, diretta + diffusa",
     "Transmittance of gas absorption (water vapour, ozone, O₂, CO₂, CH₄…) along the Sun – ground – sensor path": "Trasmittanza dell'assorbimento dei gas (vapore acqueo, ozono, O₂, CO₂, CH₄…) lungo il percorso Sole – suolo – sensore",
@@ -151,12 +165,12 @@ const I18N = (() => {
     "Global irradiance [W m⁻²] /100": "Irradianza globale [W m⁻²] /100",
     // mappa 10 m
     "10 m map around the point": "Mappa a 10 m intorno al punto", "· regression kriging on Copernicus covariates": "· regression kriging su covariate Copernicus",
-    "Period / hour": "Periodo / ora", "Build RK map": "Crea mappa RK", "Download CSV": "Scarica CSV",
+    "Period / hour": "Periodo / ora", "Build RK map": "Crea mappa RK", 
     "Model": "Modello",
     "Water vapour column [kg m⁻²]": "Vapore acqueo in colonna [kg m⁻²]",
     "Air temperature 2 m [°C]": "Temperatura dell'aria 2 m [°C]", "Air density [kg m⁻³]": "Densità dell'aria [kg m⁻³]",
-    "Global irradiance [W m⁻²]": "Irradianza globale [W m⁻²]", "TIR L8/9 B10 transmittance": "TIR L8/9 B10 trasmittanza",
-    "TIR L8/9 B10 upwelling radiance": "TIR L8/9 B10 radianza in salita", "TIR L8/9 B10 downwelling radiance": "TIR L8/9 B10 radianza in discesa",
+    "Global irradiance [W m⁻²]": "Irradianza globale [W m⁻²]", 
+    
     "Estimate (trend + kriged residual)": "Stima (trend + residuo krigato)", "Kriging standard deviation": "Deviazione standard del kriging",
     "Trend only": "Solo trend", 
     "Target": "Variabile", "Residual variogram": "Variogramma dei residui", "Trend coefficients": "Coefficienti del trend",
@@ -169,7 +183,7 @@ const I18N = (() => {
     "Wavelength [nm]": "Lunghezza d'onda [nm]", "Transmittance": "Trasmittanza", "Total transmittance": "Trasmittanza totale", "Path radiance": "Radianza di percorso",
     "Irradiance": "Irradianza", "E diffuse [W m⁻² µm⁻¹]": "E diffusa [W m⁻² µm⁻¹]",
     "(change the place with the search above)": "(cambia il luogo con la ricerca in alto)",
-    "Wavelength": "Lunghezza d'onda", "Cell": "Cella", "Download GeoTIFF": "Scarica GeoTIFF",
+    "Wavelength": "Lunghezza d'onda", "Cell": "Cella", 
     "Forecast variable shown in the Forecast tab (GPR)": "Variabile di previsione della scheda Previsione (GPR)",
     "Total transmittance (T↓·T↑·T gas)": "Trasmittanza totale (T↓·T↑·T gas)", "Downward scattering transmittance T↓": "Trasmittanza di diffusione in discesa T↓",
     "Upward scattering transmittance T↑": "Trasmittanza di diffusione in salita T↑", "Gaseous transmittance": "Trasmittanza gassosa",

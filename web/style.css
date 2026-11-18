@@ -95,6 +95,9 @@ details.has-dl > button.dl { top: .6rem; right: 1rem; }
 .eq { font-family: "Cambria Math", "STIX Two Math", Georgia, serif; font-size: 1.1rem; background: var(--soft); padding: .7rem 1rem; border-radius: 6px; overflow-x: auto; }
 dl.glossary { display: grid; grid-template-columns: minmax(9rem, max-content) 1fr; gap: .35rem 1rem; margin: .6rem 0 1rem; font-size: .9rem; }
 dl.glossary dt { font-weight: 600; } dl.glossary dd { margin: 0; color: var(--ink); }
+/* modello RT senza termico (6S): parte LWIR ingrigita */
+body.rtm-6s .lwir { opacity: .4; filter: grayscale(1); pointer-events: none; }
+body:not(.rtm-6s) .lwir-note { display: none; }
 .progress-row { display: flex; align-items: center; gap: .8rem; margin: 0 0 .7rem; }
 .progress-row .status { margin: 0; }
 progress { width: 220px; height: 10px; accent-color: var(--accent); }
@@ -175,7 +178,9 @@ ol.layers .mv button:hover:not(:disabled) { color: var(--ink); border-color: var
 .ramp-preview { height: 10px; border-radius: 2px; margin-top: .3rem; }
 .histo canvas { width: 100%; height: 80px; display: block; margin-top: .6rem; }
 .histo .hint { margin: .2rem 0 0; font-size: .78rem; }
-.downloads { display: flex; gap: .4rem; flex-wrap: wrap; }
+.downloads { display: flex; gap: .4rem; flex-wrap: wrap; align-items: flex-end; }
+.downloads label { display: flex; flex-direction: column; gap: .2rem; color: var(--muted); flex: 1; }
+.controls.import input[type=file] { font: inherit; font-size: .85rem; }
 
 /* ---------- testi ---------- */
 .prose { line-height: 1.6; max-width: 980px; } .prose h3 { margin-top: 1.2rem; } .prose code { background: var(--soft); padding: .05rem .3rem; border-radius: 4px; }

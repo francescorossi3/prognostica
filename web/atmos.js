@@ -33,23 +33,23 @@ const ATM = (() => {
     const cz = Math.sin(la) * Math.sin(decl) + Math.cos(la) * Math.cos(decl) * Math.cos(ha);
     return Math.acos(Math.max(-1, Math.min(1, cz))) * 180 / Math.PI;
   }
-  // TIR Landsat 8/9 TIRS banda 10 (Jiménez-Muñoz et al. 2014), w in g cm-2
-  function tir(w) {
-    if (!Number.isFinite(w)) return {};
-    const p1 = 0.04019 * w * w + 0.02916 * w + 1.01523, p2 = -0.38333 * w * w - 1.50294 * w + 0.20324,
-      p3 = 0.00918 * w * w + 1.36072 * w - 0.27514;
-    return { tau: 1 / p1, lu: -(p2 + p3) / p1, ld: p3 };
-  }
-
-  // ---------------------------------------------------------------- LUT 6S
+  // ---------------------------------------------------------------- LUT del modello di trasferimento radiativo scelto
+  // S.rtm = "6s" (solo VNIR-SWIR) o "libradtran" (VNIR-SWIR e LWIR); file data/rt/lut_<set>.json o lut_libradtran_<set>.json
   const lutP = {};
-  function lut(set = "s2") {                      // set: "s2" (bande Sentinel-2) o "hyper" (400-2500 nm ogni 10 nm)
-    if (!lutP[set]) {
-      const f = `data/rt/lut_${set}.json`;
+  const lutFile = (set, m = S.rtm || "6s") => `data/rt/lut_${m === "6s" ? "" : m + "_"}${set}.json`;
+  function lut(set = "s2") {                      // set: "s2" (bande Sentinel-2), "hyper" (400-2500 nm ogni 10 nm), "tir" (LWIR)
+    const key = `${S.rtm || "6s"}:${set}`;
+    if (!lutP[key]) {
+      const f = lutFile(set);
       const urls = [S.meta.atmos_url ? S.meta.atmos_url.replace(/\/?$/, "/") + f : null, DATA + f.replace("data/", "")].filter(Boolean);
-      lutP[set] = (async () => { for (const u of urls) { try { const r = await fetch(u); if (r.ok) return await r.json(); } catch { /* prossimo */ } } return null; })();
+      lutP[key] = (async () => { for (const u of urls) { try { const r = await fetch(u); if (r.ok) return await r.json(); } catch { /* prossimo */ } } return null; })();
     }
-    return lutP[set];
+    return lutP[key];
+  }
+  // il modello ha le sue tabelle pubblicate? (per abilitarlo nel selettore)
+  async function available(m) {
+    const u = (S.meta.atmos_url || "").replace(/\/?$/, "/") + lutFile("s2", m);
+    return fetch(u, { method: "HEAD" }).then(r => r.ok).catch(() => false);
   }
   function bracket(ax, x) {
     x = Math.max(ax[0], Math.min(ax[ax.length - 1], x));
@@ -101,7 +101,6 @@ const ATM = (() => {
       cloud: g("cloud_cover"), ghi: g("shortwave_radiation"), dir: g("direct_radiation"), dif: g("diffuse_radiation"),
       dni: g("direct_normal_irradiance"), toa: g("terrestrial_radiation") };
     o.rho = rho(o.ps, o.t2m, o.rh);
-    o.tir = tir(w);
     o.prof = LEVELS.map(p => ({ p, t: g(`temperature_${p}hPa`), rh: g(`relative_humidity_${p}hPa`), z: g(`geopotential_height_${p}hPa`),
       ws: g(`wind_speed_${p}hPa`) })).filter(r => r.z != null && (o.ps == null || r.p <= o.ps));
     o.prof.forEach(r => { r.rho = rho(r.p, r.t, r.rh); });
@@ -174,7 +173,8 @@ const ATM = (() => {
       <dt>Air density at the surface</dt><dd>${fmt(o.rho, 4)} kg m⁻³</dd>
       <dt>Cloud cover</dt><dd>${fmt(o.cloud, 0)} %</dd>
       <dt>Irradiance (hour mean)</dt><dd>global ${fmt(o.ghi, 0)} · direct ${fmt(o.dir, 0)} · diffuse ${fmt(o.dif, 0)} · DNI ${fmt(o.dni, 0)} · TOA ${fmt(o.toa, 0)} W m⁻²</dd>
-      <dt>TIR Landsat 8/9 B10 (10.9 µm)</dt><dd>τ ${fmt(o.tir.tau, 3)} · L↑ ${fmt(o.tir.lu, 3)} · L↓ ${fmt(o.tir.ld, 3)} W m⁻² sr⁻¹ µm⁻¹</dd>
+      <dt class="lwir">Thermal (LWIR)</dt><dd class="lwir">${S.rtm === "6s" ? "not covered by 6S: choose libRadtran" : o.tir
+        ? `τ ${fmt(o.tir.tau, 3)} · L↑ ${fmt(o.tir.lu, 3)} · L↓ ${fmt(o.tir.ld, 3)} W m⁻² sr⁻¹ µm⁻¹ (Landsat 8/9 B10)` : "tables not available yet"}</dd>
     </dl>`;
     // profilo verticale
     const pr = o.prof;
@@ -225,5 +225,5 @@ const ATM = (() => {
   }
   const S2WL = { "01": 443, "02": 490, "03": 560, "04": 665, "05": 705, "06": 740, "07": 783, "08": 842, "8A": 865, "09": 945, "10": 1375, "11": 1610, "12": 2190 };
 
-  return { LEVELS, S2NAME, S2WL, fetchMulti, derive, render, lut, sza, tir, rho, rtBand };
+  return { LEVELS, S2NAME, S2WL, fetchMulti, derive, render, lut, available, sza, rho, rtBand };
 })();

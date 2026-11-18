@@ -77,10 +77,10 @@
   <div class="controls"><label>Hour <select id="a-hour"></select></label>
     <span class="hint">Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).</span></div>
   <div class="controls">
-    <label>Radiative transfer model, VNIR–SWIR <select id="a-rtm-vs">
-      <option value="6s">6S</option></select></label>
-    <label>LWIR <select id="a-rtm-lw">
-      <option value="jm14">Water-vapour functions, Jiménez-Muñoz et al. 2014 (Landsat B10)</option></select></label>
+    <label>Radiative transfer model <select id="a-rtm">
+      <option value="6s">6S · VNIR–SWIR only</option>
+      <option value="libradtran" disabled>libRadtran · VNIR–SWIR and LWIR (tables in preparation)</option></select></label>
+    <span class="hint lwir-note">With 6S the thermal (LWIR) part is greyed out.</span>
   </div>
   <div id="a-box"></div>
   <div class="grid2">
@@ -115,6 +115,7 @@
       <dt>Spherical albedo S</dt><dd>Reflectance of the atmosphere for light coming from below: the term 1/(1 − S·ρ) counts the reflections back and forth between ground and atmosphere.</dd>
       <dt>E<sub>0</sub>, θ<sub>s</sub></dt><dd>Solar irradiance at the top of the atmosphere and solar zenith angle.</dd>
     </dl>
+    <div class="lwir">
     <h3>LWIR (8–14 µm)</h3>
     <p class="eq">L<sub>sensor</sub> = τ · [ ε · B(T<sub>s</sub>) + (1 − ε) · L↓ ] + L↑</p>
     <dl class="glossary">
@@ -124,7 +125,8 @@
       <dt>ε</dt><dd>Surface emissivity.</dd>
       <dt>B(T<sub>s</sub>)</dt><dd>Planck radiance of a black body at the land surface temperature T<sub>s</sub>.</dd>
     </dl>
-    <p class="hint">6S does not cover the LWIR: τ, L↑ and L↓ come from the water-vapour functions of Jiménez-Muñoz et al. (2014) for Landsat 8/9 band 10.</p>
+    <p class="hint">6S does not cover the LWIR: τ, L↑ and L↓ come from libRadtran.</p>
+    </div>
   </details>
 </section>
 
@@ -132,6 +134,11 @@
 <section id="tab-hr" class="tab">
   <p class="place" id="h-point">Choose a place with the search above: the map is built around it.</p>
   <p class="hint">Atmospheric parameters (or the forecast) at high resolution (10 m by default) by regression kriging (RK) around the place.</p>
+  <div class="controls import">
+    <label title="GeoTIFF / COG, or ENVI .hdr together with its .img">Use the grid of an image <input type="file" id="h-img" accept=".tif,.tiff,.hdr,.img" multiple></label>
+    <button id="h-img-clear" class="ghost" hidden>Back to the square grid</button>
+    <span class="hint" id="h-img-info">The map will have exactly the extent, pixels and coordinate system of the image, so the values can be used pixel by pixel.</span>
+  </div>
   <div class="controls">
     <label>Variable <select id="h-target"></select></label>
     <label id="h-wl-wrap">Wavelength <select id="h-wl"></select></label>
@@ -148,7 +155,7 @@
     <aside class="side">
       <div id="h-layers" class="panel"></div>
       <details class="panel-style" open><summary>Style</summary><div id="h-style" class="panel"></div></details>
-      <div class="downloads"><button id="h-tif" class="ghost">Download GeoTIFF</button><button id="h-csv" class="ghost">Download CSV</button></div>
+      <div class="downloads"><label>Download <select id="h-fmt"></select></label><button id="h-dl" class="ghost" title="Selected layer, same pixels and coordinate system as the grid">Download</button></div>
     </aside>
   </div>
   <h2 class="section">Validation against measurements (AERONET)</h2>
@@ -205,7 +212,7 @@
       <div class="add-layer"><label>Add layer <select id="m-layer"></select></label><button id="m-add" class="ghost" title="Add the chosen layer to the map">+ Add</button></div>
       <div id="m-layers" class="panel"></div>
       <details class="panel-style" open><summary>Style</summary><div id="m-style" class="panel"></div></details>
-      <div class="downloads"><button id="m-tif" class="ghost" title="Selected layer at the period shown">Download GeoTIFF</button><button id="m-csv" class="ghost" title="Selected layer at the period shown">Download CSV</button></div>
+      <div class="downloads"><label>Download <select id="m-fmt"></select></label><button id="m-dl" class="ghost" title="Selected layer at the period shown">Download</button></div>
     </aside>
   </div>
   <p class="hint">Click on the map to see the value and open the detailed forecast.</p>
@@ -284,6 +291,8 @@
 <script src="vendor/chart.umd.js"></script>
 <script src="gp.js"></script>
 <script src="i18n.js"></script>
+<script src="vendor/geotiff.js"></script>
+<script src="vendor/proj4.js"></script>
 <script src="mapstyle.js"></script>
 <script src="export.js"></script>
 <script src="atmos.js"></script>
