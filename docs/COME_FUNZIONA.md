@@ -69,7 +69,8 @@ flowchart LR
   i18n[i18n.js<br>dizionario EN-IT] --> app
   ms[mapstyle.js<br>pannelli Layer e Stile] --> M
   ms --> H
-  ex[export.js<br>download CSV e GeoTIFF] --> app
+  ex[export.js<br>CSV, GeoTIFF, PNG/JPEG, ASCII, ENVI] --> app
+  s2[s2rk.js<br>Sentinel-2 + modello validato] --> H
 ```
 
 Le schede sono in tre gruppi: previsione e sua verifica (Forecast, Maps, Accuracy, Events), atmosfera (Atmosphere, Atmosphere RK) e Data & method.
@@ -77,8 +78,8 @@ Le schede sono in tre gruppi: previsione e sua verifica (Forecast, Maps, Accurac
 | Scheda | Cosa mostra | File |
 |---|---|---|
 | Forecast | Previsione GPR con incertezza e singoli modelli per il luogo scelto nella barra di ricerca (grafico e tabella scorrevoli) | `app.js`, `gp.js` |
-| Atmosphere | Riepilogo dell'ora, grafici (profilo verticale, prossimi giorni, spettro 6S con spiegazioni al passaggio del mouse), scelta del modello di trasferimento radiativo, equazioni della radianza al sensore per VNIR–SWIR e LWIR | `atmos.js` |
-| Atmosphere RK | Mappa a 10 m con regression kriging (trend sulla quota, barra di avanzamento, pannelli Layer e Stile, GeoTIFF/CSV) e validazione con le misure AERONET calcolata da Torricelli (mappa dei siti, pallino = errore) | `hires.js`, `mapstyle.js`, `gp.js` |
+| Atmosphere | Riepilogo dell'ora, grafici (profilo verticale, prossimi giorni, spettro con spiegazioni al passaggio del mouse), modello di trasferimento radiativo (6S: solo VNIR–SWIR, parte termica ingrigita; libRadtran: VNIR–SWIR e LWIR), equazioni della radianza al sensore | `atmos.js` |
+| Atmosphere RK | Mappe ad alta risoluzione con due metodi: Sentinel-2 + gradient boosting validato su AERONET/GNSS (date passate, `s2rk.js`) oppure trend sulla quota + kriging dei valori del modello; griglia in un sistema di riferimento vero (UTM di base) o presa da un'immagine importata (GeoTIFF/COG, ENVI) pixel per pixel; download in GeoTIFF, PNG/JPEG + world file, griglia ASCII, ENVI, CSV; mappa di validazione dei siti | `hires.js`, `s2rk.js`, `mapstyle.js`, `export.js` |
 | Maps | Mappe regionali: migliore, media pesata, GPR, incertezza, probabilità di pioggia; pannelli Layer e Stile | `app.js`, `mapstyle.js` |
 | Accuracy | Errore di ogni modello per anticipo e andamento mensile; holdout e backtest storico del GPR | `app.js` |
 | Events | Rilevamento di eventi di pioggia e temperatura (CSI) | `app.js` |
@@ -99,7 +100,7 @@ flowchart LR
 ```
 
 - **Torricelli** (`config.yaml → site.atmos_url`): `atmos.js` legge le tabelle 6S da Torricelli e, se non sono disponibili, usa la copia locale in `web/data/`.
-- **Validazione dell'aumento di risoluzione** (Torricelli `obs.yml`): misure AERONET (tutti i siti), ECMWF/CAMS ai siti, covariate Sentinel-2 L2A e terreno a 60/500/2000 m; random forest e gradient boosting (scikit-learn) correggono il modello, kriging dei residui; ogni gruppo di siti viene escluso a turno. Prognostica legge `data/validation/rk_validation.json`.
+- **Validazione dell'aumento di risoluzione** (Torricelli `obs.yml`): misure AERONET (tutti i siti) e GNSS (NGL), ECMWF/CAMS ai siti, covariate Sentinel-2 L2A e terreno a 60/500/2000 m; random forest e gradient boosting (scikit-learn) correggono il modello, kriging dei residui; ogni gruppo di siti viene escluso a turno. Prognostica legge `data/validation/rk_validation.json`.
 - **Dati atmosferici di partenza**: ECMWF IFS 0,25° (~25 km: vapore acqueo, pressione, temperatura) e CAMS globale 0,4° (~45 km: AOD 550 nm) da Open-Meteo, valore della cella di griglia di ogni punto. La tabella 6S viene interpolata in vapore acqueo, AOD, angolo zenitale solare e quota del suolo.
 - **Census** (`config.yaml → site.goatcounter`): `app.js` invia eventi anonimi senza cookie a GoatCounter, con prefisso `prognostica/`. Census li legge.
 
@@ -157,7 +158,9 @@ gantt
 | `web/atmos.js` | Scheda Atmosphere e trasferimento radiativo 6S |
 | `web/hires.js` | Atmosphere RK: regression kriging a 10 m (valori in 49–121 punti campione da Open-Meteo + 6S, trend sulla sola quota, kriging dei residui, validazione leave-one-out) ed export GeoTIFF |
 | `web/mapstyle.js` | Simbologia delle mappe come in QGIS: pannello Layer (mostra/nascondi, ordine) e pannello Stile (scala di colori, min/max, classi, opacità, istogramma, legenda) |
-| `web/export.js` | Download in tutte le schede: grafici e tabelle in CSV, mappe in GeoTIFF Float32 (EPSG:4326) |
+| `web/export.js` | Download in tutte le schede: grafici e tabelle in CSV; mappe in GeoTIFF Float32, PNG/JPEG + world file, griglia ASCII ESRI, ENVI, CSV, nel sistema di riferimento della griglia |
+| `web/s2rk.js` | Applica a un'immagine Sentinel-2 il gradient boosting validato in Torricelli: covariate calcolate nel browser (finestre dei COG), terreno, ECMWF/CAMS; poi trasferimento radiativo pixel per pixel |
+| `web/vendor/` | Leaflet, Chart.js, geotiff.js, proj4js (licenze in `LICENSES.md`) |
 | `web/i18n.js` | Dizionario inglese → italiano |
 | `tests/test_gp_consistency.py` | Controlla che sklearn, `meteoita.gp` e `web/gp.js` diano la stessa predizione GPR |
 

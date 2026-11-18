@@ -8,6 +8,7 @@
 
 const I18N = (() => {
   const D = {
+    "Atmospheric parameters at high resolution around the place: with Sentinel-2 and the model validated on measurements (past dates), or by kriging of model values.": "Parametri atmosferici ad alta risoluzione intorno al luogo: con Sentinel-2 e il modello validato sulle misure (date passate), oppure con il kriging dei valori del modello.",
     "Sentinel-2 + gradient boosting (validated on AERONET / GNSS, past dates)": "Sentinel-2 + gradient boosting (validato su AERONET / GNSS, date passate)",
     "Elevation trend + kriging of model values": "Trend sulla quota + kriging dei valori del modello", "Date": "Data", "Find Sentinel-2 images": "Cerca immagini Sentinel-2",
     "Image": "Immagine", "Build map": "Crea mappa", "Searching Sentinel-2 images…": "Cerco immagini Sentinel-2…", "No Sentinel-2 image within ±5 days": "Nessuna immagine Sentinel-2 entro ±5 giorni",
@@ -87,7 +88,7 @@ const I18N = (() => {
     // schede raggruppate, grafico scorrevole, Atmosphere RK (validazione e avanzamento)
     "Accuracy": "Accuratezza", "Atmosphere RK": "Atmosfera RK", "How to read the GPR tables": "Come leggere le tabelle GPR",
     "Scroll the chart sideways with the bar, the mouse wheel (Shift + wheel) or a swipe.": "Scorri il grafico di lato con la barra, la rotella del mouse (Maiusc + rotella) o con un dito.",
-    "Atmospheric parameters (or the forecast) at high resolution (10 m by default) by regression kriging (RK) around the place.": "Parametri atmosferici (o la previsione) ad alta risoluzione (10 m di base) con regression kriging (RK) intorno al luogo.",
+    
     "Sample points.": "Punti campione.",
     "Trend.": "Trend.",
     "Kriging of the residuals.": "Kriging dei residui.",

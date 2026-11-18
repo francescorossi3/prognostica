@@ -69,7 +69,8 @@ flowchart LR
   i18n[i18n.js<br>EN to IT dictionary] --> app
   ms[mapstyle.js<br>Layers and Style panels] --> M
   ms --> H
-  ex[export.js<br>CSV and GeoTIFF downloads] --> app
+  ex[export.js<br>CSV, GeoTIFF, PNG/JPEG, ASCII, ENVI] --> app
+  s2[s2rk.js<br>Sentinel-2 + validated model] --> H
 ```
 
 The tabs are in three groups: forecast and its verification (Forecast, Maps, Accuracy, Events), atmosphere (Atmosphere, Atmosphere RK) and Data & method.
@@ -77,8 +78,8 @@ The tabs are in three groups: forecast and its verification (Forecast, Maps, Acc
 | Tab | What it shows | File |
 |---|---|---|
 | Forecast | GPR forecast with uncertainty and the single models for the place chosen in the search bar (scrollable chart and table) | `app.js`, `gp.js` |
-| Atmosphere | Summary of the hour, charts (vertical profile, next days, 6S spectrum with hover explanations), choice of the radiative transfer model, at-sensor radiance equations for VNIR–SWIR and LWIR | `atmos.js` |
-| Atmosphere RK | Regression kriging map at 10 m (elevation trend, progress bar, Layers and Style panels, GeoTIFF/CSV) and validation against AERONET measurements computed by Torricelli (map of the sites, dot size = error) | `hires.js`, `mapstyle.js`, `gp.js` |
+| Atmosphere | Summary of the hour, charts (vertical profile, next days, spectrum with hover explanations), radiative transfer model (6S: VNIR–SWIR only, thermal part greyed out; libRadtran: VNIR–SWIR and LWIR), at-sensor radiance equations | `atmos.js` |
+| Atmosphere RK | High-resolution maps with two methods: Sentinel-2 + gradient boosting validated on AERONET/GNSS (past dates, `s2rk.js`) or elevation trend + kriging of model values; grid in a real CRS (UTM by default) or taken from an imported image (GeoTIFF/COG, ENVI) pixel by pixel; downloads in GeoTIFF, PNG/JPEG + world file, ASCII grid, ENVI, CSV; validation map of the sites | `hires.js`, `s2rk.js`, `mapstyle.js`, `export.js` |
 | Maps | Regional maps: best model, weighted mean, GPR, uncertainty, rain probability; Layers and Style panels | `app.js`, `mapstyle.js` |
 | Accuracy | Error of each model by lead time and monthly trend; GPR hold-out and historical back-test | `app.js` |
 | Events | Detection of rain and temperature events (CSI) | `app.js` |
@@ -99,7 +100,7 @@ flowchart LR
 ```
 
 - **Torricelli** (`config.yaml → site.atmos_url`): `atmos.js` reads the 6S look-up tables from Torricelli; if they are not available it uses the local copy in `web/data/`.
-- **Validation of the downscaling** (Torricelli `obs.yml`): AERONET measurements (all sites), ECMWF/CAMS at the sites, Sentinel-2 L2A and terrain covariates at 60/500/2000 m; random forest and gradient boosting (scikit-learn) correct the model, kriging of the residuals; each group of sites is left out in turn. Prognostica reads `data/validation/rk_validation.json`.
+- **Validation of the downscaling** (Torricelli `obs.yml`): AERONET (all sites) and GNSS (NGL) measurements, ECMWF/CAMS at the sites, Sentinel-2 L2A and terrain covariates at 60/500/2000 m; random forest and gradient boosting (scikit-learn) correct the model, kriging of the residuals; each group of sites is left out in turn. Prognostica reads `data/validation/rk_validation.json`.
 - **Atmospheric inputs**: ECMWF IFS 0.25° (~25 km: water vapour, pressure, temperature) and CAMS global 0.4° (~45 km: AOD 550 nm) from Open-Meteo, value of the grid cell of each point. The 6S look-up table is interpolated in water vapour, AOD, solar zenith angle and ground elevation.
 - **Census** (`config.yaml → site.goatcounter`): `app.js` sends anonymous, cookie-free GoatCounter events (path prefix `prognostica/`). Census reads them.
 
@@ -157,7 +158,9 @@ gantt
 | `web/atmos.js` | Atmosphere tab and 6S radiative transfer |
 | `web/hires.js` | Atmosphere RK: 10 m regression kriging (values at 49–121 sample points from Open-Meteo + 6S, trend on elevation only, kriging of the residuals, leave-one-out validation) and GeoTIFF export |
 | `web/mapstyle.js` | QGIS-like map symbology: Layers panel (show/hide, order) and Style panel (colour ramp, min/max, classes, opacity, histogram, legend) |
-| `web/export.js` | Downloads in every tab: charts and tables as CSV, maps as GeoTIFF Float32 (EPSG:4326) |
+| `web/export.js` | Downloads in every tab: charts and tables as CSV; maps as GeoTIFF Float32, PNG/JPEG + world file, ESRI ASCII grid, ENVI, CSV, in the coordinate system of the grid |
+| `web/s2rk.js` | Applies the gradient boosting validated in Torricelli to a Sentinel-2 image: covariates computed in the browser (COG windows), terrain, ECMWF/CAMS; then radiative transfer pixel by pixel |
+| `web/vendor/` | Leaflet, Chart.js, geotiff.js, proj4js (licences in `LICENSES.md`) |
 | `web/i18n.js` | English → Italian dictionary |
 | `tests/test_gp_consistency.py` | Checks that sklearn, `meteoita.gp` and `web/gp.js` give the same GPR prediction |
 
