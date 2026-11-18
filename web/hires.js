@@ -260,7 +260,13 @@ const HR = (() => {
     return MapStyle.legend(lab, "", C);
   }
 
-  async function draw(fit = false, keepPanels = false) {
+  // un disegno alla volta: due disegni sovrapposti (immagini create in modo asincrono) lascerebbero layer orfani o mancanti
+  let drawing = Promise.resolve();
+  function draw(fit = false, keepPanels = false) {
+    drawing = drawing.then(() => drawNow(fit, keepPanels)).catch(e => console.error(e));
+    return drawing;
+  }
+  async function drawNow(fit, keepPanels) {
     const o = HR.out;
     if (!o) return panels();
     const bounds = [[o.G.bb.s, o.G.bb.w], [o.G.bb.n, o.G.bb.e]];       // sovrapposizione approssimata della griglia proiettata
