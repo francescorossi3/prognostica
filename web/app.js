@@ -918,14 +918,14 @@ function initData() {
   6S (solar spectrum only) or libRadtran (solar and thermal spectrum), chosen in the Atmosphere tab. In the thermal infrared libRadtran gives transmittance
   and upwelling and downwelling radiance with standard atmospheres chosen by latitude and season.</p>
   <h3>Atmosphere RK: high-resolution maps validated on measurements</h3>
-  <p>For a past date and hour, water vapour (ECMWF IFS, about 25 km) and AOD (CAMS, about 45 km) are corrected with a gradient boosting model trained on
+  <p>For a past date and hour, water vapour (ECMWF IFS, about 25 km) and AOD (CAMS, about 45 km) are interpolated to fine spatial resolution by regression kriging, with a gradient boosting trend trained on
   hourly AERONET and GNSS measurements, using covariates that exist for every pixel: the model values, terrain within 500 m and 2 km, hour and season.
   It is applied every 30 m (90 m for large areas). The validation leaves out each site and every site in its 0.5° cell: errors are against measurements, not
   against the model. The grid can be the square around the place or the grid of an imported GeoTIFF/ENVI image. Radiative transfer quantities are
   converted to the band of a sensor with its spectral response (library, image metadata or custom) and exported in the units of the product.</p>
   <p><b>Limitations.</b> Best, Weighted mean and GPR only use models available everywhere (Open-Meteo), so they can be computed
   at any point. Stations are mostly in lowlands or on the coast: in the mountains estimates and uncertainties are less verified.
-  The AOD correction is small: aerosol varies too quickly for the covariates to explain much more than CAMS.</p>
+  The gain for AOD is small: aerosol varies too quickly for the covariates to explain much more than CAMS.</p>
   <h3>Licence</h3><p>© 2026 Francesco Rossi. Code: all rights reserved. Data: CC BY-NC 4.0 (attribution, non-commercial use).
   Third-party data remain under their own licences.</p>`;
 }
@@ -982,14 +982,14 @@ function dataTextIT(link, d) {
   solare) o libRadtran (spettro solare e termico), da scegliere nella scheda Atmosfera. Nell'infrarosso termico libRadtran dà trasmittanza e radianze in salita
   e in discesa con atmosfere standard scelte secondo latitudine e stagione.</p>
   <h3>Atmosphere RK: mappe ad alta risoluzione validate sulle misure</h3>
-  <p>Per una data e un'ora passate, vapore acqueo (ECMWF IFS, circa 25 km) e AOD (CAMS, circa 45 km) sono corretti con un modello gradient boosting addestrato sulle
+  <p>Per una data e un'ora passate, vapore acqueo (ECMWF IFS, circa 25 km) e AOD (CAMS, circa 45 km) sono interpolati ad alta risoluzione spaziale con il regression kriging, con un trend gradient boosting addestrato sulle
   misure orarie AERONET e GNSS, con covariate che esistono per ogni pixel: i valori del modello, il terreno entro 500 m e 2 km, ora e stagione.
   Si applica ogni 30 m (90 m per aree grandi). La validazione esclude ogni sito e tutti i siti della sua cella di 0,5°: gli errori sono rispetto alle misure, non al modello.
   La griglia può essere il quadrato intorno al luogo o quella di un'immagine GeoTIFF/ENVI importata. Le grandezze di trasferimento radiativo sono convertite alla banda
   di un sensore con la sua risposta spettrale (libreria, metadati dell'immagine o personalizzata) ed esportate nelle unità del prodotto.</p>
   <p><b>Limiti.</b> Migliore, Media pesata e GPR usano solo modelli disponibili ovunque (Open-Meteo), così si possono calcolare in qualsiasi punto.
   Le stazioni sono soprattutto in pianura o sulla costa: in montagna stime e incertezze sono meno verificate.
-  La correzione dell'AOD è piccola: l'aerosol cambia troppo in fretta perché le covariate spieghino molto più di CAMS.</p>
+  Il guadagno per l'AOD è piccolo: l'aerosol cambia troppo in fretta perché le covariate spieghino molto più di CAMS.</p>
   <h3>Licenza</h3><p>© 2026 Francesco Rossi. Codice: tutti i diritti riservati. Dati: CC BY-NC 4.0 (attribuzione, uso non commerciale).
   I dati di terzi restano soggetti alle loro licenze.</p>`;
 }

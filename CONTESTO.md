@@ -34,8 +34,9 @@ CSV/Excel con nomi inglesi: `rankings.csv`, `rankings_holdout.csv`, `best_and_we
 LUT iperspettrale: workflow Torricelli «Tabella RT 6S» con `hyper` (6 macchine in parallelo, ~1 h; `scripts/01b_merge_lut.py` unisce le parti).
 
 ## Piano per la prossima chat (dal 18/11/2026)
+Scopo del regression kriging: interpolare e aumentare la risoluzione spaziale di vapore e AOD (non "correggere" il modello).
 1. **ERA5 + IFS + CAMS insieme (Torricelli 05, 07; Prognostica rkmap.js, atmos.js)**: in 05 aggiungere ERA5 (Open-Meteo archive: tcwv, t2m, rh, ps) ai siti;
-   in 07 covariate di tutti i modelli (IFS NaN prima del 3/2/2024: HGB gestisce i mancanti), correzione rispetto a ERA5 (IFS se ERA5 non c'è ancora, ultimi ~5 giorni);
+   in 07 covariate di tutti i modelli (IFS NaN prima del 3/2/2024: HGB gestisce i mancanti), residuo (misura − modello) rispetto a ERA5 (IFS se ERA5 non c'è ancora, ultimi ~5 giorni);
    due validazioni: con tutti i modelli e con IFS tolto. Nel browser scaricare ERA5 e, se la data lo permette, IFS.
 2. **Più GNSS (04b)**: stazioni NGL una ogni 0,5° su tutta l'area (non solo Italia a 1°).
 3. **AERONET MAN** (navi) per l'AOD sul mare.
@@ -45,7 +46,7 @@ LUT iperspettrale: workflow Torricelli «Tabella RT 6S» con `hyper` (6 macchine
 Vincoli: limite di richieste Open-Meteo (05 salva il parziale e riprende), file CSV < 100 MB (validazione divisa per mese), date solo passate.
 
 ## Novità 18/11/2026
-- **Atmosphere RK** riscritta: un solo metodo. Per una data e un'ora passate, vapore (ECMWF IFS) e AOD (CAMS) corretti dal gradient boosting
+- **Atmosphere RK** riscritta: un solo metodo. Per una data e un'ora passate, vapore (ECMWF IFS) e AOD (CAMS) interpolati ad alta risoluzione con regression kriging (trend gradient boosting)
   addestrato da Torricelli su misure orarie AERONET e GNSS con covariate che esistono per ogni pixel (modello, terreno a 500/2000 m, posizione, ora):
   niente Sentinel-2, niente trend sulla quota, niente random forest. Validazione per celle di 0,5°: vapore RMSE 2,30 → 1,98 kg m⁻², AOD 0,078 → 0,072.
 - Grandezze RT nella banda di qualsiasi sensore (`web/srf.js`): libreria Torricelli `srf.json` (curve misurate da Py6S, gaussiane LWIR),

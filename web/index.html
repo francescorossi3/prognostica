@@ -142,7 +142,7 @@
 <section id="tab-hr" class="tab">
   <p class="place" id="h-point">Choose a place with the search above: the map is built around it.</p>
   <p class="hint">Water vapour, aerosol optical depth and radiative transfer quantities at high resolution, for a past date and hour:
-    ECMWF IFS and CAMS corrected pixel by pixel with the model validated on AERONET and GNSS measurements (below).</p>
+    ECMWF IFS and CAMS interpolated to fine spatial resolution by regression kriging, with the model validated on AERONET and GNSS measurements (below).</p>
   <div class="controls import">
     <label title="GeoTIFF / COG, or ENVI .hdr together with its .img">Use the grid of an image <input type="file" id="h-img" accept=".tif,.tiff,.hdr,.img" multiple></label>
     <button id="h-img-clear" class="ghost" hidden>Back to the square grid</button>
@@ -185,7 +185,7 @@
     </aside>
   </div>
   <h2 class="section">Validation against measurements (AERONET, GNSS)</h2>
-  <p class="hint">Water vapour (ECMWF IFS, about 25 km) and aerosol optical depth (CAMS, about 45 km) are corrected by gradient boosting with covariates
+  <p class="hint">Water vapour (ECMWF IFS, about 25 km) and aerosol optical depth (CAMS, about 45 km) are brought to fine spatial resolution by regression kriging: a gradient boosting trend on covariates
     that exist for every pixel and hour: the model values themselves, terrain (mean elevation within 100 m, position in the relief within 500 m and 2 km),
     hour and season (not latitude and longitude, which would give straight steps in the maps). Each site is tested while left out of the training, together with every site in its 0.5° cell:
     the errors are against real sun-photometer (AERONET) and GNSS measurements.</p>
@@ -213,9 +213,9 @@
         at the chosen hour, from the Open-Meteo archive.</li>
       <li><b>Covariates.</b> On a 30 m lattice: terrain from the elevation tiles (mean elevation within 100 m, its difference from the mean
         elevation and the spread within 500 m and 2 km), hour and day of the year.</li>
-      <li><b>Correction.</b> The gradient boosting trained on AERONET and GNSS measurements (validation above) gives the correction of the model
+      <li><b>Trend.</b> The gradient boosting trained on AERONET and GNSS measurements (validation above) gives the residual of the model
         every 30 m (90 m for large areas); the map pixels take the bilinear value.</li>
-      <li><b>Radiative transfer.</b> For transmittances, path radiance, irradiances and spherical albedo the corrected water vapour and AOD
+      <li><b>Radiative transfer.</b> For transmittances, path radiance, irradiances and spherical albedo the high-resolution water vapour and AOD
         enter the 6S or libRadtran tables with the solar angle and the elevation of each pixel. The tables (every 10 nm, and every 0.1 µm in the
         thermal) are weighted with the spectral response of the chosen band: measured curves for Sentinel-2, Landsat, Sentinel-3, MODIS,
         PROBA-V; band limits or Gaussian shapes for the others; the wavelengths of an imported image; or your own.</li>

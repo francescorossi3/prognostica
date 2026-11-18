@@ -196,7 +196,7 @@ const HR = (() => {
     S.hl = [
       raster("est", "RK", "Regression kriging: the model value plus its residual predicted pixel by pixel by the gradient boosting trained on AERONET and GNSS measurements. The best estimate: use this one", "RdYlBu", true),
       raster("sd", "Predicted residual (RK − model)", "Residual of the model (measurement − model) predicted in each pixel from the covariates: positive where the model underestimates", "RdBu", false),
-      raster("trend", "Model", "The original model value (cells of 25–45 km) at the same hour, without correction: for comparison", "RdYlBu", false),
+      raster("trend", "Model", "The original model value (cells of 25–45 km) at the same hour: for comparison", "RdYlBu", false),
       raster("elev", "Elevation [m]", "Ground elevation used for the terrain covariates and for the radiative transfer", "Greys", false),
       { id: "base", name: "OpenStreetMap", kind: "base", visible: true, pane: "hl-base", group: base },
     ];
@@ -242,7 +242,7 @@ const HR = (() => {
       draw(true); report();
       bar.hidden = true;
       st.textContent = `Done in ${((performance.now() - t0) / 1000).toFixed(0)} s · ${W0(G)} · model applied every ${R.step} m${vb?.outside ? " · band outside the tables: nearest wavelength used" : ""}`
-        + (R.source.startsWith("ERA5") && kind !== "aod" ? " · before February 2024 ECMWF IFS 0.25° is not archived: ERA5 reanalysis used, the correction was trained on IFS" : "");
+        + (R.source.startsWith("ERA5") && kind !== "aod" ? " · before February 2024 ECMWF IFS 0.25° is not archived: ERA5 reanalysis used, the trend was trained on IFS" : "");
     } catch (e) { bar.hidden = true; st.innerHTML = `<span class="error">${e.message}</span>`; console.error(e); }
   }
 
@@ -307,7 +307,7 @@ const HR = (() => {
 
   function report() {
     const o = HR.out, rm = Object.entries(o.rmse).map(([v, e]) => `${v === "tcwv" ? "water vapour" : "AOD"} ${fmt(e, v === "tcwv" ? 2 : 3)}${v === "tcwv" ? " kg m⁻²" : ""}`);
-    $("#h-model").innerHTML = `<dl class="kv"><dt>Map</dt><dd>${o.label}</dd><dt>Method</dt><dd>gradient boosting correction of ECMWF IFS / CAMS,
+    $("#h-model").innerHTML = `<dl class="kv"><dt>Map</dt><dd>${o.label}</dd><dt>Method</dt><dd>regression kriging of ECMWF IFS / CAMS (gradient boosting trend),
       validated on AERONET and GNSS; applied every ${o.step} m and interpolated on the ${W0(o.G)}</dd>
       <dt>Validation RMSE</dt><dd>${rm.join(" · ")} (sites left out of training)</dd>
       ${isBand(o.kind) ? `<dt>Radiative transfer</dt><dd>${S.rtm === "6s" ? "6S" : "libRadtran"} tables, interpolated in water vapour and AOD (RK), solar zenith angle and elevation of each pixel;
@@ -349,8 +349,8 @@ const HR = (() => {
   // ogni sito: pallino grande quanto l'RMSE del metodo scelto; verde-acqua = meglio del modello grezzo, ocra = peggio
   // spiegazione delle covariate (riquadro al passaggio del mouse o al tocco)
   const COV = {
-    tcwv_model: "Water vapour column from ECMWF IFS (0.25°, about 25 km) at that hour [kg m⁻²]: the value to be corrected for water vapour",
-    aod_model: "Aerosol optical depth at 550 nm from CAMS global (0.4°, about 45 km) at that hour: the value to be corrected for AOD",
+    tcwv_model: "Water vapour column from ECMWF IFS (0.25°, about 25 km) at that hour [kg m⁻²]: the coarse value to be brought to high resolution",
+    aod_model: "Aerosol optical depth at 550 nm from CAMS global (0.4°, about 45 km) at that hour: the coarse value to be brought to high resolution",
     dust_ugm3: "Dust concentration near the ground from CAMS [µg m⁻³]",
     t2m_c: "Air temperature at 2 m from ECMWF IFS [°C]",
     rh2m: "Relative humidity at 2 m from ECMWF IFS [%]",
