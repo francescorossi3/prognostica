@@ -907,7 +907,7 @@ function initData() {
   closeness to the map), accepts coordinates (“41.90, 12.50”) and your device location, and falls back to
   <a href="https://nominatim.openstreetmap.org/">Nominatim</a>.</p>
   <h3>Atmosphere and atmospheric correction</h3>
-  <p>For the chosen point: total column water vapour, surface pressure, temperature, humidity, cloud cover, irradiance (ECMWF IFS 0.25°),
+  <p>For the chosen point, at a past date and hour (archive of the models, since the images to correct are already acquired): total column water vapour, surface pressure, temperature, humidity, cloud cover, irradiance (ECMWF IFS 0.25°),
   aerosol optical depth at 550 nm and dust (CAMS), and the profile on pressure levels 1000–200 hPa (temperature, humidity, geopotential height, wind).
   Air density is ρ = p / (R<sub>d</sub> T<sub>v</sub>) with the virtual temperature T<sub>v</sub>. The radiative-transfer parameters of the
   Sentinel-2 bands (downward/upward scattering transmittance, gaseous transmittance, path radiance, direct and diffuse irradiance, spherical albedo)
@@ -971,7 +971,7 @@ function dataTextIT(link, d) {
   <p><b>Ricerca dei luoghi</b>: suggerimenti mentre scrivi (<a href="https://photon.komoot.io/">Photon</a>, dati OpenStreetMap, ordinati per vicinanza alla mappa),
   coordinate (“41.90, 12.50”), posizione del dispositivo, e <a href="https://nominatim.openstreetmap.org/">Nominatim</a> come riserva.</p>
   <h3>Atmosfera e correzione atmosferica</h3>
-  <p>Per il punto scelto: vapore acqueo in colonna, pressione al suolo, temperatura, umidità, nuvolosità, irradianza (ECMWF IFS 0,25°), spessore ottico degli
+  <p>Per il punto scelto, a una data e un'ora passate (archivio dei modelli, perché le immagini da correggere sono già acquisite): vapore acqueo in colonna, pressione al suolo, temperatura, umidità, nuvolosità, irradianza (ECMWF IFS 0,25°), spessore ottico degli
   aerosol a 550 nm e polveri (CAMS), e il profilo sui livelli di pressione 1000–200 hPa (temperatura, umidità, altezza geopotenziale, vento).
   La densità dell'aria è ρ = p / (R<sub>d</sub> T<sub>v</sub>) con la temperatura virtuale T<sub>v</sub>. I parametri di trasferimento radiativo delle bande
   Sentinel-2 (trasmittanza di diffusione in discesa e in salita, trasmittanza gassosa, radianza di percorso, irradianza diretta e diffusa, albedo sferico)

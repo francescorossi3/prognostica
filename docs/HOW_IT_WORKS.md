@@ -78,7 +78,7 @@ The tabs are in three groups: forecast and its verification (Forecast, Maps, Acc
 | Tab | What it shows | File |
 |---|---|---|
 | Forecast | GPR forecast with uncertainty and the single models for the place chosen in the search bar (scrollable chart and table) | `app.js`, `gp.js` |
-| Atmosphere | Summary of the hour, charts (vertical profile, next days, spectrum with hover explanations), radiative transfer model (6S: VNIR–SWIR only, thermal part greyed out; libRadtran: VNIR–SWIR and LWIR), at-sensor radiance equations | `atmos.js` |
+| Atmosphere | For a past date and hour (archive of the models, as for the images to correct): summary of the hour, charts (vertical profile, day before and after, spectrum with hover explanations), radiative transfer model (6S: VNIR–SWIR only, thermal part greyed out; libRadtran: VNIR–SWIR and LWIR), at-sensor radiance equations | `atmos.js` |
 | Atmosphere RK | Water vapour, AOD and radiative transfer quantities at high resolution for a past date and hour: ECMWF/CAMS corrected by the gradient boosting validated on AERONET and GNSS; band of any sensor through its spectral response (library, metadata of the imported image, custom); grid in a real CRS (UTM by default) or taken from an imported image (GeoTIFF/COG, ENVI) pixel by pixel; downloads in GeoTIFF, PNG/JPEG + world file, ASCII grid, ENVI, CSV, in the units of the product; validation map of the sites | `hires.js`, `rkmap.js`, `srf.js`, `mapstyle.js`, `export.js` |
 | Maps | Regional maps: best model, weighted mean, GPR, uncertainty, rain probability; Layers and Style panels | `app.js`, `mapstyle.js` |
 | Accuracy | Error of each model by lead time and monthly trend; GPR hold-out and historical back-test | `app.js` |

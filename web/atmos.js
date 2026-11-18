@@ -88,23 +88,17 @@ const ATM = (() => {
     return Object.fromEntries(L.outputs.map((k, j) => [k, out[j]]));
   }
 
-  // ---------------------------------------------------------------- download
-  // locs: [{lat, lon}]; restituisce per ogni punto {times, h: {var: []}, aod: []}
-  async function fetchMulti(locs, pastDays = 1, days = 3, withProfiles = true) {
-    const la = locs.map(p => p.lat.toFixed(4)).join(","), lo = locs.map(p => p.lon.toFixed(4)).join(",");
-    const vars = withProfiles ? [...SURF, ...PROF] : SURF;
-    const u1 = `https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&hourly=${vars.join(",")}`
-      + `&models=ecmwf_ifs025&past_days=${pastDays}&forecast_days=${days}&timeformat=unixtime&timezone=GMT`;
-    const u2 = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${la}&longitude=${lo}&hourly=aerosol_optical_depth,dust`
-      + `&past_days=${pastDays}&forecast_days=${Math.min(days, 5)}&timeformat=unixtime&timezone=GMT`;
-    const [a, b] = await Promise.all([fetch(u1).then(r => r.json()), fetch(u2).then(r => r.json()).catch(() => null)]);
+  // ---------------------------------------------------------------- download (archivio: solo date passate)
+  // dal giorno start al giorno end (AAAA-MM-GG, UTC): ECMWF IFS dall'archivio delle previsioni, AOD e polveri da CAMS
+  async function fetchPast(P, start, end) {
+    const q = `latitude=${P.lat.toFixed(4)}&longitude=${P.lon.toFixed(4)}&start_date=${start}&end_date=${end}&timeformat=unixtime&timezone=GMT`;
+    const [a, b] = await Promise.all([
+      fetch(`https://historical-forecast-api.open-meteo.com/v1/forecast?${q}&hourly=${[...SURF, ...PROF].join(",")}&models=ecmwf_ifs025`).then(r => r.json()),
+      fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${q}&hourly=aerosol_optical_depth,dust&domains=cams_global`).then(r => r.json()).catch(() => null)]);
     if (a.error) throw new Error(a.reason);
-    const A = Array.isArray(a) ? a : [a], B = b && !b.error ? (Array.isArray(b) ? b : [b]) : [];
-    return A.map((x, i) => {
-      const times = x.hourly.time.map(t => t * 1000), aq = B[i]?.hourly;
-      const amap = new Map((aq?.time || []).map((t, k) => [t * 1000, [aq.aerosol_optical_depth[k], aq.dust[k]]]));
-      return { times, h: x.hourly, elev: x.elevation, aod: times.map(t => amap.get(t)?.[0] ?? null), dust: times.map(t => amap.get(t)?.[1] ?? null) };
-    });
+    const times = a.hourly.time.map(t => t * 1000), aq = b && !b.error ? b.hourly : null;
+    const amap = new Map((aq?.time || []).map((t, k) => [t * 1000, [aq.aerosol_optical_depth[k], aq.dust[k]]]));
+    return { times, h: a.hourly, elev: a.elevation, aod: times.map(t => amap.get(t)?.[0] ?? null), dust: times.map(t => amap.get(t)?.[1] ?? null) };
   }
 
   // tutte le grandezze derivate in un'ora (k) di un punto
@@ -146,25 +140,32 @@ const ATM = (() => {
     $("#a-point").innerHTML = `<b>${P.label || "Point"}</b> · ${P.lat.toFixed(4)}, ${P.lon.toFixed(4)} · ${fmt(P.elev, 0)} m · local time ${P.tz}
       <span class="hint">(change the place with the search above)</span>`;
     box.innerHTML = '<p class="hint">Downloading atmospheric data…</p>';
+    // data dell'immagine (passata): si scarica dal giorno prima al giorno dopo, per il grafico e per l'ora locale
+    const iso = ms => new Date(ms).toISOString().slice(0, 10), today = iso(Date.now());
+    if (!$("#a-date").value) $("#a-date").value = iso(Date.now() - 864e5);
+    $("#a-date").max = today;
+    $("#a-date").onchange = () => { if ($("#a-date").value) render(P); };
+    const day = $("#a-date").value > today ? today : $("#a-date").value, d0 = Date.parse(day);
     let d, L, H;
-    try { [[d], L, H] = await Promise.all([fetchMulti([{ lat: P.lat, lon: P.lon }], 1, 3, true), lut("s2"), lut("hyper"), S.rtm === "6s" ? null : lut("tir")]); }
+    try { [d, L, H] = await Promise.all([fetchPast(P, iso(d0 - 864e5), iso(Math.min(d0 + 864e5, Date.now()))), lut("s2"), lut("hyper"), S.rtm === "6s" ? null : lut("tir")]); }
     catch (e) { box.innerHTML = `<p class="error">Atmosphere download error: ${e.message}</p>`; return; }
     box.innerHTML = "";
     cur = { d, L, H, P };
-    const sets = [...(H ? [["hyper", `6S every ${Math.round((H.bands[Object.keys(H.bands)[1]].wl_um - H.bands[Object.keys(H.bands)[0]].wl_um) * 1000)} nm (${Object.keys(H.bands).length} wavelengths)`]] : []),
+    const sets = [...(H ? [["hyper", `Every ${Math.round((H.bands[Object.keys(H.bands)[1]].wl_um - H.bands[Object.keys(H.bands)[0]].wl_um) * 1000)} nm (${Object.keys(H.bands).length} wavelengths)`]] : []),
       ["s2", "Sentinel-2 bands (13)"]];
     opts($("#a-specset"), sets, $("#a-specset").value && sets.some(x => x[0] === $("#a-specset").value) ? $("#a-specset").value : sets[0][0]);
-    $("#a-specnote").textContent = H ? "" : "The hyperspectral 6S table is not available yet: Sentinel-2 bands for now.";
+    $("#a-specnote").textContent = H ? "" : "The hyperspectral table is not available yet: Sentinel-2 bands for now.";
     $("#a-specset").onchange = () => renderHour(+$("#a-hour").value);
-    // ora proposta: la prossima con il sole più alto (circa il passaggio dei satelliti eliosincroni ~10:30 locali)
-    const now = Date.now();
-    const idx = d.times.map((t, k) => k).filter(k => d.times[k] >= now - 3600000);
+    // ore del giorno scelto (ora locale del luogo); proposta: quella con il sole più alto (passaggio dei satelliti eliosincroni ~10:30)
+    const tz = P.tz, idx = d.times.map((t, k) => k).filter(k => localParts(d.times[k], tz).date === day && d.h.total_column_integrated_water_vapour[k] != null);
+    if (!idx.length) { box.innerHTML = `<p class="error">No archived model values for ${day} yet: choose an earlier date.</p>`; return; }
+    const keep = $("#a-hour").selectedOptions[0]?.text.slice(11), same = idx.find(k => localParts(d.times[k], tz).hour === +(keep || "").slice(0, 2));
     let best = idx[0];
-    for (const k of idx.slice(0, 24)) if (sza(d.times[k] - 1800000, P.lat, P.lon) < sza(d.times[best] - 1800000, P.lat, P.lon)) best = k;
-    const tz = P.tz;
-    opts($("#a-hour"), d.times.map((t, k) => { const l = localParts(t, tz); return [k, `${l.date} ${String(l.hour).padStart(2, "0")}:00`]; }), best);
+    for (const k of idx) if (sza(d.times[k] - 1800000, P.lat, P.lon) < sza(d.times[best] - 1800000, P.lat, P.lon)) best = k;
+    const sel = keep && same != null ? same : best;
+    opts($("#a-hour"), idx.map(k => { const l = localParts(d.times[k], tz); return [k, `${l.date} ${String(l.hour).padStart(2, "0")}:00`]; }), sel);
     $("#a-hour").onchange = () => renderHour(+$("#a-hour").value);
-    renderHour(best);
+    renderHour(sel);
     // serie temporali di vapore acqueo e AOD
     const lab = d.times.map(t => { const l = localParts(t, tz); return `${l.date.slice(5)} ${String(l.hour).padStart(2, "0")}h`; });
     drawChart("a-ts", { type: "line", data: { labels: lab, datasets: [

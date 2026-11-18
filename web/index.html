@@ -74,8 +74,10 @@
 <!-- ============================ ATMOSPHERE ============================ -->
 <section id="tab-atm" class="tab">
   <p class="place" id="a-point">Choose a place with the search above (or a map click, or a calibration site).</p>
-  <div class="controls"><label>Hour <select id="a-hour"></select></label>
-    <span class="hint">Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).</span></div>
+  <div class="controls"><label title="Acquisition date of the satellite image">Date <input type="date" id="a-date"></label>
+    <label title="Local time of the place">Hour <select id="a-hour"></select></label>
+    <span class="hint">Past dates only, from the archive of the models: the image to correct has already been acquired.
+      Proposed: the hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).</span></div>
   <div class="controls">
     <label>Radiative transfer model <select id="a-rtm">
       <option value="6s">6S · VNIR–SWIR only</option>
@@ -87,11 +89,11 @@
     <div class="card"><h3>Surface and column</h3><div id="a-surf"></div></div>
     <div class="card"><h3>Vertical profile</h3><canvas id="a-prof"></canvas></div>
   </div>
-  <div class="card"><h3>Next days</h3><canvas id="a-ts"></canvas></div>
+  <div class="card"><h3>Day before, day and day after</h3><canvas id="a-ts"></canvas></div>
   <div class="card">
     <h3>Spectral radiative transfer, VNIR–SWIR</h3>
     <div class="controls"><label>Resolution <select id="a-specset"></select></label><span class="hint" id="a-specnote"></span></div>
-    <p class="hint">6S, nadir view, continental aerosol. Hover over a legend entry to see what it is.</p>
+    <p class="hint">Nadir view, continental aerosol. Hover over a legend entry to see what it is.</p>
     <div class="grid2">
       <div class="chart-box"><div id="a-leg-t" class="chart-legend"></div><canvas id="a-spec-t"></canvas></div>
       <div class="chart-box"><div id="a-leg-l" class="chart-legend"></div><canvas id="a-spec-l"></canvas></div>

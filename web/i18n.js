@@ -7,6 +7,8 @@
 "use strict";
 const I18N = (() => {
   const D = {
+    "Acquisition date of the satellite image": "Data di acquisizione dell'immagine satellitare",
+    "Local time of the place": "Ora locale del luogo",
     "Water vapour column from ECMWF IFS (0.25°, about 25 km) at that hour [kg m⁻²]: the value to be corrected for water vapour": "Vapore acqueo in colonna di ECMWF IFS (0,25°, circa 25 km) a quell'ora [kg m⁻²]: il valore da correggere per il vapore",
     "Aerosol optical depth at 550 nm from CAMS global (0.4°, about 45 km) at that hour: the value to be corrected for AOD": "Spessore ottico degli aerosol a 550 nm di CAMS globale (0,4°, circa 45 km) a quell'ora: il valore da correggere per l'AOD",
     "Dust concentration near the ground from CAMS [µg m⁻³]": "Concentrazione di polveri vicino al suolo di CAMS [µg m⁻³]",
@@ -110,7 +112,7 @@ const I18N = (() => {
     "CSV": "CSV", "Download the data of this chart (CSV)": "Scarica i dati di questo grafico (CSV)", "Download this table (CSV)": "Scarica questa tabella (CSV)",
     "Selected layer at the period shown": "Layer selezionato al periodo mostrato",
     "Spectral radiative transfer, VNIR–SWIR": "Trasferimento radiativo spettrale, VNIR–SWIR",
-    "6S, nadir view, continental aerosol. Hover over a legend entry to see what it is.": "6S, vista al nadir, aerosol continentale. Passa il mouse su una voce della legenda per sapere cos'è.",
+    "Nadir view, continental aerosol. Hover over a legend entry to see what it is.": "Vista al nadir, aerosol continentale. Passa con il mouse su una voce della legenda per sapere cos'è.",
     "Transmittance · spherical albedo": "Trasmittanza · albedo sferica", "Spherical albedo S": "Albedo sferica S", "Total T (↓·↑·gas)": "T totale (↓·↑·gas)",
     "How the terms are related: radiance at the sensor": "Come sono legati i termini: radianza al sensore",
     "VNIR–SWIR (0.4–2.5 µm), Lambertian surface": "VNIR–SWIR (0,4–2,5 µm), superficie lambertiana", "LWIR (8–14 µm)": "LWIR (8–14 µm)",
@@ -190,10 +192,9 @@ const I18N = (() => {
     "GPR error at stations": "Errore GPR alle stazioni",
     "Click on the map to see the value and open the detailed forecast.": "Clicca sulla mappa per vedere il valore e aprire la previsione dettagliata.",
     // atmosfera
-    "Hour": "Ora", "Proposed: the next hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).":
-      "Proposta: la prossima ora con il sole più alto (vicina al passaggio delle ~10:30 di Sentinel-2 / Landsat).",
+    "Hour": "Ora", "Past dates only, from the archive of the models: the image to correct has already been acquired. Proposed: the hour with the highest sun (close to the ~10:30 overpass of Sentinel-2 / Landsat).": "Solo date passate, dall'archivio dei modelli: l'immagine da correggere è già stata acquisita. Proposta: l'ora con il sole più alto (vicina al passaggio delle ~10:30 di Sentinel-2 / Landsat).",
     "Surface and column": "Superficie e colonna", "Vertical profile": "Profilo verticale",
-    "Next days": "Prossimi giorni",
+    "Day before, day and day after": "Giorno prima, giorno scelto e giorno dopo",
     "Downloading atmospheric data…": "Scarico i dati atmosferici…",
     "Solar zenith angle": "Angolo zenitale solare",
     "Surface pressure": "Pressione al suolo", "Air temperature 2 m · dew point": "Temperatura dell'aria 2 m · punto di rugiada",
@@ -208,7 +209,7 @@ const I18N = (() => {
     "Water vapour column [kg m⁻²]": "Vapore acqueo in colonna [kg m⁻²]",
     "Atmosphere": "Atmosfera", "Resolution": "Risoluzione",
     "Spectral radiative transfer": "Trasferimento radiativo spettrale",
-    "Sentinel-2 bands (13)": "Bande Sentinel-2 (13)", "The hyperspectral 6S table is not available yet: Sentinel-2 bands for now.": "La tabella 6S iperspettrale non è ancora disponibile: per ora bande Sentinel-2.",
+    "Sentinel-2 bands (13)": "Bande Sentinel-2 (13)", "The hyperspectral table is not available yet: Sentinel-2 bands for now.": "La tabella iperspettrale non è ancora disponibile: per ora bande Sentinel-2.",
     "Sun below 10° elevation at this hour: no VNIR-SWIR spectrum.": "Sole sotto i 10° a quest'ora: nessuno spettro VNIR-SWIR.",
     "Wavelength [nm]": "Lunghezza d'onda [nm]", "Path radiance": "Radianza di percorso",
     "Irradiance": "Irradianza", "E diffuse [W m⁻² µm⁻¹]": "E diffusa [W m⁻² µm⁻¹]",
@@ -243,7 +244,8 @@ const I18N = (() => {
     [/^(.+) bands with wavelengths$/, "$1 bande con lunghezze d'onda"],
     [/^\+(\d+) days$/, "+$1 giorni"], [/^\+(\d+)d$/, "+$1g"],
     [/^Verified up to (.+) · updated (.+) UTC$/, "Verificato fino al $1 · aggiornato $2 UTC"],
-    [/^6S every (\d+) nm \((\d+) wavelengths\)$/, "6S ogni $1 nm ($2 lunghezze d'onda)"],
+    [/^No archived model values for (.+) yet: choose an earlier date\.$/, "Nessun valore dei modelli in archivio per il $1: scegli una data precedente."],
+    [/^Every (\d+) nm \((\d+) wavelengths\)$/, "Ogni $1 nm ($2 lunghezze d'onda)"],
     [/^Observed – (.+)$/, "Osservato – $1"],
   ];
   let lang = "en";
