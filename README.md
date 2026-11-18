@@ -11,19 +11,17 @@ The project belongs to a family: **Prognostica** (weather, front end) · **Colum
 
 ## What it does
 
-An accurate weather forecast for any place:
+Weather forecasts for any place, and the atmosphere for the correction of satellite images:
 
 - **Combined forecast with uncertainty.** All numerical models covering the place (ItaliaMeteo ICON-2I, ECMWF IFS/AIFS, ICON, GFS, ARPEGE,
   UKMO, GEM via Open-Meteo) are verified every day against synoptic stations. They are combined into ★ *Best*, ⚖ *Weighted mean* and
   ◆ *GPR* (Gaussian-process regression giving value and uncertainty). Hourly, 6-hourly and daily; lead times 0–7 days; past days with observations.
 - **Place search** with suggestions while typing (Photon/OpenStreetMap), coordinates, device location, Nominatim fallback.
-- **Atmosphere at the point**:
-  - water vapour, AOD and dust (CAMS), radiation;
-  - profiles 1000–200 hPa and air density;
-  - 6S radiative-transfer parameters for the Sentinel-2 bands;
-  - TIR transmittance and radiances for Landsat 8/9 band 10.
-- **10 m maps** around the point: regression kriging on Copernicus covariates (DEM, slope, northness, HRL imperviousness and tree cover).
-  Includes the kriging standard-deviation map and leave-one-out validation (RMSE, MAE, bias, R², 95% coverage) against trend-only and ordinary kriging.
+- **Atmosphere at the point**: water vapour, AOD and dust (CAMS), radiation, profiles 1000–200 hPa, air density; radiative-transfer parameters
+  from 6S (VNIR–SWIR) or libRadtran (VNIR–SWIR and thermal).
+- **High-resolution atmospheric maps** for a past date and hour: water vapour and AOD corrected by a gradient-boosting model validated on AERONET
+  and GNSS measurements, and the radiative-transfer quantities in the band of any sensor (spectral response from a library, from the metadata of an
+  imported image, or custom). The map can take the grid of an imported GeoTIFF/ENVI image and is exported in the units of the product.
 - **Model accuracy**: rankings, significant-event verification and GPR back-test.
 - **Calibration sites**: RadCalNet and HYPERNETS. Model forecasts are archived every day.
 

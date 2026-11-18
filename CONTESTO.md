@@ -33,6 +33,14 @@ CSV/Excel con nomi inglesi: `rankings.csv`, `rankings_holdout.csv`, `best_and_we
 `monthly_trend.csv`, `event_scores.csv`, `event_list.csv`, `daily_pairs/`, `stations.csv`, `summary.xlsx`.
 LUT iperspettrale: workflow Torricelli «Tabella RT 6S» con `hyper` (6 macchine in parallelo, ~1 h; `scripts/01b_merge_lut.py` unisce le parti).
 
+## Novità 18/11/2026
+- **Atmosphere RK** riscritta: un solo metodo. Per una data e un'ora passate, vapore (ECMWF IFS) e AOD (CAMS) corretti dal gradient boosting
+  addestrato da Torricelli su misure orarie AERONET e GNSS con covariate che esistono per ogni pixel (modello, terreno a 500/2000 m, posizione, ora):
+  niente Sentinel-2, niente trend sulla quota, niente random forest. Validazione per celle di 0,5°: vapore RMSE 2,30 → 1,98 kg m⁻², AOD 0,078 → 0,072.
+- Grandezze RT nella banda di qualsiasi sensore (`web/srf.js`): libreria Torricelli `srf.json` (curve misurate da Py6S, gaussiane LWIR),
+  lunghezze d'onda dai metadati dell'immagine importata (ENVI, GeoTIFF/GDAL), SRF personalizzate; export con unità e fattore di scala.
+- 6S o libRadtran a scelta (LWIR solo con libRadtran; con 6S la parte termica è ingrigita). Sito leggibile su telefono e tablet.
+
 ## Novità 16/11/2026
 - Scheda **Forecast** prima: ricerca luoghi con suggerimenti (Photon, distorsione verso il centro mappa, frecce/Invio), coordinate “lat, lon”,
   posizione del dispositivo, Nominatim di riserva.

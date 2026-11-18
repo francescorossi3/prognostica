@@ -1,13 +1,13 @@
 # Prognostica – istruzioni per Claude
 
-Front end meteo: previsione accurata (modelli Open-Meteo verificati + GPR), schede in tre gruppi: Forecast / Maps / Accuracy (accuratezza modelli + affidabilità GPR) / Events · Atmosphere / Atmosphere RK (regression kriging 10 m) · Data & method.
+Front end meteo: previsione accurata (modelli Open-Meteo verificati + GPR), schede in tre gruppi: Forecast / Maps / Accuracy (accuratezza modelli + affidabilità GPR) / Events · Atmosphere / Atmosphere RK (mappe di vapore, AOD e RT con il modello validato su AERONET/GNSS) · Data & method.
 Contesto completo e storia: **CONTESTO.md** (leggerlo solo se serve).
 
 ## Mappa del codice
 - `config.yaml` – provider, regioni (italia, radcalnet, hypernets), soglie eventi, `site.*` (atmos_url = Torricelli, goatcounter).
 - `meteoita/` – libreria Python (providers, observations, verify, gp, regions, grid, events, storage).
 - `scripts/00…09` – pipeline: stazioni → previsioni → osservazioni → verifica → GPR → mappe → sito → backtest → backfill → riuso mappe.
-- `web/` – `index.html`, `app.js` (UI principale), `gp.js` (GPR nel browser), `atmos.js` (atmosfera, LUT 6S), `hires.js` (regression kriging 10 m, GeoTIFF), `mapstyle.js` (pannelli Layers/Style come QGIS), `export.js` (download CSV di grafici/tabelle; mappe in GeoTIFF, PNG/JPEG, ASCII, ENVI), `s2rk.js` (mappe con il modello validato su Sentinel-2), `vendor/` (librerie MIT/BSD, `LICENSES.md`), `i18n.js` (dizionario EN→IT: aggiungere lì ogni nuovo testo).
+- `web/` – `index.html`, `app.js` (UI principale), `gp.js` (GPR nel browser), `atmos.js` (atmosfera, LUT 6S e libRadtran), `hires.js` (scheda Atmosphere RK: griglia, import di immagini, download con unità), `rkmap.js` (modello validato applicato ai pixel), `srf.js` (risposte spettrali dei sensori), `mapstyle.js` (pannelli Layers/Style come QGIS), `export.js` (download CSV di grafici/tabelle; mappe in GeoTIFF, PNG/JPEG, ASCII, ENVI), `vendor/` (librerie MIT/BSD, `LICENSES.md`), `i18n.js` (dizionario EN→IT: aggiungere lì ogni nuovo testo).
 - `.github/workflows/` – `daily.yml` (06:17 UTC), `site_only.yml` (ripubblica senza API), `backfill*.yml`.
 - Dati: `data/csv/` (CSV/Excel in inglese), parquet in `data/`.
 
