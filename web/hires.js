@@ -348,7 +348,7 @@ const HR = (() => {
     const show = () => {
       const x = V.variables[$("#hv-var").value], m = $("#hv-method").value, u = x.unit ? ` [${x.unit}]` : "", d = x.unit ? 3 : 4;
       const net = n => x.sites.filter(s => s.network === n).length;
-      $("#hv-info").textContent = `${net("aeronet")} AERONET and ${net("gnss")} GNSS sites · ${x.n_rows.toLocaleString()} hourly measurements · `
+      $("#hv-info").textContent = `${net("aeronet")} AERONET sites${net("gnss") ? ` and ${net("gnss")} GNSS stations` : ""} · ${x.n_rows.toLocaleString()} hourly measurements · `
         + `${x.period.map(t => t.slice(0, 10)).join(" – ")} · each site left out of training when it is tested`;
       $("#hv-table").innerHTML = `<thead><tr><th>Method</th><th>RMSE${u}</th><th>MAE${u}</th><th>Bias${u}</th><th>R²</th><th>n</th></tr></thead><tbody>`
         + methods.map(k => { const r = x.overall[k];
