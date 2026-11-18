@@ -55,8 +55,9 @@ function drawChart(id, cfg) {
 function htmlLegend(ch, el, tips = {}) {
   el.innerHTML = ch.data.datasets.map((d, k) => d.label.startsWith("_") ? ""
     : `<button data-k="${k}" title="${tips[k] || "Show / hide"}"><i style="background:${d.borderColor || d.backgroundColor}"></i>${d.label}</button>`).join("");
+  const id = ch.canvas.id;
   el.querySelectorAll("button").forEach(b => b.onclick = () => {
-    const c = Chart.getChart(ch.canvas) || ch, k = +b.dataset.k;            // istanza attuale (il grafico può essere stato ricreato)
+    const c = Chart.getChart(id), k = +b.dataset.k;                       // istanza attuale (il grafico può essere stato ricreato)
     c.setDatasetVisibility(k, !c.isDatasetVisible(k)); b.classList.toggle("off"); c.update(); });
 }
 // pulsante CSV per ogni tabella del sito
