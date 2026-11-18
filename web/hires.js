@@ -102,14 +102,17 @@ const HR = (() => {
       if (!G.def) throw new Error(`coordinate system EPSG:${G.epsg} not supported yet (supported: WGS84, UTM, ETRS89 and RDN2008 UTM, LAEA Europe, Monte Mario Gauss-Boaga)`);
       if (G.W * G.H > 25e6) throw new Error(`${G.W} × ${G.H} pixels: too many for the browser (max 25 million): crop the image first`);
       S.himg = makeGrid(G);
-      // data e ora di acquisizione, se scritte nei metadati
-      const tm = String(time).match(/(\d{4})[-:](\d{2})[-:](\d{2})[T ](\d{2})/);
-      if (tm) { $("#h-date").value = `${tm[1]}-${tm[2]}-${tm[3]}`; $("#h-hour").value = +tm[4]; }
+      // data e ora di acquisizione, se scritte nei metadati: ora intera più vicina (i valori del modello sono orari)
+      const tm = String(time).match(/(\d{4})[-:](\d{2})[-:](\d{2})[T ](\d{2}):?(\d{2})?/);
+      if (tm) {
+        const t = new Date(Date.UTC(+tm[1], tm[2] - 1, +tm[3], +tm[4], +(tm[5] || 0)) + 30 * 6e4);
+        $("#h-date").value = t.toISOString().slice(0, 10); $("#h-hour").value = t.getUTCHours();
+      }
       await sensors();
       if (S.himgBands.length) { $("#h-sensor").value = "image"; await bandOptions(); }
       st.innerHTML = `<b>${G.name}</b> · ${G.W} × ${G.H} pixels of ${fmt(G.dx, G.geographic ? 6 : 2)}${G.geographic ? "°" : " m"} · EPSG:${G.epsg || "WKT"} ·
         ${G.bb.s.toFixed(4)}–${G.bb.n.toFixed(4)} N, ${G.bb.w.toFixed(4)}–${G.bb.e.toFixed(4)} E
-        · ${S.himgBands.length ? `${S.himgBands.length} bands with wavelengths` : "no wavelengths in the metadata"}${tm ? ` · acquired ${tm[1]}-${tm[2]}-${tm[3]} ${tm[4]}:00 UTC` : ""}`;
+        · ${S.himgBands.length ? `${S.himgBands.length} bands with wavelengths` : "no wavelengths in the metadata"}${tm ? ` · acquired ${tm[1]}-${tm[2]}-${tm[3]} ${tm[4]}:${tm[5] || "00"} UTC` : ""}`;
       ["#h-size", "#h-size-u", "#h-cell", "#h-cell-u"].forEach(id => { $(id).disabled = true; });
       $("#h-img-clear").hidden = false;
       S.hmap.fitBounds([[G.bb.s, G.bb.w], [G.bb.n, G.bb.e]]);
