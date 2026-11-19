@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Se usi Prognostica o i suoi dati, cita così. / If you use Prognostica or its data, please cite it as below."
+title: "Prognostica: verified weather forecasts and atmospheric parameters"
+type: software
+authors:
+  - family-names: Rossi
+    given-names: Francesco
+    affiliation: "CNR – Istituto di Metodologie Integrate per l'Osservazione della Terra (IMIOT)"
+url: "https://francescorossi3.github.io/prognostica/"
+repository-code: "https://github.com/francescorossi3/prognostica"
+license-url: "https://github.com/francescorossi3/prognostica/blob/main/LICENSE"
+keywords:
+  - weather forecast verification
+  - Gaussian process regression
+  - atmospheric correction
+  - aerosol optical depth
+  - water vapour
+  - Italy

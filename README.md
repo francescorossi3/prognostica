@@ -32,3 +32,10 @@ Technical documentation (in Italian): [README.it.md](README.it.md) and [CONTESTO
 
 © 2026 Francesco Rossi. **Code: all rights reserved.** **Data: CC BY-NC 4.0.** See [LICENSE](LICENSE). Third-party data remain under their own licences
 (Open-Meteo CC BY 4.0, non-commercial free API; Meteostat CC BY-NC 4.0; OpenStreetMap ODbL; Copernicus/EEA with attribution).
+
+## Come citare / How to cite
+
+Rossi, F. (2026). *Prognostica: verified weather forecasts and atmospheric parameters* [web application]. CNR – Istituto di Metodologie
+Integrate per l'Osservazione della Terra (IMIOT). https://francescorossi3.github.io/prognostica/
+
+Vedi anche `CITATION.cff` (GitHub mostra "Cite this repository") e cita le fonti dei dati (Open-Meteo, Meteostat, ECMWF, CAMS, AERONET, GNSS…).
