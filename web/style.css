@@ -234,3 +234,5 @@ footer a { color: inherit; }
   .downloads label { flex: 1 1 45%; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+footer .cite-note { margin-top: 8px; }
+footer .cite-note code { display: block; margin: 4px 0; padding: 6px 8px; border-radius: 6px; background: rgba(127,127,127,.12); white-space: normal; font-size: 12px; user-select: all; }

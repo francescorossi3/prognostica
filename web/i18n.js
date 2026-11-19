@@ -154,7 +154,7 @@ const I18N = (() => {
     "Accuracy": "Accuratezza", "Atmosphere RK": "Atmosfera RK", "How to read the GPR tables": "Come leggere le tabelle GPR",
     "Scroll the chart sideways with the bar, the mouse wheel (Shift + wheel) or a swipe.": "Scorri il grafico di lato con la barra, la rotella del mouse (Maiusc + rotella) o con un dito.",
     // nuovo layout, pannelli Layers / Style (mapstyle.js)
-    "The name comes from Cicero's": "Il nome viene dai", "Language": "Lingua",
+    "The name comes from Cicero's": "Il nome viene dai", "How to cite:": "Come citare:", "Please also cite the data sources listed above.": "Cita anche le fonti dei dati elencate sopra.", "Language": "Lingua",
     "Table of values": "Tabella dei valori",
     "Choose a place with the search above (or a map click, or a calibration site).": "Scegli un luogo con la ricerca in alto (o con un clic sulla mappa, o un sito di calibrazione).",
     "Choose a place with the search above: the map is built around it.": "Scegli un luogo con la ricerca in alto: la mappa viene costruita intorno a esso.",
